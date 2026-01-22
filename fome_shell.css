@@ -1,0 +1,35 @@
+/* FOME SHELL THEME v1.0 */
+stage {
+    font-family: 'Roboto Mono', monospace; 
+    font-size: 11pt;
+    color: #00FFFF; /* Frost Cyan */
+}
+
+/* TOP BAR (The Command Deck) */
+#panel {
+    background-color: #050505;
+    border-bottom: 2px solid #00FFFF;
+    height: 32px;
+}
+
+/* 'ACTIVITIES' BUTTON REBRAND */
+#panel .panel-button.activities-button label {
+    /* Hiding the text 'Activities' and replacing it via content requires C-level patch, 
+       but we style the label here for the simulation */
+    color: #FFD700; /* Gold */
+    font-weight: 900;
+    text-shadow: 0 0 5px #FFD700;
+}
+
+/* THE DASH (Dock) */
+#dash .dash-background {
+    background-color: rgba(10, 10, 10, 0.9);
+    border: 1px solid #333333;
+    border-radius: 0px; /* SHARP CORNERS ONLY */
+}
+
+/* NOTIFICATIONS */
+.message-list {
+    background-color: #000000;
+    border: 1px solid #00FFFF;
+}
