@@ -1,0 +1,5 @@
+# Assuming you saved the file above to Finux/contracts/FrostEther.sol
+cd Finux
+git add contracts/FrostEther.sol
+git commit -m "Update: Zero-Kelvin Gas Optimization (v1.0)"
+git push origin main
