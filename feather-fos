@@ -1,3 +1,5 @@
+import fui
+fui.load_theme()
 import datetime
 import os
 from kivy.app import App
