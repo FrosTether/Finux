@@ -1,0 +1,144 @@
+import datetime
+import os
+from kivy.app import App
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.uix.image import Image
+from kivy.graphics import Color, Rectangle
+from kivy.clock import Clock
+from kivy.core.window import Window
+
+# --- FOS THEME (Dark Mode / Frost Accents) ---
+COLOR_BG = (0.05, 0.05, 0.08, 1)    # Obsidian Background
+COLOR_ACCENT = (0.22, 0.74, 1, 1)   # Frost Cyan
+COLOR_TEXT_MAIN = (1, 1, 1, 1)      # White
+COLOR_TEXT_DIM = (0.6, 0.6, 0.6, 1) # Gray
+
+Window.clearcolor = COLOR_BG
+
+class FeatherOS(App):
+    def build(self):
+        self.title = "Feather FOS v1.0"
+        self.icon = "feather.png" 
+        
+        # Root Canvas (Wallpaper)
+        root = FloatLayout()
+        
+        # 1. SYSTEM TRAY (Top Bar)
+        top_bar = BoxLayout(
+            orientation='horizontal', 
+            size_hint=(1, 0.06), 
+            pos_hint={'top': 1},
+            padding=[15, 0]
+        )
+        
+        # Left: OS Version
+        top_bar.add_widget(Label(
+            text="FOS v1.0 [DEV]", 
+            font_size='14sp', 
+            color=COLOR_TEXT_DIM, 
+            size_hint_x=0.3,
+            halign='left', valign='middle'
+        ))
+        
+        # Spacer
+        top_bar.add_widget(Label(size_hint_x=0.4))
+        
+        # Right: Clock
+        self.clock_label = Label(
+            text="12:00", 
+            font_size='16sp', 
+            bold=True, 
+            color=COLOR_TEXT_MAIN,
+            size_hint_x=0.3
+        )
+        top_bar.add_widget(self.clock_label)
+        
+        # Draw background for top bar
+        with top_bar.canvas.before:
+            Color(0.1, 0.1, 0.12, 1)
+            Rectangle(pos=top_bar.pos, size=top_bar.size)
+            
+        root.add_widget(top_bar)
+
+        # 2. CENTER WIDGET (Welcome / Status)
+        center_box = BoxLayout(
+            orientation='vertical', 
+            size_hint=(0.8, 0.2), 
+            pos_hint={'center_x': 0.5, 'center_y': 0.65},
+            spacing=10
+        )
+        
+        welcome = Label(
+            text="Welcome, Jacob", 
+            font_size='32sp', 
+            bold=True,
+            color=COLOR_TEXT_MAIN
+        )
+        
+        status = Label(
+            text="SYSTEM INTEGRITY: [color=#38bdf8]OPTIMAL[/color]", 
+            markup=True,
+            font_size='16sp',
+            color=COLOR_TEXT_DIM
+        )
+        
+        center_box.add_widget(welcome)
+        center_box.add_widget(status)
+        root.add_widget(center_box)
+
+        # 3. APP DOCK (The Launcher)
+        # This grid holds the icons for your other apps
+        dock = GridLayout(
+            cols=3, 
+            spacing=20, 
+            padding=30, 
+            size_hint=(1, 0.25), 
+            pos_hint={'y': 0.05}
+        )
+        
+        # App 1: Reactor (Mines)
+        btn_mines = Button(
+            text="REACTOR\n(Mines)", 
+            background_color=(0.2, 0.2, 0.25, 1),
+            color=COLOR_ACCENT,
+            halign='center'
+        )
+        
+        # App 2: Vault (Wallet) - Highlighted
+        btn_vault = Button(
+            text="VAULT\n(Wallet)", 
+            background_color=(0.1, 0.3, 0.1, 1), # Green tint
+            color=(0.5, 1, 0.5, 1),
+            halign='center',
+            bold=True
+        )
+        
+        # App 3: Kernel (Verifier)
+        btn_kernel = Button(
+            text="KERNEL\n(System)", 
+            background_color=(0.2, 0.2, 0.25, 1),
+            color=COLOR_ACCENT,
+            halign='center'
+        )
+
+        dock.add_widget(btn_mines)
+        dock.add_widget(btn_vault)
+        dock.add_widget(btn_kernel)
+        
+        root.add_widget(dock)
+        
+        # Start Clock Loop
+        Clock.schedule_interval(self.update_time, 1)
+        
+        return root
+
+    def update_time(self, dt):
+        current = datetime.datetime.now()
+        self.clock_label.text = current.strftime("%H:%M")
+
+if __name__ == '__main__':
+    FeatherOS().run()
