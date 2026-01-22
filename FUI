@@ -1,0 +1,133 @@
+from kivy.lang import Builder
+from kivy.utils import get_color_from_hex
+
+# --- 1. THEME PALETTE ---
+# The "DNA" of the Frost Ecosystem
+COLORS = {
+    "BG":       get_color_from_hex("#0D1117"),  # Deep Space Slate
+    "SURFACE":  get_color_from_hex("#161B22"),  # Card Background
+    "PRIMARY":  get_color_from_hex("#38BDF8"),  # Frost Cyan (Active)
+    "ACCENT":   get_color_from_hex("#0EA5E9"),  # Darker Cyan (Press)
+    "DANGER":   get_color_from_hex("#EF4444"),  # Red (Alerts)
+    "SUCCESS":  get_color_from_hex("#22C55E"),  # Green (Online)
+    "TEXT":     get_color_from_hex("#F3F4F6"),  # White/Grey
+    "MUTED":    get_color_from_hex("#9CA3AF"),  # Dim Text
+}
+
+# --- 2. KIVY STYLE DEFINITIONS (KV LANG) ---
+# This string defines how buttons, labels, and cards look by default.
+KV_STYLES = """
+#:import C fui.COLORS
+
+# -- Typography --
+<FrostLabel@Label>:
+    color: C['TEXT']
+    font_size: '16sp'
+
+<FrostHeader@Label>:
+    color: C['PRIMARY']
+    font_size: '24sp'
+    bold: True
+
+<FrostMuted@Label>:
+    color: C['MUTED']
+    font_size: '14sp'
+
+# -- Buttons --
+<FrostButton@Button>:
+    background_normal: ''
+    background_color: C['SURFACE']
+    color: C['PRIMARY']
+    font_size: '18sp'
+    bold: True
+    canvas.before:
+        Color:
+            rgba: C['PRIMARY'] if self.state == 'normal' else C['ACCENT']
+        Line:
+            width: 1.2
+            rectangle: self.x, self.y, self.width, self.height
+
+<FrostSolidButton@Button>:
+    background_normal: ''
+    background_color: C['PRIMARY'] if self.state == 'normal' else C['ACCENT']
+    color: C['BG']
+    bold: True
+    font_size: '18sp'
+
+# -- Cards / Containers --
+<FrostCard@BoxLayout>:
+    padding: 20
+    spacing: 10
+    canvas.before:
+        Color:
+            rgba: C['SURFACE']
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: (1, 1, 1, 0.05) # Subtle Border
+        Line:
+            width: 1
+            rectangle: self.x, self.y, self.width, self.height
+
+# -- Inputs --
+<FrostInput@TextInput>:
+    background_color: C['SURFACE']
+    foreground_color: C['TEXT']
+    cursor_color: C['PRIMARY']
+    multiline: False
+    padding: [10, 10]
+    canvas.after:
+        Color:
+            rgba: C['MUTED']
+        Line:
+            points: self.x, self.y, self.x + self.width, self.y
+"""
+
+# --- 3. LOADER FUNCTION ---
+def load_theme():
+    """
+    Call this function at the start of any App to apply the Frost Theme.
+    """
+    Builder.load_string(KV_STYLES)
+    return COLORS
+
+# --- 4. PREVIEW MODE (If run directly) ---
+if __name__ == "__main__":
+    from kivy.app import App
+    from kivy.uix.boxlayout import BoxLayout
+    from kivy.uix.label import Label
+    from kivy.uix.button import Button
+    from kivy.core.window import Window
+
+    class FUIDemo(App):
+        def build(self):
+            # Apply Theme
+            load_theme()
+            Window.clearcolor = COLORS['BG']
+            
+            # Layout
+            layout = BoxLayout(orientation='vertical', padding=40, spacing=20)
+            
+            # Typography Demo
+            layout.add_widget(Label(text="[FrostHeader] TYPOGRAPHY", markup=True))
+            layout.add_widget(Label(text="Standard Body Text", color=COLORS['TEXT']))
+            layout.add_widget(Label(text="Muted / Metadata Text", color=COLORS['MUTED']))
+            
+            # Button Demo
+            layout.add_widget(Button(text="OUTLINE BUTTON (FrostButton)", size_hint=(1, 0.2)))
+            # Note: We can't use dynamic classes in Python instantly without Factory, 
+            # so we use standard buttons styled manually here to show the logic:
+            
+            btn_solid = Button(
+                text="SOLID ACTION (FrostSolidButton)", 
+                background_normal='',
+                background_color=COLORS['PRIMARY'],
+                color=COLORS['BG'],
+                size_hint=(1, 0.2)
+            )
+            layout.add_widget(btn_solid)
+            
+            return layout
+
+    FUIDemo().run()
