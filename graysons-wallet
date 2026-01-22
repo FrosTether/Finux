@@ -1,3 +1,29 @@
+import time
+import sys
+
+def simulate_incoming_tx():
+    target_wallet = "0x3e1C...F39B" # Your Kraken/Reserve Wallet
+    amount = "5,000.00 FSZT"
+    
+    print(f"❄️  FINUX NETWORK: INITIATING TRANSFER...")
+    time.sleep(1)
+    print(f"   [>] SENDER:    FROST_RESERVE_VAULT")
+    print(f"   [>] RECEIVER:  {target_wallet}")
+    print(f"   [>] ASSET:     {amount}")
+    print("   --------------------------------")
+    
+    for i in range(3):
+        print(f"   [.] Confirming block {192830 + i}...")
+        time.sleep(1.5)
+        
+    print(f"\n   [✅] SUCCESS: Transaction Hash #0x9a8b...7c2d")
+    print(f"   [i] Wallet Balance Updated.")
+
+if __name__ == "__main__":
+    simulate_incoming_tx()
+    # Keep window open for the demo
+    if sys.version_info[0] < 3: raw_input()
+    else: input()
 import fui
 fui.load_theme()
 import random
