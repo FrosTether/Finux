@@ -1,0 +1,28 @@
+import os
+import subprocess
+
+def deploy_timeline_module():
+    print("⏳ DEPLOYING CHRONOS TIMELINE...")
+    
+    target = "GRAYSONS_WALLET_BUILD/chronos_timeline.py"
+    
+    if os.path.exists(target):
+        cmds = [
+            ["git", "add", target],
+            ["git", "commit", "-m", "Feature: Biographical Timeline Key Generation"],
+            ["git", "push", "origin", "main"]
+        ]
+        
+        for cmd in cmds:
+            try:
+                subprocess.run(cmd, check=False)
+                print(f"   [OK] {' '.join(cmd)}")
+            except:
+                pass
+            
+        print("\n✅ UPLOAD COMPLETE.")
+    else:
+        print(f"   [!] Error: {target} not found.")
+
+if __name__ == "__main__":
+    deploy_timeline_module()
