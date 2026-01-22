@@ -1,0 +1,149 @@
+import sys
+import os
+import random
+import subprocess
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.clock import Clock
+from kivy.core.window import Window
+
+# --- THEME CONFIGURATION ---
+COLOR_BG = (0.05, 0.05, 0.1, 1)       # Deep Space
+COLOR_CYAN = (0.22, 0.74, 1, 1)       # Frost Cyan
+COLOR_WARN = (1, 0.8, 0, 1)           # Warning Gold
+COLOR_DANGER = (1, 0, 0, 1)           # Danger Red
+
+Window.clearcolor = COLOR_BG
+
+# --- INFRASTRUCTURE BRIDGE (The Oracle) ---
+class FrostBridge:
+    """
+    Simulates the connection to the Ethereum Reserve Vault.
+    In production, this uses Web3.py to query 0x3e1C...
+    """
+    def get_reserve_status(self):
+        # Returns the mocked status of your specific vault
+        return "12.4500 ETH (STAKED / LOCKED)"
+
+# --- SCREEN 1: THE REACTOR DASHBOARD ---
+class ReactorScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bridge = FrostBridge()
+        
+        layout = BoxLayout(orientation='vertical', padding=30, spacing=20)
+        
+        # Header
+        layout.add_widget(Label(
+            text="[b]FROST REACTOR v1.0[/b]", 
+            markup=True, 
+            font_size='24sp', 
+            color=COLOR_CYAN
+        ))
+        
+        # 1. HASHRATE MONITOR
+        self.hash_label = Label(
+            text="HASHRATE: INITIALIZING...", 
+            font_size='20sp', 
+            color=(0, 1, 0, 1), 
+            bold=True
+        )
+        layout.add_widget(self.hash_label)
+        
+        # 2. RESERVE STATUS (The Vault Link)
+        self.reserve_label = Label(
+            text=f"VAULT LINK: {self.bridge.get_reserve_status()}", 
+            color=(0.7, 0.7, 0.7, 1),
+            font_size='14sp'
+        )
+        layout.add_widget(self.reserve_label)
+        
+        # 3. TEMPERATURE
+        self.temp_label = Label(text="CORE TEMP: -40°C (STABLE)", color=COLOR_CYAN)
+        layout.add_widget(self.temp_label)
+        
+        # Spacer
+        layout.add_widget(Label(size_hint_y=0.2))
+
+        # Navigation Button
+        btn_games = Button(
+            text="ACCESS GAMEFI TERMINAL >", 
+            size_hint=(1, 0.25), 
+            background_color=COLOR_CYAN,
+            color=(0,0,0,1),
+            bold=True
+        )
+        btn_games.bind(on_press=self.go_to_games)
+        layout.add_widget(btn_games)
+        
+        self.add_widget(layout)
+        Clock.schedule_interval(self.update_metrics, 1.0)
+
+    def update_metrics(self, dt):
+        # Simulate live mining fluctuations
+        rate = 48.0 + random.uniform(-2.5, 2.5)
+        self.hash_label.text = f"HASHRATE: {rate:.2f} MH/s"
+
+    def go_to_games(self, instance):
+        self.manager.transition.direction = 'left'
+        self.manager.current = 'games'
+
+# --- SCREEN 2: GAMEFI TERMINAL ---
+class GameScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        layout = BoxLayout(orientation='vertical', padding=30, spacing=20)
+        
+        layout.add_widget(Label(text="[b]PROTOCOL SELECTION[/b]", markup=True, font_size='22sp'))
+        
+        # Game 1: FrostMan (Pacman)
+        btn_pac = Button(text="LAUNCH FROSTMAN.EXE", background_color=(1, 1, 0, 1), color=(0,0,0,1))
+        btn_pac.bind(on_press=lambda x: self.launch_external("frostman.py"))
+        layout.add_widget(btn_pac)
+        
+        # Game 2: Ms. FrostMan (The Memorial Hack)
+        btn_ms = Button(text="LAUNCH MS_FROSTMAN.EXE\n(Genesis Hack)", background_color=(1, 0, 1, 1))
+        btn_ms.bind(on_press=lambda x: self.launch_external("ms_frostman.py"))
+        layout.add_widget(btn_ms)
+        
+        # Status Output
+        self.status = Label(text="STATUS: READY", color=(0.5, 0.5, 0.5, 1))
+        layout.add_widget(self.status)
+        
+        # Back Button
+        btn_back = Button(text="< RETURN TO REACTOR", size_hint=(1, 0.2), background_color=(0.2, 0.2, 0.2, 1))
+        btn_back.bind(on_press=self.go_back)
+        layout.add_widget(btn_back)
+        
+        self.add_widget(layout)
+
+    def launch_external(self, script_name):
+        self.status.text = f"EXECUTING {script_name}..."
+        
+        # Check if file exists before trying to run
+        if os.path.exists(script_name):
+            # This launches the game in a new, separate window
+            subprocess.Popen([sys.executable, script_name])
+            self.status.text = f"RUNNING: {script_name}"
+        else:
+            self.status.text = f"ERROR: {script_name} NOT FOUND"
+
+    def go_back(self, instance):
+        self.manager.transition.direction = 'right'
+        self.manager.current = 'reactor'
+
+# --- MAIN APP CLASS ---
+class FrostMinesApp(App):
+    def build(self):
+        self.title = "FrostMines Control"
+        sm = ScreenManager()
+        sm.add_widget(ReactorScreen(name='reactor'))
+        sm.add_widget(GameScreen(name='games'))
+        return sm
+
+if __name__ == '__main__':
+    FrostMinesApp().run()
