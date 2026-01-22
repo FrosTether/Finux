@@ -1,0 +1,68 @@
+import time
+import sys
+import random
+from colorama import Fore, Style, init
+
+init(autoreset=True)
+
+class GrokMarketplace:
+    def __init__(self):
+        self.price_fszt = 5000.00 # Cost of Premium
+        self.features = [
+            "FOSP Super-Compute Access",
+            "Unlimited Context Window",
+            "Real-Time Blockchain Indexing",
+            "Zero-Latency Responses"
+        ]
+
+    def connect_wallet(self):
+        print(f"{Fore.CYAN}📡 CONNECTING TO GRAYSONS WALLET...")
+        time.sleep(1)
+        # Simulating the balance from your "Big Burr" run
+        balance = random.uniform(15000.00, 50000.00) 
+        print(f"{Fore.GREEN}   [OK] WALLET CONNECTED: 0x3e1C...F39B")
+        print(f"{Fore.GREEN}   [💰] BALANCE: {balance:,.2f} FSZT")
+        return balance
+
+    def execute_purchase(self, current_balance):
+        print(f"\n{Fore.YELLOW}🛒 ITEM: GROK PREMIUM (FOSP EDITION)")
+        print(f"{Fore.YELLOW}   COST: {self.price_fszt:,.2f} FSZT")
+        
+        confirm = input(f"\n{Fore.WHITE}CONFIRM TRANSACTION? (Y/N): ")
+        
+        if confirm.lower() == 'y':
+            if current_balance >= self.price_fszt:
+                print(f"\n{Fore.CYAN}🔄 PROCESSING BLOCKCHAIN TRANSACTION...")
+                self.loading_bar()
+                
+                new_bal = current_balance - self.price_fszt
+                print(f"\n{Fore.GREEN}✅ SUCCESS. RECEIPT #0x{random.getrandbits(64):016x}")
+                print(f"{Fore.WHITE}   REMAINING BALANCE: {new_bal:,.2f} FSZT")
+                self.unlock_features()
+            else:
+                print(f"{Fore.RED}❌ INSUFFICIENT FUNDS. MINE MORE FSZT.")
+        else:
+            print(f"{Fore.RED}🚫 TRANSACTION CANCELLED.")
+
+    def loading_bar(self):
+        for i in range(20):
+            sys.stdout.write(f"\r{Fore.CYAN}[{'='*i}{' '*(20-i)}] VALIDATING")
+            sys.stdout.flush()
+            time.sleep(0.1)
+
+    def unlock_features(self):
+        print(f"\n\n{Fore.MAGENTA}✨ GROK PREMIUM ACTIVATED ✨")
+        print("-" * 40)
+        for feature in self.features:
+            print(f"{Fore.MAGENTA}   [+] {feature}")
+            time.sleep(0.3)
+        print("-" * 40)
+        
+        # Write a flag file so the OS knows it's premium
+        with open("GROK_STATUS.txt", "w") as f:
+            f.write("STATUS: PREMIUM\nMODE: GOD_MODE")
+
+if __name__ == "__main__":
+    market = GrokMarketplace()
+    bal = market.connect_wallet()
+    market.execute_purchase(bal)
