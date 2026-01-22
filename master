@@ -1,0 +1,84 @@
+import os
+import subprocess
+import sys
+
+# --- CONFIGURATION ---
+GITHUB_USER = "FrosTether"
+BASE_URL = f"https://github.com/{GITHUB_USER}"
+
+# Map Local Folders to Remote Repos
+ECOSYSTEM = {
+    "FINUX_MOBILE_BUILD":       "finux-mobile",
+    "GRAYSONS_WALLET_BUILD":    "graysons-wallet",
+    "FROSTMINES_BUILD":         "frost-mines",
+    "FEATHER_BUILD":            "feather-fos",
+    "FROSTNER_BUILD":           "frostner-protocol",
+    "finux-security":           "finux-security",
+    "FUI":                      "FUI",
+    "Finux":                    "Finux"
+}
+
+def run_git_cmd(cmd, cwd):
+    try:
+        subprocess.run(
+            cmd, 
+            cwd=cwd, 
+            shell=True, 
+            check=True, 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.PIPE
+        )
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"       [!] Error: {e.stderr.decode().strip()}")
+        return False
+
+def link_and_push():
+    print(f"❄️  INITIATING FROSTETHER UPLINK SEQUENCE...")
+    print(f"    Target Identity: {GITHUB_USER}")
+    print("    =======================================")
+
+    work_dir = os.getcwd()
+
+    for local_folder, repo_name in ECOSYSTEM.items():
+        print(f"\n[+] PROCESSING: {local_folder}")
+        
+        target_path = os.path.join(work_dir, local_folder)
+        
+        # 1. Verify Folder Exists
+        if not os.path.exists(target_path):
+            print(f"    [X] Skipped: Folder not found.")
+            continue
+
+        # 2. Initialize Git if missing
+        if not os.path.exists(os.path.join(target_path, ".git")):
+            print("    -> Initializing Git...")
+            run_git_cmd("git init", target_path)
+            run_git_cmd("git branch -M main", target_path)
+
+        # 3. Add Remote (Force Update if exists)
+        remote_url = f"{BASE_URL}/{repo_name}.git"
+        print(f"    -> Linking to: {remote_url}")
+        
+        # Remove old origin to prevent errors, then add new one
+        run_git_cmd("git remote remove origin", target_path) 
+        run_git_cmd(f"git remote add origin {remote_url}", target_path)
+
+        # 4. Stage and Commit
+        print("    -> Staging artifacts...")
+        run_git_cmd("git add .", target_path)
+        run_git_cmd('git commit -m "System Update: FrosTether Uplink"', target_path)
+
+        # 5. Push
+        print("    -> Pushing to cloud...")
+        success = run_git_cmd("git push -u origin main", target_path)
+        
+        if success:
+            print(f"    ✅ SUCCESS: {repo_name} is LIVE.")
+        else:
+            print(f"    ⚠️  PUSH FAILED (Check if repo exists on GitHub/Credentials)")
+
+    print("\n❄️  ECOSYSTEM SYNC COMPLETE.")
+
+if __name__ == "__main__":
+    link_and_push()
