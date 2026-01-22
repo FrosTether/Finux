@@ -1,3 +1,5 @@
+import fui
+fui.load_theme()
 import os
 from kivy.app import App
 from kivy.uix.label import Label
