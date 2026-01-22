@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=FOME (Frost Environment)
+Comment=The Official Finux Interface
+Exec=/usr/bin/gnome-session --session=fome
+TryExec=gnome-session
+Icon=fome-logo
+Type=Application
+DesktopNames=FOME;GNOME;
