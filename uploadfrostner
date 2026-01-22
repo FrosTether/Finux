@@ -1,0 +1,48 @@
+import os
+import subprocess
+
+# CONFIGURATION
+REPO_NAME = "frostner-protocol"
+GITHUB_USER = "FrosTether"
+REPO_URL = f"https://github.com/{GITHUB_USER}/{REPO_NAME}.git"
+SOURCE_DIR = "FROSTNER_BUILD"
+
+def deploy_frostner():
+    print("🔒 INITIATING FROSTNER UPLINK...")
+    
+    # 1. Check for Build Folder
+    if not os.path.exists(SOURCE_DIR):
+        print(f"   [!] Error: Folder '{SOURCE_DIR}' not found.")
+        return
+
+    os.chdir(SOURCE_DIR)
+    
+    # 2. Create Readme
+    with open("README.md", "w") as f:
+        f.write("# Frostner Protocol\n")
+        f.write("Standalone locking mechanism for the Frost Ecosystem.\n")
+        f.write("## Function\n")
+        f.write("Visualizes the cryptographic vesting lock (Streamflow Integration).")
+
+    # 3. Git Sequence
+    commands = [
+        "git init",
+        "git branch -M main",
+        "git add .",
+        'git commit -m "Genesis: Frostner Locking Mechanism"',
+        f"git remote add origin {REPO_URL}",
+        "git push -u origin main"
+    ]
+    
+    print("   [+] Pushing to FrosTether/frostner-protocol...")
+    for cmd in commands:
+        try:
+            subprocess.run(cmd, shell=True, check=True)
+            print(f"       [OK] {cmd}")
+        except subprocess.CalledProcessError:
+            print(f"       [!] Error: {cmd}")
+            print("       (Ensure you created the empty repo 'frostner-protocol' on GitHub!)")
+            break
+
+if __name__ == "__main__":
+    deploy_frostner()
