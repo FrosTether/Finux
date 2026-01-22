@@ -26,3 +26,29 @@ def deploy_timeline_module():
 
 if __name__ == "__main__":
     deploy_timeline_module()
+import os
+import subprocess
+
+def deploy_chronos():
+    print("🧳 PACKING FOR DEPLOYMENT (CHRONOS LAYER)...")
+    
+    # 1. Target File
+    target = "GRAYSONS_WALLET_BUILD/chronos_key.py"
+    
+    if os.path.exists(target):
+        cmds = [
+            ["git", "add", target],
+            ["git", "commit", "-m", "Feature: Chronos Temporal Key Generation (1992 Seed)"],
+            ["git", "push", "origin", "main"]
+        ]
+        
+        for cmd in cmds:
+            subprocess.run(cmd, check=False)
+            print(f"   [OK] {' '.join(cmd)}")
+            
+        print("\n✅ TIME TRAVEL MODULE ONLINE.")
+    else:
+        print(f"   [!] Error: File {target} not found.")
+
+if __name__ == "__main__":
+    deploy_chronos()
