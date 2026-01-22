@@ -1,0 +1,130 @@
+import random
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.uix.image import Image
+from kivy.graphics import Color, Rectangle, Line
+from kivy.clock import Clock
+from kivy.core.window import Window
+
+# --- THEME CONFIGURATION (Frost Aesthetic) ---
+COLOR_BG = (0.05, 0.05, 0.1, 1)       # Deep Slate Background
+COLOR_CYAN = (0.22, 0.74, 1, 1)       # Frost Cyan (Active)
+COLOR_TEXT = (0.9, 0.9, 0.9, 1)       # Off-White
+COLOR_ACCENT = (0.1, 0.2, 0.3, 1)     # Dark Blue Buttons
+
+Window.clearcolor = COLOR_BG
+
+class GraysonsWalletApp(App):
+    def build(self):
+        self.title = "Graysons Vault v1.0"
+        self.icon = "wallet.png"  # Ensure you have a 'wallet.png' or it will use default
+        
+        # Root Layout
+        root = BoxLayout(orientation='vertical', padding=30, spacing=20)
+        
+        # 1. SECURITY HEADER
+        header_box = BoxLayout(orientation='horizontal', size_hint=(1, 0.1))
+        header_box.add_widget(Label(
+            text="[b]GRAYSONS COLD VAULT[/b]", 
+            markup=True, 
+            font_size='20sp',
+            color=COLOR_TEXT,
+            halign='left',
+            valign='middle'
+        ))
+        # Status Indicator
+        self.status_indicator = Label(
+            text="● OFFLINE", 
+            color=(1, 0, 0, 1), # Red initially
+            font_size='14sp', 
+            size_hint_x=0.3
+        )
+        header_box.add_widget(self.status_indicator)
+        root.add_widget(header_box)
+        
+        # Divider Line
+        with root.canvas:
+            Color(*COLOR_CYAN)
+            Line(points=[30, root.height - 80, root.width - 30, root.height - 80], width=1)
+
+        # 2. ASSET DISPLAY (The Core)
+        asset_box = BoxLayout(orientation='vertical', size_hint=(1, 0.4))
+        
+        # Token Label
+        asset_box.add_widget(Label(text="TOTAL HOLDINGS (FSZT)", color=(0.5, 0.5, 0.5, 1)))
+        
+        # The Big Balance
+        self.balance_label = Label(
+            text="--.--", 
+            font_size='56sp', 
+            color=COLOR_CYAN, 
+            bold=True
+        )
+        asset_box.add_widget(self.balance_label)
+        
+        # Peg Info
+        self.peg_label = Label(text="PEG STATUS: UNKNOWN", color=(0.5, 0.5, 0.5, 1))
+        asset_box.add_widget(self.peg_label)
+        
+        root.add_widget(asset_box)
+
+        # 3. ACTION PANEL
+        action_box = BoxLayout(orientation='vertical', spacing=15, size_hint=(1, 0.3))
+        
+        # Sync Button
+        self.btn_sync = Button(
+            text="INITIATE UPLINK (SYNC)",
+            background_color=COLOR_ACCENT,
+            color=COLOR_CYAN,
+            font_size='18sp',
+            bold=True
+        )
+        self.btn_sync.bind(on_press=self.sync_wallet)
+        action_box.add_widget(self.btn_sync)
+        
+        # Address Display (Read Only)
+        self.addr_label = Label(
+            text="VAULT ADDR: 0x3e1C...F39B",
+            font_name='RobotoMono-Regular',
+            color=(0.4, 0.4, 0.4, 1),
+            font_size='12sp'
+        )
+        action_box.add_widget(self.addr_label)
+        
+        root.add_widget(action_box)
+        return root
+
+    def sync_wallet(self, instance):
+        # 1. Disable button to prevent spam
+        self.btn_sync.disabled = True
+        self.btn_sync.text = "ESTABLISHING HANDSHAKE..."
+        
+        # 2. Start Animation Sequence
+        Clock.schedule_once(self.step_connecting, 1.0)
+
+    def step_connecting(self, dt):
+        self.status_indicator.text = "● CONNECTING..."
+        self.status_indicator.color = (1, 1, 0, 1) # Yellow
+        self.peg_label.text = "VERIFYING RESERVE PROOF..."
+        Clock.schedule_once(self.step_downloading, 1.5)
+
+    def step_downloading(self, dt):
+        self.btn_sync.text = "DOWNLOADING LEDGER..."
+        Clock.schedule_once(self.step_complete, 1.5)
+
+    def step_complete(self, dt):
+        # 3. Final State
+        self.status_indicator.text = "● SECURE LINK"
+        self.status_indicator.color = (0, 1, 0, 1) # Green
+        
+        self.balance_label.text = "1,500,000.00" # The specific holding amount
+        self.peg_label.text = "PEG STATUS: FROZEN (1:1 USDT)"
+        
+        self.btn_sync.text = "WALLET SYNCHRONIZED"
+        self.btn_sync.background_color = (0, 0.3, 0, 1) # Dark Green
+
+if __name__ == '__main__':
+    GraysonsWalletApp().run()
