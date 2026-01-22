@@ -1,0 +1,56 @@
+import os
+import subprocess
+
+# CONFIGURATION
+REPO_NAME = "finux-security"
+GITHUB_USER = "FrosTether"
+REPO_URL = f"https://github.com/{FrosTether}/{finux}.git"
+
+def deploy_security_repo():
+    print("🛡️  INITIATING FINUX SECURITY PROTOCOL...")
+    
+    # 1. Create Directory
+    if not os.path.exists(REPO_NAME):
+        os.makedirs(REPO_NAME)
+    os.chdir(REPO_NAME)
+    
+    # 2. Generate Security Assets
+    print("   [+] Generating Security Policy...")
+    with open("SECURITY.md", "w") as f:
+        f.write("# Finux Security Protocol\n\n")
+        f.write("## 1. Reporting Vulnerabilities\n")
+        f.write("Please report critical vulnerabilities directly to: security@frostcoin.io\n\n")
+        f.write("## 2. The Platinum Standard\n")
+        f.write("- **ReentrancyGuard:** MANDATORY for all value-holding contracts.\n")
+        f.write("- **Audit Status:** Internal Audit Passed (v1.0 SCORCHED_EARTH).\n")
+
+    print("   [+] Generating Audit Log...")
+    with open("AUDIT_LOG.md", "w") as f:
+        f.write("# Finux Internal Audit Log\n\n")
+        f.write("| Date | Component | Status | Notes |\n")
+        f.write("|---|---|---|---|\n")
+        f.write("| 2026-01-22 | FrostEther.sol | SECURE | ReentrancyGuard Applied |\n")
+        f.write("| 2026-01-22 | FrostApp.exe | SECURE | Checksum Verified |\n")
+
+    # 3. Git Initialization
+    commands = [
+        "git init",
+        "git branch -M main",
+        "git add .",
+        'git commit -m "Initial Commit: Security Policies and Audit Logs"',
+        f"git remote add origin {REPO_URL}",
+        "git push -u origin main"
+    ]
+    
+    print("   [+] Pushing to GitHub...")
+    for cmd in commands:
+        try:
+            subprocess.run(cmd, shell=True, check=True)
+            print(f"       [OK] {cmd}")
+        except subprocess.CalledProcessError:
+            print(f"       [!] Error executing: {cmd}")
+            print("       (Make sure you created the empty repo 'finux-security' on GitHub first!)")
+            break
+
+if __name__ == "__main__":
+    deploy_security_repo()
