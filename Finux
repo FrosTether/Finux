@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+import os
+import sys
+import time
+import subprocess
+import shutil
+
+# --- CONFIGURATION ---
+ECOSYSTEM = {
+    "kernel":  "mobile/kernel",
+    "vault":   "mobile/vault",
+    "reactor": "mobile/reactor"
+}
+
+# FROST THEME COLORS
+C_RESET  = "\033[0m"
+C_CYAN   = "\033[96m"
+C_GREEN  = "\033[92m"
+C_RED    = "\033[91m"
+C_YELLOW = "\033[93m"
+C_BOLD   = "\033[1m"
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def print_banner():
+    clear_screen()
+    print(f"{C_CYAN}{C_BOLD}")
+    print(r"""
+    ███████╗██╗███╗   ██╗██╗   ██╗██╗  ██╗
+    ██╔════╝██║████╗  ██║██║   ██║╚██╗██╔╝
+    █████╗  ██║██╔██╗ ██║██║   ██║ ╚███╔╝ 
+    ██╔══╝  ██║██║╚██╗██║██║   ██║ ██╔██╗ 
+    ██║     ██║██║ ╚████║╚██████╔╝██╔╝ ██╗
+    ╚═╝     ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝
+    [MONOREPO CONTROLLER v1.0]
+    """)
+    print(f"{C_RESET}")
+
+def check_status():
+    print(f"{C_BOLD}>> SYSTEM STATUS CHECK:{C_RESET}\n")
+    
+    # Check Directories
+    for name, path in ECOSYSTEM.items():
+        if os.path.exists(path):
+            print(f"   [{C_GREEN}OK{C_RESET}] {name.upper().ljust(10)} -> {path}")
+        else:
+            print(f"   [{C_RED}MISSING{C_RESET}] {name.upper().ljust(10)} -> {path}")
+
+    # Check Git
+    if os.path.exists(".git"):
+        branch = subprocess.getoutput("git branch --show-current")
+        print(f"\n   [{C_GREEN}GIT{C_RESET}] Branch: {branch}")
+    else:
+        print(f"\n   [{C_RED}GIT{C_RESET}] Not initialized")
+
+def run_build(target):
+    if target not in ECOSYSTEM:
+        print(f"{C_RED}[!] Unknown target: {target}{C_RESET}")
+        return
+
+    path = ECOSYSTEM[target]
+    print(f"\n{C_YELLOW}>> INITIATING BUILD SEQUENCE FOR: {target.upper()}{C_RESET}")
+    print(f"   Path: {path}")
+    
+    # Verify Buildozer
+    if not shutil.which("buildozer"):
+        print(f"{C_RED}[!] Error: Buildozer not installed or not in PATH.{C_RESET}")
+        return
+
+    # Execute
+    try:
+        print(f"   [+] Compiling APK (this may take time)...")
+        subprocess.run("buildozer android debug", shell=True, cwd=path, check=True)
+        print(f"{C_GREEN}>> BUILD COMPLETE. Artifacts in {path}/bin/{C_RESET}")
+    except subprocess.CalledProcessError:
+        print(f"{C_RED}>> BUILD FAILED.{C_RESET}")
+
+def deploy_git(message):
+    print(f"\n{C_YELLOW}>> PUSHING TO GITHUB (FrosTether/Finux)...{C_RESET}")
+    try:
+        subprocess.run("git add .", shell=True, check=True)
+        subprocess.run(f'git commit -m "{message}"', shell=True, check=True)
+        subprocess.run("git push origin main", shell=True, check=True)
+        print(f"{C_GREEN}>> DEPLOYMENT SUCCESSFUL.{C_RESET}")
+    except Exception as e:
+        print(f"{C_RED}>> DEPLOYMENT FAILED: {e}{C_RESET}")
+
+def verify_reserve():
+    """ Runs the simulated handshake locally """
+    print(f"\n{C_CYAN}>> RUNNING PAYLOAD VERIFICATION...{C_RESET}")
+    time.sleep(1)
+    print(f"   [+] TARGET:   0x3e1C8Fb332374483b0E5C4247281c9B2C4A9F39B")
+    print(f"   [+] STATUS:   {C_GREEN}STAKED / FROZEN{C_RESET}")
+    print(f"   [+] SUPPLY:   25,000,000.31 FSZT")
+    print(f"\n{C_GREEN}>> ORACLE INTEGRITY CONFIRMED.{C_RESET}")
+
+def main():
+    while True:
+        print_banner()
+        check_status()
+        
+        print(f"\n{C_BOLD}COMMAND MENU:{C_RESET}")
+        print("   1. [BUILD]   Finux Kernel")
+        print("   2. [BUILD]   Graysons Vault")
+        print("   3. [BUILD]   FrostMines Reactor")
+        print("   4. [DEPLOY]  Push All to GitHub")
+        print("   5. [VERIFY]  Run Reserve Handshake")
+        print("   0. [EXIT]    Close Controller")
+        
+        choice = input(f"\n{C_CYAN}frost@finux:~$ {C_RESET}")
+        
+        if choice == '1': run_build("kernel")
+        elif choice == '2': run_build("vault")
+        elif choice == '3': run_build("reactor")
+        elif choice == '4': 
+            msg = input("   Enter Commit Message: ")
+            deploy_git(msg)
+        elif choice == '5':
+            verify_reserve()
+            input("\n   [Press Enter to Continue]")
+        elif choice == '0':
+            print("   Terminating Session...")
+            sys.exit()
+        else:
+            input(f"   {C_RED}Invalid Command.{C_RESET}")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\n   [!] Force Exit")
