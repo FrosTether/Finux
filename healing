@@ -1,0 +1,104 @@
+import os
+import sys
+import json
+import requests
+import time
+from threading import Thread
+
+# --- CONFIGURATION ---
+REPO_OWNER = "FrosTether"
+REPO_NAME = "Finux"
+GITHUB_API_URL = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/releases/latest"
+
+# SYSTEM PATHS (Where your apps live)
+MODULES = {
+    "kernel":  "mobile/kernel",
+    "vault":   "mobile/vault",
+    "reactor": "mobile/reactor",
+    "fos":     "mobile/fos"
+}
+
+class GrokUpdater:
+    def __init__(self):
+        self.local_version = self.load_local_version()
+        self.remote_version = None
+        self.update_available = False
+
+    def load_local_version(self):
+        """Reads the current version from a local JSON file."""
+        if os.path.exists("version.json"):
+            with open("version.json", "r") as f:
+                return json.load(f).get("version", "v0.0")
+        return "v0.0"
+
+    def check_for_updates(self):
+        """Polls GitHub for the latest tag."""
+        print(f"🤖 GROK: SCANNING FOR OTA UPDATES...")
+        try:
+            response = requests.get(GITHUB_API_URL, timeout=5)
+            if response.status_code == 200:
+                data = response.json()
+                self.remote_version = data['tag_name']
+                print(f"   [CLOUD] Latest Version: {self.remote_version}")
+                print(f"   [LOCAL] Current Version: {self.local_version}")
+                
+                if self.remote_version != self.local_version:
+                    self.update_available = True
+                    print(f"   [!] UPDATE DETECTED. INITIATING PROTOCOL...")
+                    return True
+                else:
+                    print(f"   [OK] System is up to date.")
+                    return False
+            else:
+                print("   [ERROR] Could not reach GitHub Command.")
+        except Exception as e:
+            print(f"   [ERROR] Connection Failed: {e}")
+        return False
+
+    def download_asset(self, asset_name, target_path):
+        """Downloads a specific file from the release."""
+        print(f"   [⬇] DOWNLOADING: {asset_name}...")
+        # Note: In a real scenario, you iterate through assets in the JSON response
+        # Here we simulate the fetch for the source code zip or APK
+        download_url = f"https://github.com/{REPO_OWNER}/{REPO_NAME}/releases/download/{self.remote_version}/{asset_name}"
+        
+        try:
+            r = requests.get(download_url, stream=True)
+            if r.status_code == 200:
+                with open(target_path, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=1024):
+                        if chunk: f.write(chunk)
+                print(f"   [✔] INSTALLED: {target_path}")
+                return True
+            else:
+                print(f"   [X] FAILED: {asset_name} not found in release.")
+        except Exception as e:
+            print(f"   [X] ERROR: {e}")
+        return False
+
+    def execute_ota(self):
+        """Main execution loop."""
+        if self.check_for_updates():
+            # 1. Update the Version File
+            with open("version.json", "w") as f:
+                json.dump({"version": self.remote_version}, f)
+            
+            # 2. Download Critical Assets (Example: Updating the Kernel)
+            # In a real run, this would replace main.py or download the new APK
+            self.download_asset("Finux_Kernel.apk", "updates/Finux_Kernel_New.apk")
+            self.download_asset("payload.frost", "payload.frost")
+            
+            print(f"\n✨ GROK: OTA UPDATE COMPLETE ({self.remote_version}).")
+            print("   Please restart the application to apply changes.")
+        else:
+            print("   GroK: Standing by.")
+
+if __name__ == "__main__":
+    # Create a dummy version file if it doesn't exist for testing
+    if not os.path.exists("version.json"):
+        with open("version.json", "w") as f:
+            json.dump({"version": "v1.0-Trinity"}, f)
+            
+    # Run the Updater
+    Grok = GrokUpdater()
+    Grok.execute_ota()
