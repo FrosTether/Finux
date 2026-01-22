@@ -146,3 +146,16 @@ class FeatherOS(App):
 
 if __name__ == '__main__':
     FeatherOS().run()
+    def start_ota_check(self):
+        # Run in a background thread so it doesn't freeze the UI
+        import grok_ota
+        updater = grok_ota.GrokUpdater()
+        threading.Thread(target=updater.execute_ota).start()
+
+    def build(self):
+        # ... (your existing code) ...
+        
+        # Trigger OTA 2 seconds after boot
+        Clock.schedule_once(lambda dt: self.start_ota_check(), 2)
+        
+        return root
