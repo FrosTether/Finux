@@ -1,0 +1,119 @@
+import os
+from kivy.app import App
+from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.clock import Clock
+
+class FinuxApp(App):
+    def build(self):
+        self.title = "Finux Kernel v1.0"
+        self.icon = "frost.png" # Ensure you have a 'frost.png' in the folder
+        
+        # Layout: Deep Slate Background
+        layout = BoxLayout(orientation='vertical', padding=20, spacing=20)
+        
+        # 1. Status Panel
+        self.status_label = Label(
+            text="[b]❄️ FROST PROTOCOL STANDBY[/b]", 
+            markup=True, 
+            color=(0.22, 0.74, 1, 1), # Cyan
+            font_size='20sp'
+        )
+        
+        # 2. Handshake Button
+        self.btn_deploy = Button(
+            text="INITIATE HANDSHAKE",
+            background_color=(0.22, 0.74, 1, 1),
+            size_hint=(1, 0.2)
+        )
+        self.btn_deploy.bind(on_press=self.run_handshake)
+        
+        layout.add_widget(self.status_label)
+        layout.add_widget(self.btn_deploy)
+        return layout
+
+    def run_handshake(self, instance):
+        # Simulate the 'payload.frost' logic
+        self.status_label.text = (
+            "[color=#38bdf8]>> CONNECTING TO FROST VAULT...[/color]\n\n"
+            "✅ TOKEN: FSZT (Frost Sub-Zero Time)\n"
+            "✅ PEG: 1:1 USDT (FROZEN)\n"
+            "✅ SUPPLY: 25,000,000.31337\n\n"
+            "[b]SYSTEM INTEGRITY: 100%[/b]"
+        )
+        self.btn_deploy.text = "DEPLOYMENT CONFIRMED"
+        self.btn_deploy.disabled = True
+
+if __name__ == '__main__':
+    FinuxApp().run()
+bulldozer.spec[app]
+
+# (str) Title of your application
+title = Finux Kernel
+
+# (str) Package name
+package.name = finux
+
+# (str) Package domain (needed for android/ios packaging)
+package.domain = org.frost
+
+# (str) Source code where the main.py lives
+source.dir = .
+
+# (str) Source filename
+source.include_exts = py,png,jpg,kv,atlas
+
+# (str) Application versioning (method 1)
+version = 1.0.0
+
+# (list) Application requirements
+# comma separated e.g. requirements = sqlite3,kivy
+requirements = python3,kivy
+
+# (str) Icon of the application
+icon.filename = frost.png
+
+# (str) Presplash of the application
+# presplash.filename = %(source.dir)s/data/presplash.png
+
+# (list) Permissions
+android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
+
+# (int) Target Android API, should be as high as possible.
+android.api = 33
+
+# (int) Minimum API your APK will support.
+android.minapi = 21
+
+# (bool) Indicate if the application should be fullscreen or not
+fullscreen = 0
+
+# (list) List of service to declare
+#services = NAME:ENTRYPOINT_TO_PY,NAME2:ENTRYPOINT2_TO_PY
+
+# (str) The log level (logcat)
+log_level = 2
+
+# (int) Android NDK version to use
+android.ndk = 25b
+
+# (bool) If True, then skip trying to update the Android sdk
+# This can be useful to avoid excess downloads
+android.skip_update = False
+
+# (bool) If True, then automatically accept SDK license
+# agreements. This is intended for automation only.
+android.accept_sdk_license = True
+
+# (str) The entry point of your application
+# entrypoint = main.py
+
+# (list) List of Java .jar files to add to the libs so that pyjnius can access
+# their classes. Don't add jars that you do not need, since extra jars can slow
+# down the build process. Allows wildcards matching, for example:
+# android.add_jars = foo.jar,bar.jar,common/*.jar
+#android.add_jars = foo.jar
+git add mobile/kernel/main.py mobile/kernel/buildozer.spec
+git commit -m "Update: Finux Kernel Source Logic"
+git push origin main
