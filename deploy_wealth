@@ -1,0 +1,25 @@
+import os
+import subprocess
+
+def deploy_wealth_dashboard():
+    print("💰 DEPLOYING WEALTH DASHBOARD...")
+    
+    target = "GRAYSONS_WALLET_BUILD/wealth_dashboard.py"
+    
+    if os.path.exists(target):
+        cmds = [
+            ["git", "add", target],
+            ["git", "commit", "-m", "Feature: Portfolio Valuation Dashboard"],
+            ["git", "push", "origin", "main"]
+        ]
+        for cmd in cmds:
+            try:
+                subprocess.run(cmd, check=False)
+                print(f"   [OK] {' '.join(cmd)}")
+            except: pass
+        print("\n✅ DASHBOARD LIVE.")
+    else:
+        print(f"   [!] Error: {target} not found.")
+
+if __name__ == "__main__":
+    deploy_wealth_dashboard()
