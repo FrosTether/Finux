@@ -1,0 +1,26 @@
+import ecdsa
+import binascii
+
+def verify_wallet_transaction(public_key_hex, signature_hex, challenge_msg):
+    """
+    Verifies a biometric-authorized signature on the backend.
+    """
+    try:
+        # 1. Convert hex inputs back to bytes
+        public_key_bytes = binascii.unhexlify(public_key_hex)
+        signature_bytes = binascii.unhexlify(signature_hex)
+        
+        # 2. Load the public key (using the SECP256k1 curve)
+        vk = ecdsa.VerifyingKey.from_string(public_key_bytes, curve=ecdsa.SECP256k1)
+        
+        # 3. Verify the signature against the original challenge message
+        # If the data was tampered with or the key is wrong, this will fail.
+        is_valid = vk.verify(signature_bytes, challenge_msg.encode())
+        
+        return is_valid
+    except (ecdsa.BadSignatureError, Exception):
+        return False
+
+# Example Usage:
+# if verify_wallet_transaction(user_pub_key, user_sig, "auth_challenge_123"):
+#     broadcast_to_blockchain(transaction_data)
