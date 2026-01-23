@@ -1,0 +1,22 @@
+### ❄️ FROST PROTOCOL: DPR VULNERABILITY REPORT
+**[TITLE]:** (e.g., Logic Flaw in init_shell.py)
+
+**1. EXECUTIVE SUMMARY**
+- **Description:** [2-3 sentences explaining the bug]
+- **Severity:** [Critical / High / Medium / Low]
+- **Component:** [Finux Kernel / Ms Frostman / FrosTether-Core]
+
+**2. STEPS TO REPRODUCE (STR)**
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+**3. PROOF OF CONCEPT (PoC)**
+- [Link to Screen Recording / Screenshot / Python script]
+
+**4. IMPACT ANALYSIS**
+- [What can an attacker actually do? e.g., "Double-minting FTC"]
+
+**5. RESEARCHER INFO**
+- **Discord Handle:**
+- **GitHub Profile:** (for attribution in the Hall of DPRs)
