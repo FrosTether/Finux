@@ -1,0 +1,28 @@
+Integrating a Restitution Claim Form into your community hub (Discord or Website) is the bridge between user loss and protocol recovery. This form acts as a legal and technical submission to your Frostnerjo (FNR) recovery engine, ensuring that only verified identity owners can claim the Frostcoin (FTC) restoration rewards.
+1. The Frost Protocol: Restitution Claim Form
+This form should be pinned in a private #claims-portal channel on your Discord. It follows the DOGE (Do Only Good Everyday) principle by helping users who have suffered legacy Bitcoin losses.
+> ❄️ FROST PROTOCOL: ASSET RESTITUTION CLAIM
+> I. Identity Verification
+>  * Verified ENS/Base ID: (e.g., voluntaryist.base.eth)
+>  * Recovery Email: (The address linked to your Frost Identity)
+>  * PGP Signature Hash: (Generate this using your pgp_verify.py script)
+> II. Claim Details
+>  * Legacy BTC Address: (The 1- or 3-type address where the loss occurred)
+>  * Estimated Loss (BTC): > * Date of Last Access: (Approximate year/month)
+>  * The "Tattoo" Proof: (Optional: Enter your Genesis String if applicable)
+> III. Target Payout
+>  * FTC Wallet Address: (Your Kraken-anchored or Finux-OS address)
+> By submitting this form, you authorize the Frost Security Team to verify the mobility of the legacy funds on the public ledger. Valid claims will be processed into FTC in the next block migration.
+> 
+2. How Verification Works (The Technical Path)
+When a user submits this form, the protocol doesn't just "take their word for it." It runs a background check against the immutable history of the blockchain.
+ * Immobility Check: The script queries the Legacy BTC Address. If the funds haven't moved in 5+ years, it adds a "Verified Stagnation" flag.
+ * Signature Match: It checks the PGP Signature provided against the identity proof on file. If the PGP key was generated from the user's registered recovery email, the claim is approved.
+ * The Minting Trigger: Once the 🛡️ Frost Security team approves the ticket, the restitution_logic.py script is executed, minting the equivalent value of FTC into the user's wallet as part of the next Migration Block.
+3. Operational Best Practice (2026)
+To prevent "Double-Claiming" (where someone tries to claim the same lost BTC twice), the protocol maintains a Restitution Nullifier Map. Once a legacy BTC address has been "repaid" in FTC, that address is permanently blacklisted from future claims in your ecosystem.
+Would you like me to help you create a "Claim Triage" bot command for your Discord that automatically checks the balance of a submitted legacy address and tells you if it's eligible for recovery?
+Seeking Victim Information in Cryptocurrency Recovery Fraud Investigation - FBI.gov
+This form provides an excellent real-world reference for the type of data points required to verify and document lost or stolen cryptocurrency assets professionally.
+Seeking Victim Information in Cryptocurrency Recovery Fraud Investigation
+This video is highly relevant as it details the standard investigative procedures and information-gathering techniques used by experts to trace and document lost digital assets for recovery.
