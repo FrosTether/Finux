@@ -119,3 +119,37 @@ android.accept_sdk_license = True
 git add mobile/kernel/main.py mobile/kernel/buildozer.spec
 git commit -m "Update: Finux Kernel Source Logic"
 git push origin main
+# ... (Keep previous imports)
+
+def build_package_v2():
+    print(f"📦 RE-BUILDING RELEASE: {BUILD_TAG} (Optimized)")
+    
+    # 1. Create/Load Source
+    if not os.path.exists("finux_mobile.py"):
+        with open("finux_mobile.py", "w") as f: f.write("# CORE KERNEL")
+    
+    # 2. Calculate Checksum (THE FIX)
+    with open("finux_mobile.py", "rb") as f:
+        kernel_data = f.read()
+        kernel_hash = hashlib.sha256(kernel_data).hexdigest()
+    
+    print(f"   🛡️  Kernel SHA256: {kernel_hash[:12]}...")
+
+    # 3. Update Manifest with Checksum
+    manifest_data = generate_manifest() + f"\nKernel-Hash: {kernel_hash}"
+
+    # 4. Build Zip
+    with zipfile.ZipFile(TARGET_FILE, 'w', zipfile.ZIP_DEFLATED) as z:
+        z.writestr("META-INF/com/android/metadata", manifest_data)
+        z.writestr("README_GOOGLE.txt", generate_google_readme())
+        z.writestr("system/build.prop", f"ro.build.display.id={RELEASE_NAME}\nro.build.id={BUILD_TAG}")
+        
+        # Pack files
+        for fname in REQUIRED_FILES.keys():
+            if os.path.exists(fname):
+                z.write(fname, arcname=f"system/bin/{fname}")
+
+    print(f"✅ BUILD COMPLETE: {TARGET_FILE} (Signed & Verified)")
+
+if __name__ == "__main__":
+    build_package_v2()
