@@ -1,0 +1,30 @@
+import os
+from cryptography.fernet import Fernet
+
+def create_secure_wallet(file_path="wallet.dat"):
+    # 1. Generate a strong, random 256-bit key
+    # In a real app, this key would be stored in the Android Keystore/iOS Keychain
+    # and locked behind a biometric prompt.
+    key = Fernet.generate_key()
+    cipher_suite = Fernet(key)
+
+    # 2. Prepare the wallet data (Avoid using SSN or birth time)
+    wallet_data = {
+        "account_id": os.urandom(16).hex(), # Random unique ID
+        "version": "1.0",
+        "status": "active"
+    }
+
+    # 3. Encrypt the data
+    encrypted_data = cipher_suite.encrypt(str(wallet_data).encode())
+
+    # 4. Save to wallet.dat
+    with open(file_path, "wb") as f:
+        f.write(encrypted_data)
+    
+    print(f"Wallet successfully generated at {file_path}")
+    return key # In production, the hardware handles this return
+
+# This simulates the biometric 'unlock'
+# If biometric_check == True:
+#    access_key_and_decrypt_wallet()
