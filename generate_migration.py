@@ -38,3 +38,7 @@ migration_block.mine_block()
 
 print(f"✅ Migration Block #1 Generated!")
 print(f"Hash: {migration_block.hash}")
+git init
+git add .
+git commit -m "Initialize Frost Protocol: Migration Block #1 and Kraken Anchor"
+
