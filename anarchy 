@@ -1,0 +1,6 @@
+git add mobile/kernel/drivers/starlink_uplink.py mobile/os/scripts/network_failover.sh corporate/legal/x_api_keys.conf
+git commit -m "Infrastructure: Starlink Satellite Uplink & Global Failover Logic"
+git push origin main
+
+
+so fucking lit 
