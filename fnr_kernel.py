@@ -17,3 +17,7 @@ class FrostnerjoProtocol:
         scratchpad = hashlib.sha256(data).digest() * 65536 
         result = hashlib.pbkdf2_hmac('sha256', data, scratchpad[:64], 2048)
         return result.hex()
+def get_fnr_reward(height):
+    interval = 3000000 # 5 years, 8 months
+    halvings = height // interval
+    return 5.50 / (2 ** halvings)
