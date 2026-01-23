@@ -32,3 +32,7 @@ echo "   [+] Activating 60GHz Backhaul Diamond..."
 # 3. Global SSID Deployment
 export MESH_SSID="FREETOWN_SOVEREIGN_NET"
 echo "✅ THE DIAMOND IS CLOSED. Signal coverage: 100% (Quad-City Area)."
+git add mobile/os/scripts/diamond_mesh.sh corporate/logistics/expansion_nodes.json
+git commit -m "Expansion: Initialized Bellevue and Norwalk Nodes - The Diamond is Closed"
+git push origin main
+
