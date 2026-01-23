@@ -1,0 +1,2 @@
+# This command tests your legacy password with common typo and case variations.
+python btcrecover.py --wallet wallet.aes.json --passwordlist tokenlist.txt --typos 2 --typos-case
