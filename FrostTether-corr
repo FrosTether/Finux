@@ -1,0 +1,31 @@
+{
+  "protocol": {
+    "networkName": "Frost-Tether-Unified",
+    "chainId": 888,
+    "genesisTimestamp": "2026-01-23T12:15:00Z",
+    "blockTime": 60,
+    "halvingInterval": 3000000
+  },
+  "assets": {
+    "KYLE": {
+      "name": "Kylecoin",
+      "algorithm": "CPU-PoW",
+      "initialReward": 66.67,
+      "maxSupply": 400000000
+    },
+    "FNR": {
+      "name": "Frostnerjo",
+      "algorithm": "Cryptonite-V8",
+      "scratchpadSize": "2MB",
+      "initialReward": 5.50,
+      "maxSupply": 33000000
+    }
+  },
+  "alloc": {
+    "JacobFrost_Admin": {
+      "KYLE_balance": "1000000",
+      "FNR_balance": "50000"
+    }
+  },
+  "extraData": "Monroeville Genesis: The Triple-Threat Network is Online."
+}
