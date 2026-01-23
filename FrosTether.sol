@@ -121,3 +121,14 @@ contract FrostEther {
         emit Transfer(address(0), account, amount);
     }
 }
+// Security Gating for Grayson's Wallet
+function authorizeGPay(uint256 amount, bytes32 terminalID) external onlyKernel {
+    require(msg.sender == FINUX_KERNEL_ADDRESS, "Unauthorized: Physical Kernel Sign-off Required");
+    
+    // Only allow spending from the "Spending" sub-vault
+    require(amount <= spendingLimit, "Exceeds 3-second safety limit");
+    
+    // Update Cold Storage State
+    vaultBalance -= amount;
+    emit ColdStoragePurchase(terminalID, amount);
+}
