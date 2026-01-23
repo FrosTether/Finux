@@ -1,0 +1,3 @@
+git add mobile/os/scripts/sandusky_mesh.sh web/marketing/sandusky_merchant_pact.md
+git commit -m "Expansion: Activated Sandusky Mesh and Initialized Merchant Pact"
+git push origin main
