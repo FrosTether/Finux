@@ -1,0 +1,5 @@
+# Download the latest binary (Replace with your specific release URL)
+wget https://github.com/YOUR_USERNAME/FrosTether-Core/releases/download/v1.1.0/amiah_assistant.bin
+
+# Make the binary executable
+chmod +x amiah_assistant.bin
