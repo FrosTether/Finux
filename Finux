@@ -475,3 +475,19 @@ git push origin main
 git add corporate/legal/blood_brother_agreement.py mobile/os/scripts/admin_sync.sh corporate/finance/royalty_routing.py
 git commit -m "Leadership: Formalized Co-Founder Agreement (25%) & Dual-Admin Access"
 git push origin main
+val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+        super.onAuthenticationSucceeded(result)
+        // Access the cipher from the result to decrypt your wallet.dat
+        val cipher = result.cryptoObject?.cipher
+        // Proceed with wallet operations...
+    }
+})
+
+val promptInfo = BiometricPrompt.PromptInfo.Builder()
+    .setTitle("Unlock Grayson's Wallet")
+    .setSubtitle("Use your fingerprint to access your secure assets")
+    .setNegativeButtonText("Cancel")
+    .build()
+
+biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(myCipher))
