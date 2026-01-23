@@ -1,3 +1,4 @@
+./bootloader.sh
 import sys
 import subprocess
 import os
