@@ -1,1 +1,2 @@
+pip install web3 py-solc-x
 pm2 start reward_bot.py --interpreter python3
