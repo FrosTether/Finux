@@ -1,0 +1,3 @@
+git add mobile/os/scripts/monroeville_mesh.sh corporate/finance/graysons_tuition.sol
+git commit -m "Local: Monroeville Mesh, Grayson's Tuition DAO, and Drone Perimeter"
+git push origin main
