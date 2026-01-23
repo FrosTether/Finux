@@ -1,0 +1,3 @@
+git add mobile/fos/bin/frost_citadel.py mobile/os/scripts/silence_mesh.sh mobile/os/config/prosody-frost.cfg.lua
+git commit -m "Communication: Frost Citadel Messenger - XMPP/OTR/PFS/RingSigs on Port 7444"
+git push origin main
