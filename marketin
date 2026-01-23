@@ -1,0 +1,23 @@
+import time
+from colorama import Fore, init
+
+init(autoreset=True)
+
+def initiate_rally_protocol():
+    print(f"\n{Fore.YELLOW}〽️ INITIATING TOLEDO GENESIS RALLY PROTOCOL...")
+    
+    events = [
+        "Activating Mesh-Airdrop Geo-Fence",
+        "Initializing Cybertruck Convoy LiDAR Sync",
+        "Broadcasting 'Sovereign Manifesto' to all Mesh devices",
+        "Executing 500 FRP Disbursement to verified attendees"
+    ]
+
+    for event in events:
+        time.sleep(1)
+        print(f"   [EVENT] {event}... {Fore.GREEN}[LIVE]")
+
+    print(f"\n{Fore.CYAN}🚀 RALLY IS ACTIVE. Freetown has arrived in Toledo.")
+
+if __name__ == "__main__":
+    initiate_rally_protocol()
