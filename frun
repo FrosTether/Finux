@@ -1,3 +1,6 @@
 git add corporate/infrastructure/godfather_signal.py
 git commit -m "Legacy: Built Godfather's Signal and Finalized Frost Deck Specs"
 git push origin main
+git add corporate/infrastructure/godfather_signal.py web/marketing/proclamation.txt
+git commit -m "Local: Published Monroeville Proclamation and Linked Godfather Signal"
+git push origin main
