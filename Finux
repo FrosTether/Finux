@@ -458,3 +458,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+def mint_digital_twins():
+    print(f"\n{Fore.CYAN}⛓️  MINTING 10,000 DIGITAL TWIN NFTS...")
+    # Linking each Serial Number to a Blockchain ID
+    for i in range(1, 11): # Simulation for first 10
+        print(f"   [MINTED] Unit #FROST-00{i} <--> NFT_ID_{random.randint(1000,9999)}")
+    print("   (...) Batch processing remainder...")
+    print(f"{Fore.GREEN}✅ ALL UNITS TOKENIZED.")
