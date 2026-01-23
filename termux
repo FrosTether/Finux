@@ -1,0 +1,6 @@
+# Launch the Amiah Social Module
+python3 amiah_social.py --genesis --tag="Introduction"
+
+# > ENTER CAPTION:
+# "Hello World. This is the first block of the Amiah Social Layer. 
+# Owned by no one. Powered by Frost. Tap It Out. #FrostProtocol #DOGE"
