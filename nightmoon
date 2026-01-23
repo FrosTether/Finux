@@ -1,0 +1,25 @@
+import asyncio
+import numpy as np
+
+class OptimizedNode:
+    # __slots__ reduces memory by preventing the creation of __dict__
+    __slots__ = ['node_id', 'status', 'data_buffer']
+
+    def __init__(self, node_id):
+        self.node_id = node_id
+        self.status = "IDLE"
+        self.data_buffer = np.zeros(1000)
+
+async def process_telemetry(node):
+    """Non-blocking telemetry sync."""
+    print(f"📡 Syncing Node {node.node_id}...")
+    await asyncio.sleep(0.1)  # Simulating network latency
+    node.status = "ACTIVE"
+    return f"Node {node.node_id}: OK"
+
+async def nightly_sync(nodes):
+    tasks = [process_telemetry(n) for n in nodes]
+    results = await asyncio.gather(*tasks)
+    print("✅ All nodes optimized and synced.")
+
+# Usage: asyncio.run(nightly_sync([OptimizedNode(i) for i in range(10)]))
