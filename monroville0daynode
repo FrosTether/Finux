@@ -1,0 +1,22 @@
+root@monroeville-node:~/frost-social# python3 amiah_social.py --tap --genesis
+[SYSTEM] Authenticating Identity: voluntaryist.base.eth...
+[SIG_CHECK] PGP Signature Verified via Frostner Lock.
+[POWER] Frost Power (FP): 100% (Genesis Weight)
+
+>>> INITIATING TAP ON GENESIS POST: "amiah-doodle-genesis"
+
+[1] Calculating Vote Value...
+    > Current Reward Pool: 100,000 FTC
+    > Voter Weight: 100% (Max)
+    > rShares Generated: 24,000,000,000
+
+[2] Updating Consensus Ledger...
+    > Post "amiah-doodle-genesis" updated.
+    > Total Taps: 1
+    > Pending Payout: 75.00 FTC (Author) / 25.00 FTC (Curators)
+
+[3] Broadcasting to IPFS Swarm...
+    > CID: QmXyZ...GenesisTap
+    > Status: PINNED by Monroeville-01
+
+✅ SUCCESS: Genesis Post Tapped. The reward pool is now liquid.
