@@ -19,3 +19,7 @@ class KylecoinProtocol:
         reward = self.get_current_reward(block_height)
         # Mining logic here
         return reward
+def get_kyle_reward(height):
+    interval = 3000000 # 5 years, 8 months
+    halvings = height // interval
+    return 66.67 / (2 ** halvings)
