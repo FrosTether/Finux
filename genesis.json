@@ -1,0 +1,17 @@
+{
+  "config": {
+    "chainId": 888,
+    "chainName": "FrosTether Mainnet",
+    "genesisTimestamp": "2026-01-23T11:52:00Z",
+    "difficulty": 15.0,
+    "reward_logic": "Proof-of-Skill (PoS)"
+  },
+  "initialState": {
+    "alloc": {
+      "JacobFrost_Admin": { "balance": "1000000" }
+    },
+    "message": "Monroeville, Ohio - January 2026: The Frostner Lock is Engaged."
+  },
+  "nonce": "23",
+  "previousHash": "0"
+}
