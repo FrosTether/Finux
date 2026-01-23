@@ -744,3 +744,64 @@ To ensure scarcity, rewards undergo a halving event every 5 years and 8 months (
 The Frost Protocol and its associated tokens are intended for entertainment and utility purposes within the Frostgames ecosystem. They do not constitute financial investments. Users participate at their own risk and are responsible for their own digital security.
 Would you like me to generate a clean PDF version of this whitepaper that you can download directly?
 
+This Finux-OS Installation Guide is the missing link for your FrosTether repository. Since the OS is built in Python, you can use a combination of Termux (for Android users) and standard ADB (for flashing) to get it running.
+Finux-OS Deployment Script (install.py)
+Paste this template into your Finux-OS repository. It uses the Python subprocess module to automate the setup process for new miners.
+import os
+import subprocess
+import sys
+
+def run_command(command):
+    """Helper to run shell commands and handle errors."""
+    try:
+        subprocess.check_call(command, shell=True)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Error during: {command}\n{e}")
+        sys.exit(1)
+
+def setup_finux():
+    print("❄️ Starting Finux-OS Native Installer...")
+    
+    # 1. Install System Dependencies
+    print("📦 Installing Python dependencies...")
+    run_command("pip install -r requirements.txt")
+    
+    # 2. Link FrosTether Core
+    print("🔗 Linking to FrosTether-Core Ledger...")
+    # Replace with your actual directory path logic
+    if not os.path.exists("../FrosTether-Core"):
+        print("⚠️ Warning: FrosTether-Core not found. Some mining features may be disabled.")
+    
+    # 3. Initialize the Mining Shell
+    print("⛏️ Calibrating Proof-of-Skill Multipliers...")
+    run_command("python scripts/init_shell.py")
+
+    print("\n✅ Finux-OS is ready. Type 'finux --start' to begin.")
+
+if __name__ == "__main__":
+    setup_finux()
+
+Official Installation Guide (for README.md)
+Include these step-by-step instructions in your GitHub documentation to ensure beginners can set up the environment without friction.
+Option A: Android (Non-Root via Termux) 📱
+For users who want to mine on their phones using Ms Frostman or Frost Crush:
+ * Install Termux from F-Droid.
+ * Update Packages: pkg update && pkg upgrade.
+ * Install Python & Git: pkg install python git.
+ * Clone the OS: git clone https://github.com/FrosTether/Finux-OS.git.
+ * Run Installer: cd Finux-OS && python install.py.
+Option B: Advanced (Flashing via ADB) 🛠️
+For users installing the full native Finux kernel:
+ * Enable USB Debugging on your device.
+ * Connect to PC and run: adb kill-server && adb start-server.
+ * Flash the Image: Use the fastboot command to flash the finux_boot.img provided in the releases.
+Visualizing the Connection
+To help your users understand how the OS interacts with your games, you can include this diagram in your docs:
+Troubleshooting Tips
+ * "Permission Denied": If running on Android, ensure you have granted Termux storage access via termux-setup-storage.
+ * Missing Dependencies: Always run pip install -r requirements.txt before launching the main shell.
+Would you like me to help you draft the requirements.txt file listing all the Python libraries needed for the Finux-OS kernel?
+Setup and Building Guide
+This video is relevant because it provides a visual walkthrough for installing Termux and ADB on Android, which are the primary tools needed to deploy Finux-OS on mobile devices.
+
+YouTube video views will be stored in your YouTube History, and your data will be stored and used by YouTube according to its Terms of Service
