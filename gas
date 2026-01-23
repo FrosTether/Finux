@@ -1,0 +1,24 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract OptimizedAirdrop {
+    // Immutable variables are stored in bytecode, not storage slots
+    address public immutable rootAuthority;
+    uint256 public constant DROP_AMOUNT = 500 * 10**18;
+
+    constructor() {
+        rootAuthority = msg.sender;
+    }
+
+    function batchDistribute(address[] calldata recipients) external {
+        require(msg.sender == rootAuthority, "Unauthorized");
+        
+        uint256 length = recipients.length;
+        for (uint256 i = 0; i < length; ) {
+            // Transfer logic here...
+            
+            // Unchecked increments save ~30-40 gas per loop iteration
+            unchecked { i++; }
+        }
+    }
+}
