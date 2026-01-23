@@ -1,3 +1,6 @@
+git add mobile/kernel/security/frost_ghost.py mobile/os/config/ghost-services.conf corporate/finance/vpn_billing.py
+git commit -m "Security: Ghost Layer (Tor/I2P/VPN) Integration & Subscription Logic"
+git push origin main
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
