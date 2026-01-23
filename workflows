@@ -1,0 +1,27 @@
+name: Generate DPR Certificates
+on:
+  push:
+    paths:
+      - 'hall_of_dprs/*.md'
+
+jobs:
+  convert_to_pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Generate PDF Certificate
+        uses: baileyjm02/markdown-to-pdf@v1
+        with:
+          input_path: hall_of_dprs/
+          output_dir: certificates/
+          build_pdf: true
+
+      - name: Commit and Push Certificates
+        run: |
+          git config --global user.name 'Amiah Bot'
+          git config --global user.email 'amiah@frost-os.local'
+          git add certificates/*.pdf
+          git commit -m "Automated: Generated DPR Certificate"
+          git push
