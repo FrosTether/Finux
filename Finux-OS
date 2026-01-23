@@ -1,0 +1,5 @@
+/Finux-OS
+├── /kernel (Core Python OS logic)
+├── /drivers (Hardware compatibility)
+├── /shell (The user interface for mining)
+└── README.md
