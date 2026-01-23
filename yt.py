@@ -628,3 +628,44 @@ Android Fingerprint Lock Screen Project
 This video provides a practical walkthrough of setting up a fingerprint authentication app in Android Studio, which is the foundational step for securing a digital wallet.
 
 YouTube video views will be stored in your YouTube History, and your data will be stored and used by YouTube according to its Terms of Service
+To implement the signWithSecureKey function, you must use a library that can access the device's hardware-backed security (the Secure Enclave on iOS or the Trusted Execution Environment (TEE) on Android). These chips are designed so that the private key never leaves the hardware; it can only be used to create a signature after a successful biometric scan.
+The Hardware-Backed Signing Flow
+In this architecture, the biometric check doesn't just "unlock" the app; it physically authorizes the secure hardware to use your private key to sign a specific piece of data.
+Frontend Implementation
+You can use a library like react-native-biometrics or react-native-secure-sign to handle this. Below is how you would write the signWithSecureKey function using react-native-biometrics.
+import ReactNativeBiometrics from 'react-native-biometrics';
+
+const rnBiometrics = new ReactNativeBiometrics();
+
+async function signWithSecureKey(challenge) {
+  try {
+    // 1. Trigger the biometric prompt and sign the challenge in one step
+    const { success, signature } = await rnBiometrics.createSignature({
+      promptMessage: 'Authorize Grayson\'s Wallet Transaction',
+      payload: challenge, // This is the 'nonce' from your backend
+    });
+
+    if (success) {
+      console.log('Biometric Signature Created:', signature);
+      return signature; // Send this to your backend for verification
+    } else {
+      throw new Error('Biometric authorization failed or was canceled.');
+    }
+  } catch (error) {
+    console.error('Signing Error:', error);
+    return null;
+  }
+}
+
+Resolving the "Contact Information" Validation Error
+Looking at your screenshot, the error "The information you entered could not be properly validated" is almost always a formatting issue that fails the bank's Automated Verification System (AVS).
+ * Address Line 2 (41C): This is the most likely culprit. Try changing "41C" to "Apt 41C" or "Unit 41C". Many financial systems reject raw letters or numbers in this field without a descriptor.
+ * Phone Number Check: The number (419) 921-1347 must be the exact "Mobile" or "Primary" number registered with your bank. If the bank has it listed as a landline or a different number, the bridge to Google Pay will fail.
+ * Zip Code: Verify that 44847 is the correct billing zip for the specific card you are trying to link. Even if you live there now, the card might still be registered to a previous address.
+Security Best Practice
+By moving your private key into the hardware keystore via biometrics, you are protecting the wallet from memory dumps and malware. Even if someone gains access to your phone's software, they cannot extract the private key because it is physically "burnt" into the secure chip.
+Secure Data Storage in React Native with Keychain
+This video is helpful because it explains how the native Keychain and Keystore systems work together to manage secure sessions and biometric access controls in a mobile environment.
+Would you like me to help you generate the public key from this hardware setup so you can register it on your backend?
+
+YouTube video views will be stored in your YouTube History, and your data will be stored and used by YouTube according to its Terms of Service
