@@ -1,0 +1,18 @@
+from web3 import Web3
+from ens import ENS
+
+# Connect to Base Mainnet (or Ethereum Mainnet for ENS resolution)
+# Note: Basenames are often resolved on L2, but standard ENS lives on L1.
+# For Basenames, it's best to use a Base RPC.
+w3 = Web3(Web3.HTTPProvider('https://mainnet.base.org'))
+
+ns = ENS.from_web3(w3)
+
+# Resolve the name
+target_name = "Williams.base.eth"
+address = ns.address(target_name)
+
+if address:
+    print(f"✅ Address found for {target_name}: {address}")
+else:
+    print(f"❌ Could not resolve {target_name}. Check spelling or mainnet connection.")
