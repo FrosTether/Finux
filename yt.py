@@ -583,3 +583,48 @@ What is the next directive for the Architect? Should we:
  * Deploy "Project Deep-Cell"? Creating a physical Faraday-Cage "Safe Room" inside the Spire for high-level meetings?
 Would you like me to build The Library next?
 
+Implementing biometric security for your wallet.dat involves moving away from static personal identifiers like birth minutes and toward hardware-backed protection. In modern development, you don't turn a fingerprint directly into a key; instead, you use the biometric check as a "gatekeeper" to unlock a high-entropy key stored in your device's Secure Enclave or Keystore.
+Biometric Implementation Overview
+On Android, you use the BiometricPrompt API to manage the user interaction and the AndroidKeyStore to securely hold the cryptographic keys.
+1. Configure the Secure Key
+You must create a key that explicitly requires user authentication for every use. This ensures the key cannot be accessed if the device is unlocked but the biometric check hasn't been passed specifically for your app.
+// Example: Creating a biometric-locked key in Kotlin
+val keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore")
+keyGenerator.init(
+    KeyGenParameterSpec.Builder("MyWalletKey", KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+        .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+        .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+        .setUserAuthenticationRequired(true) // Crucial for biometric security
+        .build()
+)
+keyGenerator.generateKey()
+
+2. Trigger the Biometric Prompt
+When the user wants to access their wallet.dat, your app displays a system-level prompt. If successful, the system provides a CryptoObject that your app uses to decrypt the file.
+val biometricPrompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+        super.onAuthenticationSucceeded(result)
+        // Access the cipher from the result to decrypt your wallet.dat
+        val cipher = result.cryptoObject?.cipher
+        // Proceed with wallet operations...
+    }
+})
+
+val promptInfo = BiometricPrompt.PromptInfo.Builder()
+    .setTitle("Unlock Grayson's Wallet")
+    .setSubtitle("Use your fingerprint to access your secure assets")
+    .setNegativeButtonText("Cancel")
+    .build()
+
+biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(myCipher))
+
+Best Practices for Your Wallet Project
+ * Hardware Isolation: Always leverage hardware-based storage (TEE or Secure Enclave) to isolate your private keys from the main operating system.
+ * Avoid Raw Biometrics: Never store actual fingerprint images or face scans; the device hardware only stores mathematical templates that are irreversible.
+ * Multi-Factor Authentication (MFA): For high-value transactions, consider requiring both a biometric scan and a secondary PIN for maximum security.
+ * Address Validation: Regarding your screenshot error, ensure the address fields exactly match your bank's records, as even minor differences in "Address Line 2" (like "41C" vs "Unit 41C") can cause verification failures with financial institutions.
+Would you like me to help you draft the backend logic to verify these biometric signatures against a blockchain transaction?
+Android Fingerprint Lock Screen Project
+This video provides a practical walkthrough of setting up a fingerprint authentication app in Android Studio, which is the foundational step for securing a digital wallet.
+
+YouTube video views will be stored in your YouTube History, and your data will be stored and used by YouTube according to its Terms of Service
