@@ -1,0 +1,2 @@
+# Launch the Amiah Assistant with the migration flag
+./amiah_assistant.bin --sync-migration
