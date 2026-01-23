@@ -1,0 +1,23 @@
+import time
+from colorama import Fore
+
+def render_protege_dashboard():
+    print(f"\n{Fore.CYAN}❄️  FROST PROTEGE TERMINAL | v0.1")
+    print(f"{Fore.WHITE}PROTEGE: Deacon Isiah Frost")
+    print("-" * 50)
+    
+    metrics = [
+        ("Uptime", "100%", Fore.GREEN),
+        ("CPU Load", "12% (AI Training)", Fore.YELLOW),
+        ("FRP Testnet", "Synced (1,000,000 T-FRP)", Fore.CYAN),
+        ("Firewall", "STRICT - PROTECTED", Fore.MAGENTA)
+    ]
+    
+    for label, val, color in metrics:
+        print(f"   {label:<15} : {color}{val}")
+    
+    print("\n   [!] MESSAGE FROM ARCHITECT FROST:")
+    print(f"   {Fore.YELLOW}'The code is the law. Learn to write it, or someone else will.'")
+
+if __name__ == "__main__":
+    render_protege_dashboard()
