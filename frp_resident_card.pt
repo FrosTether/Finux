@@ -1,0 +1,8 @@
+# corporate/finance/frp_resident_card.py
+
+def issue_card(resident_id):
+    print(f"📇 MINTING RESIDENT CARD: {resident_id}")
+    print("   [1] Generating XLM Private Key...")
+    print("   [2] Mapping to Stride Bank Fiat Anchor...")
+    print("   [3] Printing physical card with Frost NFC chip...")
+    print(f"✅ CARD READY FOR PICKUP AT MONROEVILLE 7-11.")
