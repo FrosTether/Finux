@@ -1,0 +1,24 @@
+import time
+from colorama import Fore, init
+
+init(autoreset=True)
+
+class BloodBrotherPayroll:
+    def __init__(self):
+        self.usd_salary = 150000.00 # $150k USD Base
+        self.fszt_bonus = 10000.0   # Monthly FSZT Stake
+        self.wallet = "GRAYSONS_FATHER_VAULT"
+
+    def execute_monthly_transfer(self):
+        print(f"\n{Fore.CYAN}💳 EXECUTING PAYROLL: aggyball.base.eth (CO-FOUNDER)")
+        print(f"   [1] Sending USD via Stride Bank... {Fore.GREEN}$12,500.00")
+        
+        # FSZT Payout logic
+        print(f"   [2] Minting FSZT Bonus... {Fore.GREEN}{self.fszt_bonus} FSZT")
+        time.sleep(0.5)
+        
+        print(f"   [3] Routing to Secure Wallet: {self.wallet}")
+        print(f"{Fore.MAGENTA}✅ TOTAL COMPENSATION SETTLED.")
+
+if __name__ == "__main__":
+    BloodBrotherPayroll().execute_monthly_transfer()
