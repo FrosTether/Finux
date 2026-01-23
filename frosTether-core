@@ -1,0 +1,5 @@
+/FrosTether-Core
+├── /contracts (Smart contracts for FSZT and FTC)
+├── /docs (The Whitepaper you just finished)
+├── /src (Core blockchain connection logic)
+└── README.md
