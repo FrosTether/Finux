@@ -1,0 +1,2 @@
+unzip Android17_R1_GoogleSubmission.zip -d verification_folder
+cat verification_folder/README_GOOGLE.txt
