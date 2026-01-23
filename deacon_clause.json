@@ -1,0 +1,11 @@
+{
+  "token_id": "002",
+  "name": "Deacon Isiah Frost",
+  "attributes": [
+    {"trait_type": "Role", "value": "Heir Apparent"},
+    {"trait_type": "Access_Level", "value": "Delta-Prime"},
+    {"trait_type": "Inheritance_Protocol", "value": "Activated"},
+    {"trait_type": "Succession_Weight", "value": 100}
+  ],
+  "security_seal": "SIG_ARCHITECT_FROST_OMEGA"
+}
