@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# ==========================================
+# FINUX BOOTLOADER v1.0
+# ==========================================
+
+# 1. Define Project Path (CHANGE THIS to your actual path)
+FINUX_DIR="$HOME/finux"
+
+# 2. Export Display Variables (Needed for GUI on Linux)
+export DISPLAY=:0
+export XAUTHORITY=$HOME/.Xauthority
+
+# 3. Navigate to Directory
+cd "$FINUX_DIR" || { echo "❌ Critical Error: Finux directory not found!"; exit 1; }
+
+# 4. Boot Sequence
+echo "❄️  Initializing Frost Protocol..."
+sleep 1
+
+# Check for updates (Optional: Pulls latest code from Williams' repo)
+# echo "Checking for updates..."
+# git pull origin main
+
+echo "🚀 Launching FOME Shell..."
+
+# 5. The Kiosk Loop (Prevents crashing to desktop)
+while true; do
+    # Run the UI
+    python3 FUI.py
+    
+    # If the app closes, wait 2 seconds and reboot it
+    echo "⚠️  Shell terminated. Rebooting in 2 seconds..."
+    sleep 2
+done
