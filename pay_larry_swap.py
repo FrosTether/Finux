@@ -107,3 +107,19 @@ if __name__ == "__main__":
         swap_and_log(wei_amount, TARGET_USD)
     else:
         print("Cancelled.")
+--- 💸 PAY UNCLE LARRY PROCESSOR 💸 ---
+📉 ETH Price: $3,240.50
+🎯 Target: $900.0 USDC
+💳 Cost:   0.28051 ETH (includes 1% buffer)
+
+Execute Swap & Record to Ledger? (y/n): y
+
+🔄 Sending Transaction to Blockchain...
+⏳ Transaction Sent: 0x7a8b9c... (Simulated Hash)
+   Waiting for confirmation (approx 15s)...
+
+✅ SWAP CONFIRMED!
+💰 Balance Updated: +$900.0 USDC
+
+📝 writing to ledger...
+✅ Saved to finux_ledger.csv
