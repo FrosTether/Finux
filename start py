@@ -1,0 +1,50 @@
+import time
+import sys
+from rich.console import Console
+from rich.status import Status
+from rich.panel import Panel
+from rich.progress import track
+
+console = Console()
+
+def boot_sequence():
+    """Simulates the Finux-OS startup process."""
+    console.clear()
+    console.print(Panel.fit("❄️ FINUX-OS v1.0.4 - GENESIS BOOT", style="bold cyan"))
+    
+    # 1. Dependency & Kernel Check
+    with console.status("[bold green]Loading Finux Kernel...") as status:
+        time.sleep(1.5)
+        console.log("Kernel Loaded: 0x888_FROST")
+
+    # 2. Establish Frost Protocol Connection
+    with console.status("[bold blue]Connecting to FrosTether Ledger...") as status:
+        # Simulate connecting to the blockchain
+        time.sleep(2)
+        console.log("Network Status: [bold green]ONLINE[/bold green] (Node: Monroeville_01)")
+
+    # 3. Synchronize Mining Multipliers
+    for step in track(range(3), description="Syncing Proof-of-Skill Multipliers..."):
+        time.sleep(1)
+        
+    console.print("\n[bold yellow]SYSTEM READY.[/bold yellow] Welcome, Operator.")
+    console.rule("[bold white]Main Terminal")
+
+def launch_shell():
+    """Simple command loop for the custom shell."""
+    while True:
+        try:
+            cmd = console.input("[bold cyan]finux@frost[/bold cyan]:[bold blue]~[/bold blue]$ ")
+            if cmd.lower() in ["exit", "shutdown"]:
+                console.print("[bold red]Shutting down Finux-OS...[/bold red]")
+                break
+            elif cmd == "mine":
+                console.print("[yellow]Starting Frostblocks Miner... Use Ms Frostman to validate.[/yellow]")
+            else:
+                console.print(f"Command not found: {cmd}")
+        except KeyboardInterrupt:
+            break
+
+if __name__ == "__main__":
+    boot_sequence()
+    launch_shell()
