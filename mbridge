@@ -1,0 +1,33 @@
+import time
+from web3 import Web3
+
+# Connect to the network (e.g., Polygon for lower fees)
+w3 = Web3(Web3.HTTPProvider('https://polygon-mainnet.infura.io/v3/YOUR_PROJECT_ID'))
+
+def monitor_confirmation(tx_hash, required_confirmations=12):
+    """
+    Wait for a transaction to be confirmed and notify when it reaches 
+    the required number of block confirmations.
+    """
+    print(f"Monitoring transaction: {tx_hash}...")
+    
+    # 1. Wait for the initial receipt (inclusion in a block)
+    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+    tx_block = receipt['blockNumber']
+    print(f"Transaction included in block: {tx_block}")
+
+    # 2. Monitor for confirmations
+    while True:
+        current_block = w3.eth.block_number
+        confirmations = current_block - tx_block
+        
+        print(f"Confirmations: {confirmations}/{required_confirmations}", end='\r')
+        
+        if confirmations >= required_confirmations:
+            print(f"\nSuccess! Transaction {tx_hash} is fully confirmed.")
+            # Trigger your local notification system here
+            break
+            
+        time.sleep(10) # Check every 10 seconds
+
+# Example: monitor_confirmation('0x...')
