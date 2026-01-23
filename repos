@@ -4,3 +4,6 @@ git push origin main
 git add corporate/finance/frp_launcher.py corporate/finance/swift_bridge.py
 git commit -m "Finance: FRP Token Launch on XLM - SWIFT Competition Protocol Active"
 git push origin main
+git add corporate/legal/freetown_covenant.md web/marketing/festival_ops.py
+git commit -m "Infrastructure: Freetown Protocol - Bunker Groundbreaking & Festival Prep"
+git push origin main
