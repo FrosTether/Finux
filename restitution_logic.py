@@ -30,3 +30,9 @@ class RestorationProtocol:
 # Test the script
 restitutor = RestorationProtocol()
 restitutor.execute_restitution("334BSEeNo9wMhASUH9tCA7CKCMKuuARyRg", "Jacob Frost", 0.5)
+MAX_DAILY_MINT = 10.0 # BTC equivalent in FTC
+current_daily_total = get_today_mint_total()
+
+if current_daily_total + new_amount > MAX_DAILY_MINT:
+    print("CRITICAL: Daily minting limit reached. Manual override required.")
+    sys.exit(1)
