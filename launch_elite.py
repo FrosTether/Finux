@@ -1,0 +1,94 @@
+import time
+import sys
+import os
+import random
+from rich.console import Console
+from rich.panel import Panel
+from rich.layout import Layout
+from rich.live import Live
+from rich.table import Table
+from rich.align import Align
+from rich.text import Text
+
+console = Console()
+
+def boot_app():
+    # 1. SPLASH SCREEN
+    os.system('clear')
+    console.print(Align.center("\n\n\n\n\n"))
+    console.print(Align.center("[bold cyan]❄️  F R O S T   P R O T O C O L[/]", style="cyan blink"))
+    console.print(Align.center("[dim]POWERED BY FROID OS[/]", style="white"))
+    time.sleep(3)
+    
+    # 2. CONNECTING
+    with console.status("[bold white]Connecting to FrostNode (Mansfield)...[/]", spinner="dots"):
+        time.sleep(1.5)
+        console.print("[green]✔ WALLET SYNCED: 558.65 BTC[/]")
+        time.sleep(0.5)
+
+def main_menu():
+    os.system('clear')
+    
+    # --- HEADER (CURRENCY & PROFILE) ---
+    header_table = Table.grid(expand=True)
+    header_table.add_column(justify="left", ratio=1)
+    header_table.add_column(justify="right", ratio=1)
+    
+    profile = "[bold white]👤 JACOB FROST [CEO][/]\n[dim]Lvl 150 (Legendary)[/]"
+    wallet = "[bold green]558.65 BTC[/]  |  [bold cyan]∞ FC (Admin)[/]"
+    
+    header_table.add_row(profile, wallet)
+    
+    header_panel = Panel(header_table, style="bold white on black", border_style="cyan")
+
+    # --- MAIN CONTENT (OPERATOR & MODES) ---
+    # ASCII Art representing the "CEO Skin" character
+    operator_art = """
+        [OPERATOR: JACOB FROST]
+        [SKIN: "THE ARCHITECT"]
+             
+             .---.
+           /   🕶️   \\ 
+          |   ( _ )   | 
+           \\  ___  /  
+            '-----'   
+           /|  👔  |\\  
+          / |  💼  | \\ 
+         * |______|  * /   ||   \\  
+          /    ||    \\ 
+         _     ||     _
+    """
+    
+    modes_table = Table(show_header=False, expand=True, box=None)
+    modes_table.add_column(justify="center")
+    
+    # The Game Modes - Renamed for the Protocol
+    modes_table.add_row(Panel("[bold red]❄️ BATTLE ROYALE[/]\n[dim]Map: Crypto Farm[/]", style="white on red"))
+    modes_table.add_row(Panel("[bold cyan]MULTIPLAYER[/]\n[dim]Mode: Kill Confirmed (BTC)[/]", style="white on blue"))
+    modes_table.add_row(Panel("[bold green]BLACK MARKET[/]\n[dim]Buy Skins with FrostCoin[/]", style="white on green"))
+    
+    # Layout Assembly
+    layout = Layout()
+    layout.split_column(
+        Layout(header_panel, size=4),
+        Layout(name="body")
+    )
+    
+    layout["body"].split_row(
+        Layout(Panel(Align.center(operator_art, vertical="middle"), title="ACTIVE LOADOUT", border_style="white"), ratio=1),
+        Layout(Align.center(modes_table, vertical="middle"), ratio=1)
+    )
+    
+    # --- FOOTER (CHAT & TICKER) ---
+    footer = Panel(
+        "[WORLD CHAT] [bold yellow]xX_Elon_Xx:[/bold yellow] Nice update. | [bold cyan]System:[/bold cyan] 2x EXP Weekend active.", 
+        title="FROST NETWORK v2.0", 
+        border_style="dim"
+    )
+
+    console.print(layout)
+    console.print(footer)
+
+if __name__ == "__main__":
+    boot_app()
+    main_menu()
