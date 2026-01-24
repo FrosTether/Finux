@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="FrostScene" extends="Scene">
+  <script type="text/brightscript" uri="pkg:/components/FrostScene.brs" />
+  <children>
+    <Rectangle width="1280" height="720" color="0x0A0A0FFF" />
+    <Label id="title" text="FROST PROTOCOL // v1.0" translation="[100, 50]" font="font:LargeBoldSystemFont" color="0x00CCFFFF" />
+    
+    <Group translation="[100, 150]">
+        <Label id="priceLabel" text="FROSTCOIN: LOADING..." font="font:MediumBoldSystemFont" color="0xFFFFFFFF" />
+        <Label id="marketLabel" text="MCAP: $7.76K" translation="[0, 50]" font="font:SmallSystemFont" color="0xAAAAAAFF" />
+    </Group>
+
+    <Rectangle width="300" height="100" translation="[880, 570]" color="0x1A1A1AFF">
+        <Label id="status" text="SYSTEM: ONLINE" translation="[20, 35]" font="font:SmallBoldSystemFont" color="0x00FF00FF" />
+    </Rectangle>
+  </children>
+</component>
