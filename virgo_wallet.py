@@ -38,3 +38,41 @@ if __name__ == "__main__":
     pay = FrostPay()
     my_wallet = "0xJacobFrostWalletAddress123"
     print(pay.buy_frostcoin(my_wallet, 50)) # Buy $50 worth
+# Virgo_Core_v2.py (PATCHED)
+import os
+import requests
+from openai import OpenAI
+from google import genai
+
+class VirgoCore:
+    def __init__(self):
+        self.offline_mode = False
+        
+        # Guard: Check Sora Key
+        if not os.getenv("OPENAI_API_KEY"):
+            print("⚠️  Warning: OPENAI_API_KEY missing. Sora disabled.")
+            self.sora_client = None
+        else:
+            self.sora_client = OpenAI()
+
+        # Guard: Check Veo Key
+        if not os.getenv("GEMINI_API_KEY"):
+            print("⚠️  Warning: GEMINI_API_KEY missing. Veo disabled.")
+            self.veo_client = None
+        else:
+            # Initialize with error catching
+            try:
+                self.veo_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+            except Exception as e:
+                print(f"❌ Veo Init Failed: {e}")
+                self.veo_client = None
+
+    def safe_generate(self, prompt, engine="veo"):
+        if self.offline_mode:
+            return ">> System Offline. Check logs."
+            
+        if engine == "veo" and not self.veo_client:
+            return ">> Error: Veo API Key missing."
+            
+        # ... (Rest of logic proceeds safely) ...
+        return f">> [MOCK] Generated video for: {prompt}"
