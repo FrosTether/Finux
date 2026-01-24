@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="FrostScene" extends="Scene">
+  <script type="text/brightscript" uri="pkg:/components/FrostScene.brs" />
+  <children>
+    <Rectangle width="1280" height="720" color="0x050505FF" />
+    <Label id="title" text="FROST PROTOCOL // LIVE" translation="[100, 50]" font="font:LargeBoldSystemFont" color="0x00CCFFFF" />
+    
+    <Label id="priceLabel" text="FETCHING FROSTCOIN..." translation="[100, 150]" font="font:MediumSystemFont" />
+    <Label id="statusLabel" text="NETWORK: CONNECTING" translation="[100, 200]" font="font:MediumSystemFont" color="0x00FF00FF" />
+    
+    <Timer id="refreshTimer" duration="30" repeat="true" />
+  </children>
+</component>
