@@ -1,0 +1,3 @@
+# Create a fake log with a critical error
+echo "[INFO] System Booting..." > /tmp/test_kernel.log
+echo "[CRITICAL] KERNEL PANIC: VFS: Unable to mount root fs on unknown-block(0,0)" >> /tmp/test_kernel.log
