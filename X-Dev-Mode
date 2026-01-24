@@ -1,0 +1,12 @@
+curl -X POST http://localhost:5000/webhook \
+     -H "Content-Type: application/json" \
+     -H "X-Dev-Mode: true" \
+     -d '{
+           "type": "checkout.session.completed",
+           "data": {
+             "object": {
+               "amount_total": 5000,
+               "metadata": { "wallet_address": "0xJacobTestWallet" }
+             }
+           }
+         }'
