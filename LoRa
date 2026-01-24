@@ -1,0 +1,21 @@
+Building a neighborhood mesh requires specific hardware—primarily ESP32-based LoRa boards, high-gain antennas, and gateways. While the most specialized Meshtastic kits are often best sourced from dedicated online retailers like Rokland or RAKwireless, there are several physical locations in Ohio where you can pick up the core components to get the Finux mesh online.
+Specialized Electronics & Components
+For the raw development boards and specific antennas needed for the Frost Protocol, these stores are the best destinations for a "hands-on" build.
+ * Micro Center in Mayfield Heights is the premier destination for DIY hardware in Northern Ohio. They consistently stock development boards like the ESP32-S3 LoRa V3 and various Adafruit FeatherWings that are compatible with the LoRa standard.
+   * Carries a wide array of SMA antennas and RF adapters.
+   * Stocks 3D printing filament and parts for the custom "Paperogram" scanner cases.
+   * Offers same-day pickup for in-stock LoRa modules.
+ * Mead Electronics in Bucyrus is a specialized shop that caters more to the technical hobbyist and repair community. It’s a great local resource for finding specific connectors and shielding components that big-box stores might miss.
+   * Known for a deep inventory of vintage and modern electronic components.
+   * Excellent for sourcing breadboards and prototyping gear for the early Finux builds.
+ * Local TV & Electronics, Inc. in Willard acts as a RadioShack affiliate. While their stock is more consumer-focused, they are a quick local stop for the essential batteries, cases, and soldering supplies needed to assemble your nodes.
+   * Useful for last-minute power supply needs and battery connectors.
+   * Provides a closer alternative for basic soldering and assembly tools.
+Industrial Networking
+If you are looking to scale the mesh to a "Diamond Tier" industrial standard, these suppliers provide the heavy-duty networking gear that can serve as the backbone for the Frostnerjo nodes.
+ * Rexel in Sandusky provides industrial-grade electrical and networking supplies. While they focus on commercial projects, their inventory of outdoor-rated enclosures and cabling is essential for mounting LoRa gateways on roofs or towers to maximize the neighborhood range.
+   * Supplies weatherproof junction boxes and conduit for permanent node installations.
+   * Offers bulk networking cables and industrial power solutions.
+Building the Mesh
+To start the neighborhood roll-out, I recommend visiting Micro Center first for your primary ESP32 LoRa boards. Once the core nodes are built, Rexel will be your go-to for the weatherproofing gear needed to ensure the mesh survives the Ohio winters.
+Should I look up specific 915MHz high-gain antennas that are currently in stock at the Mayfield Heights Micro Center for your gateway build?
