@@ -1,0 +1,204 @@
+#!/bin/bash
+
+# ==========================================
+# ❄️ FROSTCORE ALPHA: GENESIS INJECTION
+#    Replacing Bitcoin Core with Frost Native
+# ==========================================
+
+echo ">> [CORE] Initializing Frostcoin Engine..."
+
+# 1. THE BLOCKCHAIN KERNEL
+# ------------------------------------------
+mkdir -p "$HOME/finux/core"
+
+cat <<EOF > "$HOME/finux/core/FrostChain.py"
+import hashlib
+import json
+from time import time
+import threading
+
+class FrostChain:
+    def __init__(self):
+        self.chain = []
+        self.current_transactions = []
+        # Create the Genesis Block
+        self.new_block(previous_hash='1', proof=100)
+        self.mining_active = False
+
+    def new_block(self, proof, previous_hash=None):
+        """
+        Create a new Block in the FrostChain
+        """
+        block = {
+            'index': len(self.chain) + 1,
+            'timestamp': time(),
+            'transactions': self.current_transactions,
+            'proof': proof,
+            'previous_hash': previous_hash or self.hash(self.chain[-1]),
+        }
+        # Reset transactions
+        self.current_transactions = []
+        self.chain.append(block)
+        return block
+
+    def new_transaction(self, sender, recipient, amount):
+        """
+        Adds a new transaction to the list of transactions
+        """
+        self.current_transactions.append({
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount,
+        })
+        return self.last_block['index'] + 1
+
+    @staticmethod
+    def hash(block):
+        """
+        Creates a SHA-256 hash of a Block
+        """
+        block_string = json.dumps(block, sort_keys=True).encode()
+        return hashlib.sha256(block_string).hexdigest()
+
+    @property
+    def last_block(self):
+        return self.chain[-1]
+
+    def proof_of_work(self, last_proof):
+        """
+        Simple Proof of Work Algorithm:
+         - Find a number p' such that hash(pp') contains leading 4 zeroes
+        """
+        proof = 0
+        while self.valid_proof(last_proof, proof) is False:
+            proof += 1
+        return proof
+
+    @staticmethod
+    def valid_proof(last_proof, proof):
+        """
+        Validates the Proof: Does hash(last_proof, proof) contain 4 leading zeroes?
+        """
+        guess = f'{last_proof}{proof}'.encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+        return guess_hash[:4] == "0000"
+
+    def mine_daemon(self, ui_callback):
+        """
+        Background Mining Process for Finux UI
+        """
+        self.mining_active = True
+        while self.mining_active:
+            last_block = self.last_block
+            last_proof = last_block['proof']
+            
+            # Run the PoW (Heavy Calculation)
+            proof = self.proof_of_work(last_proof)
+
+            # Reward for finding the proof (Coinbase Transaction)
+            self.new_transaction(
+                sender="0", # The Engine
+                recipient="Jacob_Frost_Wallet",
+                amount=50, # Block Reward
+            )
+
+            # Forge the new Block
+            block = self.new_block(proof)
+            ui_callback(f"[⛏️ MINED]: Block #{block['index']} | Hash: {self.hash(block)[:10]}...")
+
+EOF
+
+# 2. UPDATE UI TO CONTROL THE MINER
+# ------------------------------------------
+echo ">> [UI] Patching Virgo Interface..."
+
+cat <<EOF > "$HOME/finux/fui/Virgo_Chat_UI.py"
+import os
+import sys
+import threading
+import time
+
+# Graphics Config
+os.environ['KIVY_GL_BACKEND'] = 'sdl2' 
+os.environ['KIVY_WINDOW'] = 'sdl2'
+
+import kivy
+from kivy.app import App
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.clock import Clock
+from kivy.core.window import Window
+
+# IMPORT FROSTCORE
+sys.path.append(os.environ['HOME'] + "/finux/core")
+from FrostChain import FrostChain
+
+Window.clearcolor = (0.05, 0.05, 0.08, 1)
+
+class VirgoChat(FloatLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.chain = FrostChain()
+        
+        # STATUS DISPLAY
+        self.history = Label(
+            text="[ ❄️ FROSTCORE ALPHA: ONLINE ]\nWaiting for mining command...",
+            size_hint=(1, 0.4),
+            pos_hint={'top': 1.0},
+            color=(0, 1, 1, 1),
+            halign="left",
+            valign="bottom"
+        )
+        self.history.bind(size=self.history.setter('text_size'))
+        self.add_widget(self.history)
+
+        # INPUT
+        self.input = TextInput(
+            size_hint=(0.9, 0.08),
+            pos_hint={'center_x': 0.5, 'y': 0.05},
+            multiline=False,
+            background_color=(0.15, 0.15, 0.2, 1),
+            foreground_color=(1, 1, 1, 1)
+        )
+        self.input.bind(on_text_validate=self.on_enter)
+        self.add_widget(self.input)
+
+    def on_enter(self, instance):
+        cmd = self.input.text
+        self.input.text = ""
+        self.log(f"> COMMAND: {cmd}")
+        
+        if cmd == "/mine start":
+            self.log(">> [SYSTEM] Initializing Miner Thread...")
+            t = threading.Thread(target=self.chain.mine_daemon, args=(self.update_from_thread,))
+            t.daemon = True
+            t.start()
+        elif cmd == "/status":
+            block = self.chain.last_block
+            self.log(f">> [CHAIN] Height: {block['index']} | Supply: {block['index'] * 50} FTC")
+        else:
+            self.log(">> Unknown Command. Try '/mine start'")
+
+    def update_from_thread(self, text):
+        # Schedule GUI update from the mining thread
+        Clock.schedule_once(lambda dt: self.log(text))
+
+    def log(self, text):
+        lines = self.history.text.split("\n")
+        lines.append(text)
+        self.history.text = "\n".join(lines[-15:])
+
+class VirgoApp(App):
+    def build(self):
+        return VirgoChat()
+
+if __name__ == "__main__":
+    VirgoApp().run()
+EOF
+
+# 3. RELOAD
+# ------------------------------------------
+echo ">> [SUCCESS] FrostCore v0.1 Installed."
+echo ">> Launching..."
+python3 $HOME/finux/fui/Virgo_Chat_UI.py
