@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+
+contract FrostSportsOne is ERC20 {
+    address public architect;
+    mapping(string => uint256) public playerStats;
+
+    constructor() ERC20("Frost Sports One", "FS1") {
+        architect = msg.sender; // Jacob Frost (The Architect)
+    }
+
+    // Virgo calls this to mint tokens based on real-time game stats
+    function mintPerformance(address receiver, uint256 statMultiplier) external {
+        require(msg.sender == architect, "Only Virgo can mint.");
+        uint256 amount = statMultiplier * 10**decimals();
+        _mint(receiver, amount);
+    }
+}
