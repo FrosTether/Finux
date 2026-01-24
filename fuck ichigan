@@ -1,0 +1,29 @@
+import google.auth
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+
+# Target: Michigan Mesh Leader
+DEACON_EMAIL = "fdeacon143@gmail.com"
+
+def deploy_to_deacon():
+    service = build('drive', 'v3')
+    
+    # 1. Upload the Sanitized Finux Update
+    file_metadata = {'name': 'Finux_Update_v2_Amiahdo.zip'}
+    media = MediaFileUpload('payload.zip', mimetype='application/zip')
+    
+    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    file_id = file.get('id')
+
+    # 2. Grant "Diamond Tier" Audit Access
+    permission = {
+        'type': 'user',
+        'role': 'reader',
+        'emailAddress': DEACON_EMAIL
+    }
+    service.permissions().create(fileId=file_id, body=permission).execute()
+    
+    print(f"Update deployed to Deacon ({DEACON_EMAIL}). Michigan Mesh Bridge active.")
+
+if __name__ == "__main__":
+    deploy_to_deacon()
