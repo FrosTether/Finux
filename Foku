@@ -1,0 +1,26 @@
+import requests
+
+# Replace with your Roku's Public IP (if port forwarded) 
+# or Local IP (if on VPN/Local Network)
+ROKU_IP = "192.168.1.XX" 
+PORT = "8060"
+
+def reboot_roku():
+    url = f"http://{ROKU_IP}:{PORT}/keypress/power"
+    print(f"Sending Reboot signal to Frost-Roku at {ROKU_IP}...")
+    
+    try:
+        # Sending the Power command twice often triggers a hard cycle on some models
+        # For a full system restart via ECP, we simulate the secret menu sequence:
+        # Home (5x), Up, Rewind (2x), Fast Forward (2x)
+        commands = ["home"]*5 + ["up", "rev", "rev", "fwd", "fwd"]
+        
+        for cmd in commands:
+            requests.post(f"http://{ROKU_IP}:{PORT}/keypress/{cmd}")
+            
+        print("Sequence sent. Your Roku should now be restarting.")
+    except Exception as e:
+        print(f"Failed to connect: {e}")
+
+if __name__ == "__main__":
+    reboot_roku()
