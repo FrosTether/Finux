@@ -143,3 +143,9 @@ class GrokLogParser:
 if __name__ == "__main__":
     parser = GrokLogParser()
     parser.verify_and_report()
+# Inside execute_command(self, cmd):
+
+if action == "ROLLBACK":
+    print(">> [TEST SUCCESS] Rollback command received from Brain.")
+    print(">> [TEST ACTION] Would run: /usr/local/bin/finux_rollback.sh")
+    # subprocess.run(["/usr/local/bin/finux_rollback.sh"]) <--- Keep this commented out for the test!
