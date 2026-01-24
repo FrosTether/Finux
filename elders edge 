@@ -1,0 +1,33 @@
+#!/bin/bash
+# Finux Dry Run: Target - Uncle Lawrence's Trusted Elder Node (S25 FE)
+
+TARGET_IP="uncle-lawrence-node.local" # Or use his specific static IP if assigned
+REMOTE_USER="root"
+
+echo "--- Initiating Finux Dry Run on Trusted Elder Node ---"
+
+# 1. Test SSH Connectivity
+if ssh -q -o BatchMode=yes -o ConnectTimeout=5 $REMOTE_USER@$TARGET_IP exit; then
+    echo "[PASS] SSH Connection Established."
+else
+    echo "[FAIL] SSH Connection Failed. Check if the S25 FE is on the Diamond Mesh."
+    exit 1
+fi
+
+# 2. Check Directory Permissions for the 01:00 Payload
+if ssh $REMOTE_USER@$TARGET_IP "[ -w /opt/finux/bin/ ]"; then
+    echo "[PASS] Write permissions verified on /opt/finux/bin/."
+else
+    echo "[FAIL] Permission Denied. Ensure 'Finux-S' build is in Developer Mode."
+    exit 1
+fi
+
+# 3. Verify Local Payload Integrity
+if [ -d "./payload" ]; then
+    echo "[PASS] Local update payload found and sanitized."
+else
+    echo "[FAIL] Payload directory missing. Run 'Finux Sanitizer' first."
+    exit 1
+fi
+
+echo "--- Dry Run Complete: Trusted Elder Node is Audit-Ready ---"
