@@ -53,3 +53,4 @@ sudo cp build/frost-fosp $FINUX_ROOT/
 ./scripts/gpg_backup.sh $FINUX_ROOT/frostman
 
 echo "--- [$(date)] Nightly Cycle Completed Successfully ---"
+
