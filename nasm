@@ -28,3 +28,24 @@ frost_irq_handler:
     popall
     pop rbp
     iretq                           ; Return to the interrupted Python agent
+; Finux Vision Gate: Secure Hologram Buffer Lock
+; Prevents non-kernel apps from intercepting the raw private key
+
+global secure_scan_init
+
+secure_scan_init:
+    ; 1. Lock the Camera Buffer to the Finux Kernel
+    mov rax, 0x01          ; SYSCALL_LOCK_HARDWARE
+    mov rdi, [cam_id]      ; Meta Quest Passthrough ID
+    syscall
+
+    ; 2. Run Diffraction Check (PQC Lattice)
+    ; This calls the Assembly-optimized PQC module
+    call verify_hologram_lattice
+    
+    ; 3. If Valid, move Key to Secure Enclave
+    jz .failed_verify
+    mov rsi, [raw_key_buffer]
+    call ase_move_to_vault  ; Move to Aluminium Secure Enclave
+    
+    ret
