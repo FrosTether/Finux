@@ -1,0 +1,21 @@
+#include "FrostProtocolCore.h"
+#include <curl/curl.h> // For external API calls
+
+namespace FrostOS {
+    // Bridge to a Decentralized Exchange (DEX) for immediate liquidity
+    void swapFNRforLiquidity(double amountFNR, string targetAsset) {
+        cout << "Initiating Free Market Swap: " << amountFNR << " FNR -> " << targetAsset << endl;
+
+        // 1. Check current Market Spread via Grok-AWS API
+        double marketRate = Grok::getMarketRate("FNR", targetAsset);
+        
+        // 2. Execute Swap via 0x Protocol or Uniswap Hook
+        if (marketRate > 0) {
+            bool success = DEX::executeSwap("Jacob_Genesis_Node", amountFNR, targetAsset);
+            if (success) {
+                cout << "Liquidity Secured. 💕 Ready for Kelsee's transfer." << endl;
+                trigger_haptic_pulse(311.0f, 500); // Confirmation pulse
+            }
+        }
+    }
+}
