@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component name="FrostScene" extends="Scene">
+  <children>
+    <Rectangle 
+      id="background" 
+      width="1280" 
+      height="720" 
+      color="0x0A0A0FFF" /> <Label 
+      id="header" 
+      text="FROST OS // ROKU_INTERFACE" 
+      translation="[100, 50]" 
+      font="font:LargeBoldSystemFont" 
+      color="0x00CCFFFF" /> <LabelList 
+      id="frostMenu" 
+      translation="[100, 200]" 
+      itemSize="[400, 50]" 
+      textAttributes="{color: '0xAAAAAAFF', font: 'font:MediumSystemFont'}"
+      focusedTextAttributes="{color: '0xFFFFFFFF', font: 'font:MediumBoldSystemFont'}" />
+  </children>
+</component>
