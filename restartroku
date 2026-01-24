@@ -1,0 +1,21 @@
+import requests
+import time
+
+# Use the IP from your Roku Developer settings
+ROKU_IP = "192.168.1.XX" 
+
+def push_and_restart():
+    base_url = f"http://{ROKU_IP}:8060/keypress/"
+    
+    # Secret sequence to force a system reboot:
+    # Home (5x), Up (1x), Rewind (2x), Fast Forward (2x)
+    sequence = ["Home"]*5 + ["Up", "Rev", "Rev", "Fwd", "Fwd"]
+    
+    print("Initiating FrostOS Remote Restart...")
+    for key in sequence:
+        requests.post(base_url + key)
+        time.sleep(0.4)
+    print("Restart command sent successfully.")
+
+if __name__ == "__main__":
+    push_and_restart()
