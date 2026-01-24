@@ -1,0 +1,42 @@
+import os
+import re
+
+# Patterns to find: API Keys, Private Keys, Secret Tokens
+PATTERNS = {
+    'FROST_PRIVATE_KEY': r"['\"](0x[a-fA-A0-9]{64})['\"]",
+    'GOOGLE_API_KEY': r"['\"](AIza[0-9A-Za-z-_]{35})['\"]",
+    'MNEMONIC_PHRASE': r"['\"]([a-z]{2,10}(?:\s[a-z]{2,10}){11,23})['\"]"
+}
+
+def sanitize():
+    env_content = []
+    for filename in os.listdir('.'):
+        if filename.endswith(('.py', '.asm', '.sol')):
+            with open(filename, 'r') as f:
+                content = f.read()
+            
+            for key_name, pattern in PATTERNS.items():
+                matches = re.findall(pattern, content)
+                for match in matches:
+                    print(f"Found sensitive data in {filename}: Moving {key_name} to .env")
+                    # Replace hardcoded value with environment variable call
+                    content = content.replace(f"'{match}'", f"os.getenv('{key_name}')")
+                    content = content.replace(f'"{match}"', f"os.getenv('{key_name}')")
+                    env_content.append(f"{key_name}={match}")
+            
+            with open(filename, 'w') as f:
+                f.write(content)
+                
+    # Create the .env file
+    with open('.env', 'w') as f:
+        f.write("\n".join(set(env_content)))
+    
+    # Create/Update .gitignore
+    with open('.gitignore', 'a+') as f:
+        f.seek(0)
+        if '.env' not in f.read():
+            f.write("\n.env\n")
+            print("Added .env to .gitignore. Eyes off!")
+
+if __name__ == "__main__":
+    sanitize()
