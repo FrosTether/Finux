@@ -1,0 +1,38 @@
+# === FROSTNERJO CORE SECURITY ===
+# Ignore all Monero and protocol private keys
+*.key
+*.priv
+*.pem
+*.seed
+*mnemonic*
+
+# === KELSEE / G-PARTNER METADATA ===
+# Ignore physical card identifiers and linked wallet metadata
+*kelsee_sovereign_metadata*
+*venmo_bridge*
+*drfrostwavhz*
+*direction_card*
+*medical_insurance*
+*mastercard_gift*
+
+# === MONOKILLER & VIRGO DEPLOYMENT ===
+# Ignore deployment secrets and Virgo x1777 launch hashes
+.env
+.env.local
+deployment_secrets.json
+virgo_x1777_launch.log
+
+# === BLOCKCHAIN & FOSS x25 PROJECT NOISE ===
+# Node dependencies and build artifacts
+node_modules/
+dist/
+build/
+*.pyc
+__pycache__/
+
+# === OPERATING SYSTEM & IDE FILES ===
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
