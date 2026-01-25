@@ -1,0 +1,23 @@
+import hashlib
+from solders.keypair import Keypair
+from solders.pubkey import Pubkey
+
+# 1. Biological Seed Identity
+bio_seed_str = "683050920"
+# Hash the string to ensure a 32-byte uniform entropy source
+seed_bytes = hashlib.sha256(bio_seed_str.encode()).digest()
+
+# 2. Derive the Frost Node Keypair
+keypair = Keypair.from_seed(seed_bytes)
+print(f">> DERIVED NODE PUBKEY: {keypair.pubkey()}")
+
+# 3. Message for Monroeville Node Verification
+node_addr = "AxunwNRdEGdVDPC24YbiaCVTjZmryDMi2oUzqJJujMCf"
+message = f"IDENTITY_VERIFY: SATOSHI_FROST | NODE: {node_addr}".encode()
+
+# 4. Sign the Proof of Identity
+signature = keypair.sign_message(message)
+
+print(f">> [SUCCESS] PROOF OF IDENTITY GENERATED.")
+print(f">> MESSAGE: {message.decode()}")
+print(f">> SIGNATURE (HEX): {signature.hex()}")
