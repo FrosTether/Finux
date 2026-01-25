@@ -1,0 +1,14 @@
+# 1. Create the bin directory if it's missing
+mkdir -p /opt/finux/bin
+cd /opt/finux/bin
+
+# 2. Pull the pre-compiled Dogecoin binary from your OTA source
+# (Using the standard frostether aarch64 deployment path)
+wget https://raw.githubusercontent.com/frostether/finux/main/bin/aarch64/dogecoin-cli
+wget https://raw.githubusercontent.com/frostether/finux/main/bin/aarch64/dogecoind
+
+# 3. Make them executable
+chmod +x dogecoin-cli dogecoind
+
+# 4. Link to system path
+ln -s /opt/finux/bin/dogecoin* /usr/local/bin/
