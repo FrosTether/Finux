@@ -22,3 +22,8 @@ def index():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
+openssl req -x509 -newkey rsa:2048 -nodes \
+  -keyout ~/finux/vault/keys/key.pem \
+  -out ~/finux/vault/keys/cert.pem \
+  -days 3650 \
+  -subj "/C=US/ST=Ohio/L=Monroeville/O=FrostProtocol/CN=SatoshiNode"
