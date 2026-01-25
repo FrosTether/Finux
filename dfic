@@ -1,0 +1,1 @@
+pkg update && pkg upgrade -y && pkg install python rust build-essential clang binutils cmake ninja libandroid-execinfo -y && pip install maturin setuptools wheel && pip install python-kraken-sdk
