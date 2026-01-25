@@ -1,0 +1,171 @@
+#!/bin/bash
+
+# ==========================================
+# ♍ VIRGO ADAPTIVE KERNEL
+#    Target: Device-Specific Optimization
+#    Logic: Auto-Profiling (No Switches)
+# ==========================================
+
+echo ">> [VIRGO] Profiling Hardware Matrix..."
+
+# 1. UPDATE KERNEL (Smart Governor)
+# ------------------------------------------
+cat <<'EOF' > "$HOME/finux/core/FrostMaster.py"
+import os
+import sys
+import time
+import threading
+import hashlib
+import struct
+import subprocess
+import json
+import multiprocessing
+from FrostChain_DB import FrostChainDB
+
+# --- COLOR PALETTE ---
+C_CYAN = "\033[38;5;51m"
+C_PURPLE = "\033[38;5;135m"
+C_GREEN = "\033[38;5;46m"
+C_RED = "\033[38;5;196m"
+C_GREY = "\033[38;5;240m"
+RESET = "\033[0m"
+CLEAR = "\033[H\033[J"
+
+class DeviceProfile:
+    def __init__(self):
+        self.cores = multiprocessing.cpu_count()
+        self.total_mem = self._get_ram()
+        self.tier = "UNKNOWN"
+        self._classify()
+
+    def _get_ram(self):
+        try:
+            with open('/proc/meminfo', 'r') as f:
+                line = f.readline()
+                # Extract kB and convert to GB
+                kb = int(line.split()[1])
+                return kb / 1024 / 1024
+        except:
+            return 2.0 # Assume low-end fallback
+
+    def _classify(self):
+        # Determine Device Capability
+        if self.cores >= 8 and self.total_mem > 6.0:
+            self.tier = "APEX (High-Perf)"
+            self.ui_refresh = 0.1
+            self.throttle = 1.0
+        elif self.cores >= 4:
+            self.tier = "CORE (Standard)"
+            self.ui_refresh = 0.5
+            self.throttle = 1.1 # Slight delay
+        else:
+            self.tier = "LITE (Survival)"
+            self.ui_refresh = 2.0
+            self.throttle = 2.0 # Half speed save battery
+
+class FrostNode:
+    def __init__(self):
+        self.profile = DeviceProfile()
+        self.db = FrostChainDB()
+        self.id = "NODE_" + hashlib.sha256(os.urandom(4)).hexdigest()[:6].upper()
+        
+        # State
+        self.mining = True
+        self.mode = "CALIBRATING"
+        self.hashes = 0
+        
+        # Sensors
+        self.batt_temp = 25.0
+        self.batt_level = 100
+        self.chain_height = self.db.get_height()
+        self.last_hash = self.db.get_last_hash()
+
+    def check_environment(self):
+        """
+        Auto-Governs based on Sensor Data.
+        Replaces the manual switch.
+        """
+        try:
+            cmd = subprocess.check_output(["termux-battery-status"], stderr=subprocess.DEVNULL)
+            data = json.loads(cmd)
+            self.batt_temp = data.get('temperature', 25.0)
+            self.batt_level = data.get('percentage', 100)
+            
+            # LOGIC GATE: THERMAL PROTECTION
+            if self.batt_temp < 5.0:
+                self.mode = "❄️ BLIZZARD (Auto-Protect)"
+                return 5.0 # Slow down 5x to save dying battery
+            elif self.batt_temp > 42.0:
+                self.mode = "🔥 OVERHEAT (Throttling)"
+                return 3.0 # Slow down 3x to cool off
+            elif self.batt_level < 15:
+                self.mode = "🔋 LOW POWER (Eco)"
+                return 2.0
+            else:
+                self.mode = f"● OPTIMAL ({self.profile.tier})"
+                return self.profile.throttle # Use hardware default
+
+        except:
+            self.mode = "SENSOR ERROR (Safe Mode)"
+            return 2.0
+
+    def mine_loop(self):
+        base_freq = 1.0 / 963.0
+        
+        while self.mining:
+            # DYNAMIC TUNING
+            # Every 100 blocks, check environment and adjust speed
+            if self.hashes % 100 == 0:
+                throttle_factor = self.check_environment()
+            
+            # The Mining Cycle
+            time.sleep(base_freq * throttle_factor)
+            
+            # Crypto Work
+            entropy = struct.pack(">Q", time.time_ns())
+            self.last_hash = hashlib.sha256(entropy).hexdigest()
+            self.hashes += 1
+
+            # Persistence (Batched)
+            if self.hashes % 500 == 0:
+                self.chain_height += 1
+                self.db.add_block(self.chain_height, time.time(), self.id, self.last_hash, "PTR")
+
+def render_ui(node):
+    while node.mining:
+        try:
+            sys.stdout.write(CLEAR)
+            sys.stdout.write(f"{C_PURPLE}╔══════════════════════════════════════════════╗{RESET}\n")
+            sys.stdout.write(f"{C_PURPLE}║ {C_CYAN}♍ VIRGO ADAPTIVE KERNEL {C_GREY}v4.0{C_PURPLE}               ║{RESET}\n")
+            sys.stdout.write(f"{C_PURPLE}╠══════════════════════════════════════════════╣{RESET}\n")
+            sys.stdout.write(f"{C_PURPLE}║ {RESET}HARDWARE: {C_GREEN}{node.profile.tier:<26}{C_PURPLE} ║{RESET}\n")
+            sys.stdout.write(f"{C_PURPLE}║ {RESET}STATUS  : {C_CYAN}{node.mode:<26}{C_PURPLE} ║{RESET}\n")
+            sys.stdout.write(f"{C_PURPLE}╠══════════════════════════════════════════════╣{RESET}\n")
+            sys.stdout.write(f"{C_PURPLE}║ {RESET}TEMP    : {node.batt_temp}°C{C_PURPLE}                           ║{RESET}\n")
+            sys.stdout.write(f"{C_PURPLE}║ {RESET}HEIGHT  : {node.chain_height} Blocks{C_PURPLE}                   ║{RESET}\n")
+            sys.stdout.write(f"{C_PURPLE}╚══════════════════════════════════════════════╝{RESET}\n")
+            sys.stdout.write(f"\n{C_GREY}>> System is auto-optimizing. No input required.{RESET}\n")
+            
+            sys.stdout.flush()
+            time.sleep(node.profile.ui_refresh)
+            
+        except KeyboardInterrupt:
+            node.mining = False
+            sys.exit()
+
+if __name__ == "__main__":
+    node = FrostNode()
+    t = threading.Thread(target=node.mine_loop, daemon=True)
+    t.start()
+    render_ui(node)
+EOF
+
+# 2. RELAUNCH
+# ------------------------------------------
+echo "=========================================="
+echo "♍ ADAPTIVE KERNEL DEPLOYED."
+echo ">> Hardware Profiling: ACTIVE"
+echo ">> Thermal Automation: ACTIVE"
+echo "------------------------------------------"
+echo "Type 'finux' to let the system self-tune."
+echo "=========================================="
