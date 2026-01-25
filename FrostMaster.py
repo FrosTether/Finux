@@ -235,3 +235,4 @@ if __name__ == "__main__":
             if p.is_alive():
                 p.terminate()
         print(f"\n{C_RED}>> 31337 G PROTOCOL HALTED. Stay elite.{RESET}")
+pyinstaller --onefile --name FrostNode_31337 FrostMaster.py
