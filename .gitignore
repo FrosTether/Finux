@@ -36,3 +36,12 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+# --- FROST CLOAK ---
+*.zip
+*.log
+.env
+__pycache__/
+# Hide local Roku deploy scripts
+deploy_frosku.sh
+# Hide the Master Key
+*.key
