@@ -83,3 +83,26 @@ if __name__ == "__main__":
 # Automated Uplink Notification
 import os
 os.system("echo 'Frostoise Core Online - 1655 W Main Node Initiated' | mail -s '♍🧲 System Live' voluntaryistj@gmail.com")
+import os
+os.environ['KIVY_CLIPBOARD'] = 'dummy'
+
+from kivy.app import App
+from kivy.core.audio import SoundLoader
+from kivy.uix.textinput import TextInput
+
+class FrostoiseApp(App):
+    def build(self):
+        # 1. Start the Pressure Log
+        print("\033[94m[SYSTEM] AUDIO DRIVERS ENGAGED - 100% PRESSURE\033[0m")
+        
+        # 2. Trigger the Uplink Email
+        os.system("echo 'Audio Drivers Installed' | mail -s '♍🧲 Audio Live' voluntaryistj@gmail.com")
+        
+        # 3. Load Audio Frequency (Example)
+        # sound = SoundLoader.load('uplink_confirm.wav')
+        # if sound: sound.play()
+        
+        return TextInput(hint_text="Search Frost Protocol...", multiline=False)
+
+if __name__ == "__main__":
+    FrostoiseApp().run()
