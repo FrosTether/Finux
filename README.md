@@ -1,26 +1,15 @@
-# Finux
-Frost Sub-Zero Vault Launch app 
-# Initialize the local repo
-git init
+# Finux (Financial Linux Automation)
 
-# Add the Genesis block, Kernel headers, and DARPA FOIA scripts
-git add .
+## Overview
+Finux is a Python-based CLI utility designed for the Termux environment. It provides a modular interface for interacting with crypto exchange APIs (Kraken) and verifying system states via Google Cloud Platform.
 
-# Create the first public commit
-git commit -m "Frost Protocol Genesis: Initial Open Source Release - Jan 24, 2026"
-
-# Link to your public GitHub/GitLab
-git remote add origin https://github.com/Frost-OS/Finux-Project.git
-
-# Push the code to the world
-git push -u origin main
-# Frostoise Protocol
-Deployment of the 1655 West Main Node via Termux/F-Droid.
+## Features
+* **Secure API Bridge:** Implements HMAC-SHA512 signing for Kraken private endpoints.
+* **Environment Management:** Loads credentials securely via `.env` (dotenv).
+* **Automated Audits:** Python scripts to fetch real-time balance and asset status.
+* **Legacy Support:** Optimized for low-power Linux environments (Alpine/Termux).
 
 ## Installation
-1. Install dependencies:
-   `pkg install x11-repo tur-repo`
-   `pkg install python-kivy mesa-dev libglvnd-dev msmtp bsd-mailx ffmpeg`
-2. Configure `~/.msmtprc` with your Google App Password.
-3. Run the engine:
-   `python frostit.py`
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/FrosTether/Finux.git](https://github.com/FrosTether/Finux.git)
