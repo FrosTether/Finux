@@ -13,3 +13,4 @@ Finux is a Python-based CLI utility designed for the Termux environment. It prov
 1. Clone the repository:
    ```bash
    git clone [https://github.com/FrosTether/Finux.git](https://github.com/FrosTether/Finux.git)
+Environment: Android 16 (API 36) / Termux".
