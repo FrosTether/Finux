@@ -80,3 +80,6 @@ if __name__ == "__main__":
     # The terminal intro you liked
     print("\033[94m🌊 Frostoise Engine Loading...\033[0m")
     FrostoiseApp().run()
+# Automated Uplink Notification
+import os
+os.system("echo 'Frostoise Core Online - 1655 W Main Node Initiated' | mail -s '♍🧲 System Live' voluntaryistj@gmail.com")
