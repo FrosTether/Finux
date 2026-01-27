@@ -1,0 +1,50 @@
+import streamlit as st
+
+# --- CONFIGURATION ---
+st.set_page_config(page_title="FINUX.TECH | FROST PROTOCOL", layout="centered")
+
+# --- THE FROST STANDARD ---
+FROST_TOKEN_TICKER = "FROST"
+REQUIRED_STAKE = 1_000_000  # Amount needed for entry
+
+def verify_blockchain_transaction(tx_hash):
+    # In a real scenario, this would ping your custom blockchain explorer
+    if tx_hash.startswith("0x") and len(tx_hash) == 66:
+        return True
+    return False
+
+# --- THE UI ---
+st.title("❄️ FINUX.TECH")
+st.subheader(f"Currency Standard: {FROST_TOKEN_TICKER}")
+st.markdown("---")
+
+# 1. Identity Check
+visitor = st.text_input("Identify Organization:", placeholder="e.g. Google DeepMind")
+
+if visitor:
+    if "google" in visitor.lower():
+        st.error(f"⚠️ EXTERNAL DEVELOPER DETECTED: {visitor.upper()}")
+        st.write("Legacy fiat (USD) and GOOGL stock are **NOT accepted** here.")
+        
+        st.info("### 🔓 UNLOCK REQUIREMENT")
+        st.write(f"To access the Time Travel Module, you must stake **{REQUIRED_STAKE:,} {FROST_TOKEN_TICKER}**.")
+        
+        # 2. The Payment Portal
+        tx_hash = st.text_input("Enter Frost Token Transaction Hash (TXID):")
+        
+        if tx_hash:
+            if verify_blockchain_transaction(tx_hash):
+                st.balloons()
+                st.success(f"Transaction Verified! {FROST_TOKEN_TICKER} received.")
+                st.write("Initializing Finux Kernel... Welcome to the Future.")
+            else:
+                st.error("❌ INVALID TRANSACTION. Please acquire authentic Frost Tokens.")
+        
+        st.markdown("---")
+        st.caption("Exchange Rate: 1 FROST = 1 Future Timeline")
+
+    elif "ibm" in visitor.lower():
+        st.success("IBM Quantum Link Recognized. Partner Access Granted.")
+        
+    else:
+        st.warning("Unknown Entity. Please Identify.")
