@@ -45,3 +45,17 @@ __pycache__/
 deploy_frosku.sh
 # Hide the Master Key
 *.key
+# Security (NEVER UPLOAD THESE)
+.env
+.env.local
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+env/
+
+# Logs
+*.log
