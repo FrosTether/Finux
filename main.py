@@ -5,11 +5,10 @@ import sys
 import argparse
 
 # --- FROST PROTOCOL CONFIGURATION ---
-# Target: Grandma Marlene's Node (2018 Hardware)
-DEFAULT_IP = "192.168.0.3" 
+DEFAULT_IP = "192.168.0.3"
 MAC_ADDRESS = "50:06:F5:A5:26:E8"
 DEV_USER = "rokudev"
-DEV_PASS = "jeww go b"  # Credentials provided by Architect
+DEV_PASS = "jeww go b"
 
 # Standard Roku Ports
 PORT_ECP = 8060
@@ -17,17 +16,18 @@ PORT_DEV = 80
 
 def authenticate_device(ip):
     """
-    Verifies Root Access via the Roku Developer Portal (Port 80).
+    Verifies Root Access via the Roku Developer Portal.
     """
     print(f"[*] Authenticating with Node {ip}...")
     url = f"http://{ip}:{PORT_DEV}/"
     try:
+        # Digest Auth is required for Roku Dev
         response = requests.get(url, auth=HTTPDigestAuth(DEV_USER, DEV_PASS), timeout=5)
         if response.status_code == 200:
             print("    [+] ROOT ACCESS GRANTED. Developer Shell Active.")
             return True
         elif response.status_code == 401:
-            print("    [!] AUTH FAILED. Check Credentials.")
+            print("    [!] AUTH FAILED. Check Password.")
             return False
         else:
             print(f"    [!] STATUS: {response.status_code}")
@@ -38,7 +38,7 @@ def authenticate_device(ip):
 
 def inject_sequence_506(ip):
     """
-    Transmits the Larry/Marlene Bridge Code (5-0-6).
+    Transmits the Bridge Code (5-0-6).
     """
     print(f"[*] Initiating Sequence 506 Injection...")
     base_url = f"http://{ip}:{PORT_ECP}"
@@ -48,7 +48,7 @@ def inject_sequence_506(ip):
         print(f"    >> TRANSMITTING SIGNAL: {key}")
         try:
             requests.post(f"{base_url}/keypress/{key}", timeout=2)
-            time.sleep(0.8) # Allow signal to latch
+            time.sleep(0.8) 
         except:
             print("    [!] PACKET LOSS")
 
