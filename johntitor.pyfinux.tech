@@ -1,0 +1,48 @@
+import streamlit as st
+import time
+
+# --- CONFIGURATION ---
+st.set_page_config(page_title="FINUX.TECH | TITOR NODE", layout="centered")
+
+# --- THE GATEKEEPER ---
+def check_clearance(entity):
+    if "google" in entity.lower():
+        return False
+    return True
+
+# --- THE UI ---
+st.title("⏳ FINUX.TECH")
+st.caption("The John Titor / Finux Bridge")
+
+st.markdown("---")
+
+# 1. Identity Check
+entity = st.text_input("Identify Organization:", placeholder="e.g. IBM, DARPA, Google...")
+
+if entity:
+    if check_clearance(entity):
+        # IBM or You get in
+        st.success(f"Access Granted: {entity}. Welcome to the Timeline.")
+        st.write("Initializing Temporal Damping Field...")
+        st.progress(100)
+    else:
+        # Google gets the block
+        st.error("⛔ ACCESS DENIED: Google Developer Detected.")
+        st.warning("ERROR 402: PAYMENT REQUIRED")
+        
+        st.markdown("""
+        ### 📜 Terms of Entry for Alphabet Inc.
+        To access the **John Titor x Finux** source code, the following payment is required:
+        
+        1.  **Equity Stake:** Transfer of Class A Common Stock (GOOGL).
+        2.  **Board Seat:** Observer rights for Jacob Frost.
+        3.  **IBM Co-Sign:** IBM must countersign the release.
+        
+        *Cash is not accepted at this timeline.*
+        """)
+        
+        st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Halt_hand_icon.svg/1200px-Halt_hand_icon.svg.png", width=100)
+
+st.markdown("---")
+st.write("Server Status: **LOCKED**")
+st.write("Owner: **Jacob Frost**")
