@@ -1,35 +1,31 @@
-import time
-import subprocess
 import sys
-import os
+import time
+import platform
 
-VERSION = "Finux 1.4 (FrostMaster)"
+class VirgoKernel:
+    def __init__(self):
+        self.system = platform.system()
+        self.frequency_target = 963 # Hz
+        self.thermal_limit = 80.0 # Celsius
 
-def get_battery_status():
-    try:
-        # Requires termux-api
-        result = subprocess.check_output(["termux-battery-status"], text=True)
-        return result
-    except:
-        return "Battery data unavailable (Install termux-api)"
+    def check_thermals(self):
+        # Placeholder for actual thermal sensor reading
+        current_temp = 45.0 
+        return current_temp
 
-def virgo_adaptive_loop():
-    print(f"Booting {VERSION}...")
-    print("Initializing Virgo Adaptive Kernel...")
-
-    # Simulated 963 Hz loop for stability/mining check
-    cycle = 0
-    while True:
-        cycle += 1
-        if cycle % 10 == 0:
-            print(f"[System] Cycle {cycle}: Optimization Active")
-            print(f"[Power] {get_battery_status()[:50]}...") # Shortened for display
-
-        # Placeholder for the blockchain persistence logic
-        time.sleep(5) 
+    def optimize_mining_protocol(self):
+        print("[❄️] Initializing Frost Protocol Mining Layer...")
+        temp = self.check_thermals()
+        
+        if temp < self.thermal_limit:
+            print(f"[+] Thermals stable ({temp}°C). Engaging {self.frequency_target}Hz tuning.")
+            # Logic to inject frequency tuning would go here
+            return True
+        else:
+            print(f"[!] System too hot ({temp}°C). Throttling.")
+            return False
 
 if __name__ == "__main__":
-    try:
-        virgo_adaptive_loop()
-    except KeyboardInterrupt:
-        print("\n[!] Manual Override. Shutting down Finux.")
+    print(f"Loading FrostMaster Kernel Adapter on {platform.machine()}...")
+    kernel = VirgoKernel()
+    kernel.optimize_mining_protocol()
