@@ -1,0 +1,85 @@
+from kivy.app import App
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.label import Label
+from kivy.clock import Clock
+from kivy.graphics import Color, Rectangle
+
+# --- CONFIGURATION ---
+MAP_SIZE = 10
+# 0 = Floor, 1 = Wall, 2 = Snowball (Points), 3 = Ms. Frostman
+LEVEL_MAP = [
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 3, 2, 2, 1, 2, 2, 2, 2, 1],
+    [1, 2, 1, 2, 1, 2, 1, 1, 2, 1],
+    [1, 2, 1, 2, 2, 2, 2, 1, 2, 1],
+    [1, 2, 2, 2, 1, 1, 2, 2, 2, 1],
+    [1, 1, 1, 2, 1, 1, 2, 1, 1, 1],
+    [1, 2, 2, 2, 2, 2, 2, 2, 2, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+]
+
+class GameBoard(GridLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.cols = 10
+        self.player_pos = [1, 1] # Row 1, Col 1
+        self.score = 0
+        self.tiles = []
+        self.draw_map()
+
+    def draw_map(self):
+        self.clear_widgets()
+        self.tiles = []
+        for row in range(len(LEVEL_MAP)):
+            row_tiles = []
+            for col in range(len(LEVEL_MAP[0])):
+                val = LEVEL_MAP[row][col]
+                color = (0, 0, 0, 1) # Floor (Black)
+                if val == 1: color = (0.2, 0.2, 0.8, 1) # Wall (Blue)
+                if val == 2: color = (1, 1, 1, 1)       # Snowball (White)
+                if val == 3: color = (1, 0.4, 0.7, 1)   # Ms. Frostman (Pink)
+                
+                tile = Button(background_normal='', background_color=color)
+                self.add_widget(tile)
+                row_tiles.append(tile)
+            self.tiles.append(row_tiles)
+
+    def move_player(self, dr, dc):
+        r, c = self.player_pos
+        new_r, new_c = r + dr, c + dc
+        
+        # Collision Check (Don't walk into walls)
+        target_val = LEVEL_MAP[new_r][new_c]
+        if target_val != 1:
+            # Update Logic
+            LEVEL_MAP[r][c] = 0 # Old spot becomes empty
+            if target_val == 2: self.score += 10 # Eat snowball
+            LEVEL_MAP[new_r][new_c] = 3 # New spot is Player
+            self.player_pos = [new_r, new_c]
+            self.draw_map() # Redraw screen
+
+class FrostmanApp(App):
+    def build(self):
+        root = BoxLayout(orientation='vertical')
+        self.game = GameBoard()
+        
+        # Controls
+        controls = BoxLayout(size_hint_y=0.2)
+        btn_l = Button(text='LEFT', on_press=lambda x: self.game.move_player(0, -1))
+        btn_u = Button(text='UP', on_press=lambda x: self.game.move_player(-1, 0))
+        btn_d = Button(text='DOWN', on_press=lambda x: self.game.move_player(1, 0))
+        btn_r = Button(text='RIGHT', on_press=lambda x: self.game.move_player(0, 1))
+        
+        controls.add_widget(btn_l)
+        controls.add_widget(btn_u)
+        controls.add_widget(btn_d)
+        controls.add_widget(btn_r)
+        
+        root.add_widget(self.game)
+        root.add_widget(controls)
+        return root
+
+if __name__ == '__main__':
+    FrostmanApp().run()
