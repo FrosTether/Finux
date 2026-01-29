@@ -1,0 +1,67 @@
+# --- FROST ECOSYSTEM: MASTER GITHUB SYNC ---
+import os
+import shutil
+
+# 1. CONFIGURATION (ENTER YOUR DETAILS)
+# ------------------------------------------------------------------
+GITHUB_USER = "FrosTether"        # Change this to your username!
+GITHUB_EMAIL = "voluntaryistj@gmail.com"      # Change this!
+REPO_NAME = "FrostEcosystem"         # Your Repo Name
+TOKEN = "ghp_PFJX6zoXhBBlcLusw4oIHcChur5fffffffff3O3W40y7WQB"      # Paste your ghp_ token here
+# ------------------------------------------------------------------
+
+# 2. SETUP GIT & CLONE
+print(f"🔗 Authenticating as {GITHUB_USER}...")
+!git config --global user.email "{GITHUB_EMAIL}"
+!git config --global user.name "{GITHUB_USER}"
+
+repo_url = f"https://{TOKEN}@github.com/{GITHUB_USER}/{REPO_NAME}.git"
+project_dir = os.path.join(os.getcwd(), REPO_NAME)
+
+if os.path.exists(project_dir):
+    print("🔄 Removing old local copy to ensure fresh sync...")
+    shutil.rmtree(project_dir)
+
+print(f"📥 Cloning {REPO_NAME} from GitHub...")
+!git clone {repo_url}
+
+# 3. ECOSYSTEM SCANNER
+# We look for folders or root files and organize them into the Repo
+print("📡 Scanning for Frost Apps...")
+
+# A. Handle the "Root" App (The last one you worked on in the main folder)
+# We ask you what this app is to name it correctly in the repo.
+root_app_name = input("❓ What is the name of the app currently in the main folder? (e.g., FrostCrush, Wallet): ")
+if not root_app_name: root_app_name = "Unsorted_Build"
+
+target_folder = os.path.join(project_dir, root_app_name)
+if not os.path.exists(target_folder):
+    os.makedirs(target_folder)
+
+# Move Root Files (main.py, buildozer.spec, frostit.sh)
+files_to_move = ["main.py", "buildozer.spec", "frostit.sh", "frost.png"]
+for f in files_to_move:
+    if os.path.exists(f):
+        shutil.copy(f, os.path.join(target_folder, f))
+        print(f"   ✅ Saved {f} to /{root_app_name}/")
+
+# B. Handle Sub-Folders (If you created MsFrostman, Oofmon, etc.)
+known_folders = ["MsFrostman", "Oofmon", "FrostCop", "AggyBall", "FrostTycoon", "FrostMarket", "GraysonsWallet"]
+
+for folder in known_folders:
+    if os.path.exists(folder):
+        print(f"   📦 Found folder: {folder}")
+        # Copy entire folder to Repo
+        dest_path = os.path.join(project_dir, folder)
+        if os.path.exists(dest_path): shutil.rmtree(dest_path) # Update existing
+        shutil.copytree(folder, dest_path)
+        print(f"   ✅ Backed up {folder} to GitHub")
+
+# 4. PUSH TO CLOUD
+print("🚀 Pushing Ecosystem to GitHub...")
+os.chdir(project_dir)
+!git add .
+!git commit -m "Frost Ecosystem Update: {root_app_name} and modules"
+!git push origin main
+print("✅ DONE! Your entire ecosystem is secured.")
+print(f"👉 View here: https://github.com/{FrosTether}/{FrostEcosystem}")
