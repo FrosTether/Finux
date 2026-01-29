@@ -1,0 +1,17 @@
+{
+    "environment": "production",
+    "node_name": "Frost-Central-OH-01",
+    "max_peers": 50,
+    "allowed_ips": ["*"],
+    "database": {
+        "type": "sqlite",
+        "path": "./frost_data.db"
+    },
+    "tokens": {
+        "FNR": {
+            "symbol": "FNR",
+            "supply": 100000000,
+            "burn_rate": 0.02
+        }
+    }
+}
