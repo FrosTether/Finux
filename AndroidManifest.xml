@@ -38,3 +38,20 @@
         
         </application>
 </manifest>
+<manifest ...>
+    
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" /> 
+
+    <application ...>
+        
+        <service 
+            android:name=".core.FrostMinerService"
+            android:foregroundServiceType="dataSync" 
+            android:exported="false" />
+            
+        <activity ...>
+            ...
+        </activity>
+    </application>
+</manifest>
