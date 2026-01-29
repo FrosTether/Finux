@@ -4,10 +4,10 @@ import shutil
 
 # 1. CONFIGURATION (ENTER YOUR DETAILS)
 # ------------------------------------------------------------------
-GITHUB_USER = "JacobFrostDev"        # Change this to your username!
-GITHUB_EMAIL = "your@email.com"      # Change this!
+GITHUB_USER = "FrosTether"        # Change this to your username!
+GITHUB_EMAIL = "voluntaryistj@gmail.com"      # Change this!
 REPO_NAME = "FrostEcosystem"         # Your Repo Name
-TOKEN = "PASTE_YOUR_TOKEN_HERE"      # Paste your ghp_ token here
+TOKEN = "ghp_PFJX6zoXhBfffBlcLusw4oIHcChu3O3W40y7WQB"      # Paste your ghp_ token here
 # ------------------------------------------------------------------
 
 # 2. SETUP GIT & CLONE
@@ -64,4 +64,4 @@ os.chdir(project_dir)
 !git commit -m "Frost Ecosystem Update: {root_app_name} and modules"
 !git push origin main
 print("✅ DONE! Your entire ecosystem is secured.")
-print(f"👉 View here: https://github.com/{GITHUB_USER}/{REPO_NAME}")
+print(f"👉 View here: https://github.com/{FrosTether}/{FrostEcosystem}")
