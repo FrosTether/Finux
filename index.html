@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrostBlock Explorer | Mainnet</title>
+    <style>
+        :root {
+            --bg-dark: #0D1117;
+            --bg-card: #161B22;
+            --accent: #58A6FF;
+            --text-main: #C9D1D9;
+            --text-muted: #8B949E;
+            --border: #30363D;
+            --success: #238636;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .search-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 10px;
+            width: 300px;
+            border-radius: 6px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: #0f131a;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .hash {
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .badge {
+            background: rgba(56, 139, 253, 0.15);
+            color: var(--accent);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .genesis-row {
+            background: rgba(35, 134, 54, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo">❄️ FrostScan</div>
+        <input type="text" class="search-box" placeholder="Search Address / Tx Hash / Block...">
+    </header>
+
+    <div class="grid">
+        <div class="card">
+            <h3>FNR PRICE</h3>
+            <div class="value">$0.00 <span style="font-size:12px; color:var(--text-muted)">(Pre-Market)</span></div>
+        </div>
+        <div class="card">
+            <h3>LATEST BLOCK</h3>
+            <div class="value">#1</div>
+        </div>
+        <div class="card">
+            <h3>CIRCULATING SUPPLY</h3>
+            <div class="value">100,000,000</div>
+        </div>
+        <div class="card">
+            <h3>ACTIVE MINERS</h3>
+            <div class="value">1 <span style="font-size:12px; color:var(--success)">(Cold Storage)</span></div>
+        </div>
+    </div>
+
+    <h2 style="font-size: 18px; margin-bottom: 15px;">LATEST TRANSACTIONS</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tx Hash</th>
+                <th>Block</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Value (FNR)</th>
+            </tr>
+        </thead>
+        <tbody id="tx-table">
+            <tr class="genesis-row">
+                <td><span class="hash">0x9f8a...3b21</span></td>
+                <td><span class="badge">#1 (Genesis)</span></td>
+                <td>Null (0x00...00)</td>
+                <td><span class="hash" title="Your Cold Wallet">0x5147...da1d</span></td>
+                <td style="color: var(--success); font-weight: bold;">+100,000,000.00</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    // In a real deployment, this would fetch data from http://your-ip:5000/chain
+    // For now, it statically displays the Genesis State.
+    
+    console.log("[❄️] FrostScan Initialized.");
+    console.log("[i] Monitoring Genesis Address: 0x5147f68049bdf47fcb778c89544f9f7d1ed7da1d");
+
+    // Interactive Search Mockup
+    document.querySelector('.search-box').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            alert('Connecting to Node... (Simulation Mode)');
+        }
+    });
+</script>
+
+</body>
+</html>
