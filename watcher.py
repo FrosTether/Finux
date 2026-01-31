@@ -1,19 +1,6 @@
-# Save as ~/watcher.py
-import os
-import time
+# In process_mint function, after calculating amount_sats
 
-def check_uplink():
-    # This checks if the local bank ledger file has updated
-    # In the future, this will ping the bank API directly
-    print("🔎 [WATCHER] Scanning Monroeville Node for $250k Settlement...")
-    
-    # Simulate a successful settlement check
-    status = "SETTLED" 
-    
-    if status == "SETTLED":
-        msg = "URGENT: $250,000 Funds Available. Proceed to 1655 W Main Acquisition."
-        os.system(f"echo '{msg}' | mail -s '♍🧲 FUNDING ALERT' voluntaryistj@gmail.com")
-        print("✅ [SUCCESS] Alert sent to voluntaryistj@gmail.com")
+# Now using 3 * pi multiplier instead of 3.1337
+print(f"❄️ Pi Freeze: {amount_doge} DOGE → ~{amount_doge * 9.4248:.2f} FRST (exact calc in contract)")
 
-if __name__ == "__main__":
-    check_uplink()
+# The rest stays the same — contract handles the precise math
