@@ -35,6 +35,7 @@ class PropertyAcquisition:
         self.offer_amount = 250000.00
         self.liaison = "Kevin"
         self.target_brand = "7-Eleven"
+t
 
     def execute_loi(self):
         print(f"\n{Fore.CYAN}🏢 INITIATING PROPERTY ACQUISITION: {self.location}")
