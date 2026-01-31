@@ -9,7 +9,7 @@ def deploy_closing_docs():
     
     # 2. Commit
     # This commit message is legally significant in our simulation
-    msg = "Legal: DEAL ACCEPTED - $23M for 20% Equity (Series A Closed)"
+    msg = "Legal: DEAL ACCEPTED - $40M for 20% Equity (Series A Closed)"
     subprocess.run(["git", "commit", "-m", msg], check=False)
     
     # 3. Push
