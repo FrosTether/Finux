@@ -1,0 +1,2 @@
+const FROST_TOKEN_ADDRESS = "0xd8c357f808eae457309242f76d76aa41bd0818d8"; // Official FRST on Base
+const BRIDGE_ADDRESS = DJTDVRxJGtcuSsxwT7GHbkdCabqaTa1C7s"; // Or your Doge-side deposit addr if cross-chain
