@@ -3,187 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FrostBlock Explorer | Mainnet</title>
+    <title>Finux.tech | The Frost Protocol</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.10.0/web3.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0D1117;
-            --bg-card: #161B22;
-            --accent: #58A6FF;
-            --text-main: #C9D1D9;
-            --text-muted: #8B949E;
-            --border: #30363D;
-            --success: #238636;
+            --frost-dark: #0a0f14;
+            --frost-panel: #111a22;
+            --frost-cyan: #00f2ff;
+            --frost-blue: #0077be;
+            --text-color: #e0f7fa;
         }
-
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            background-color: var(--frost-dark);
+            color: var(--text-color);
             font-family: 'Courier New', monospace;
             margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        header {
+            padding: 0;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
         }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 50px;
         }
-
-        .search-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 10px;
-            width: 300px;
-            border-radius: 6px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+        header {
+            text-align: center;
             margin-bottom: 40px;
+            border-bottom: 2px solid var(--frost-blue);
+            padding-bottom: 20px;
         }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
+        h1 { color: var(--frost-cyan); text-shadow: 0 0 10px var(--frost-blue); }
+        .panel {
+            background: var(--frost-panel);
+            border: 1px solid var(--frost-blue);
+            border-radius: 10px;
             padding: 20px;
-            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
         }
-
-        .card h3 {
-            margin: 0 0 10px 0;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .card .value {
-            font-size: 24px;
+        .btn {
+            background: linear-gradient(45deg, var(--frost-blue), var(--frost-cyan));
+            border: none;
+            color: #000;
+            padding: 10px 20px;
             font-weight: bold;
-            color: white;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--bg-card);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background: #0f131a;
-            color: var(--text-muted);
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
-        .hash {
-            color: var(--accent);
             cursor: pointer;
+            border-radius: 5px;
+            text-transform: uppercase;
+            width: 100%;
+            margin-top: 10px;
         }
-
-        .badge {
-            background: rgba(56, 139, 253, 0.15);
-            color: var(--accent);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-        
-        .genesis-row {
-            background: rgba(35, 134, 54, 0.1);
-        }
+        .btn:hover { box-shadow: 0 0 15px var(--frost-cyan); }
+        .stat-row { display: flex; justify-content: space-between; margin: 10px 0; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .hash { color: var(--frost-cyan); font-size: 0.8em; }
+        #mining-visual { height: 10px; background: #333; margin-top: 15px; border-radius: 5px; overflow: hidden; }
+        #mining-bar { height: 100%; width: 0%; background: var(--frost-cyan); transition: width 1s linear; }
+        .blink { animation: blinker 1.5s linear infinite; color: red; }
+        @keyframes blinker { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <div class="logo">❄️ FrostScan</div>
-        <input type="text" class="search-box" placeholder="Search Address / Tx Hash / Block...">
-    </header>
+    <div class="container">
+        <header>
+            <h1>FINUX.TECH</h1>
+            <p>Frost Operating System Ecosystem</p>
+            <p style="font-size: 0.8em; color: #888;">Node Seed: 683050920</p>
+        </header>
 
-    <div class="grid">
-        <div class="card">
-            <h3>FNR PRICE</h3>
-            <div class="value">$0.00 <span style="font-size:12px; color:var(--text-muted)">(Pre-Market)</span></div>
+        <div class="panel" id="login-panel">
+            <h3>🔒 Identity Access</h3>
+            <p>Connect Web3 Wallet to initialize Frost Protocol.</p>
+            <button class="btn" onclick="connectWallet()">Connect Wallet</button>
+            <p id="wallet-status" style="margin-top: 10px; color: var(--frost-cyan);"></p>
         </div>
-        <div class="card">
-            <h3>LATEST BLOCK</h3>
-            <div class="value">#1</div>
+
+        <div class="panel" style="opacity: 0.5; pointer-events: none;" id="miner-panel">
+            <h3>💎 Frost Crush II: Platinum Miner</h3>
+            <div class="stat-row">
+                <span>Target Node:</span>
+                <span class="hash">voluntaryistj.base.eth</span>
+            </div>
+            <div class="stat-row">
+                <span>Contract:</span>
+                <span class="hash">0xdc15...8013 ($FROST)</span>
+            </div>
+            <div class="stat-row">
+                <span>Mining Interval:</span>
+                <span id="timer-display">150s</span>
+            </div>
+            <div class="stat-row">
+                <span>Status:</span>
+                <span id="mining-status">STANDBY</span>
+            </div>
+            
+            <div id="mining-visual"><div id="mining-bar"></div></div>
+            
+            <button class="btn" onclick="startMining()">Initialize Mining Loop</button>
+            <br><br>
+            <div style="text-align: center;">
+                <a href="#" style="color: var(--frost-cyan); text-decoration: none;">[ Download FrostCrush_v2.apk ]</a>
+            </div>
         </div>
-        <div class="card">
-            <h3>CIRCULATING SUPPLY</h3>
-            <div class="value">100,000,000</div>
-        </div>
-        <div class="card">
-            <h3>ACTIVE MINERS</h3>
-            <div class="value">1 <span style="font-size:12px; color:var(--success)">(Cold Storage)</span></div>
+
+        <div class="panel">
+            <h3>👶 Grayson's Vault (Education Fund)</h3>
+            <div class="stat-row">
+                <span>Status:</span>
+                <span style="color: #0f0;">ACTIVE</span>
+            </div>
+            <div class="stat-row">
+                <span>Network:</span>
+                <span>Base (L2)</span>
+            </div>
+            <p style="font-size: 0.8em; word-break: break-all; margin-top:10px;">
+                Address: <span class="hash">0x[Linked_via_Family_Protocol]</span>
+            </p>
+            <button class="btn" style="background: #333; color: #fff;">View on Explorer</button>
         </div>
     </div>
 
-    <h2 style="font-size: 18px; margin-bottom: 15px;">LATEST TRANSACTIONS</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Tx Hash</th>
-                <th>Block</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Value (FNR)</th>
-            </tr>
-        </thead>
-        <tbody id="tx-table">
-            <tr class="genesis-row">
-                <td><span class="hash">0x9f8a...3b21</span></td>
-                <td><span class="badge">#1 (Genesis)</span></td>
-                <td>Null (0x00...00)</td>
-                <td><span class="hash" title="Your Cold Wallet">0x5147...da1d</span></td>
-                <td style="color: var(--success); font-weight: bold;">+100,000,000.00</td>
-            </tr>
-        </tbody>
-    </table>
+    <script>
+        let account = null;
+        let miningInterval = 150; // 150 seconds
+        let currentTimer = 150;
+        let miningActive = false;
 
-</div>
-
-<script>
-    // In a real deployment, this would fetch data from http://your-ip:5000/chain
-    // For now, it statically displays the Genesis State.
-    
-    console.log("[❄️] FrostScan Initialized.");
-    console.log("[i] Monitoring Genesis Address: 0x5147f68049bdf47fcb778c89544f9f7d1ed7da1d");
-
-    // Interactive Search Mockup
-    document.querySelector('.search-box').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            alert('Connecting to Node... (Simulation Mode)');
+        async function connectWallet() {
+            if (window.ethereum) {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    account = accounts[0];
+                    document.getElementById('wallet-status').innerText = "Connected: " + account.substring(0,6) + "..." + account.substring(38);
+                    
+                    // Unlock the Miner
+                    const minerPanel = document.getElementById('miner-panel');
+                    minerPanel.style.opacity = "1";
+                    minerPanel.style.pointerEvents = "all";
+                } catch (error) {
+                    console.error("User denied account access");
+                }
+            } else {
+                alert("Please install MetaMask or use the Frost OS Browser!");
+            }
         }
-    });
-</script>
 
+        function startMining() {
+            if (miningActive) return;
+            miningActive = true;
+            document.getElementById('mining-status').innerHTML = "<span class='blink'>MINING IN PROGRESS...</span>";
+            
+            const timerDisplay = document.getElementById('timer-display');
+            const progressBar = document.getElementById('mining-bar');
+            
+            let width = 0;
+            const step = 100 / miningInterval;
+
+            const mineLoop = setInterval(() => {
+                currentTimer--;
+                width += step;
+                
+                timerDisplay.innerText = currentTimer + "s";
+                progressBar.style.width = width + "%";
+
+                if (currentTimer <= 0) {
+                    // Payout Event
+                    simulatePayout();
+                    currentTimer = 150;
+                    width = 0;
+                }
+            }, 1000);
+        }
+
+        function simulatePayout() {
+            // In a real dApp, this would call the Contract.mint() function
+            console.log(`[FrostProtocol] Block Mined. Reward sent to voluntaryistj.base.eth`);
+            const status = document.getElementById('mining-status');
+            const originalText = status.innerHTML;
+            
+            status.innerHTML = "<span style='color: #0f0;'>BLOCK FOUND! REWARD SENT</span>";
+            setTimeout(() => {
+                status.innerHTML = originalText;
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
