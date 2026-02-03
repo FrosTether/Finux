@@ -1,35 +1,41 @@
-import requests
-from requests.auth import HTTPDigestAuth
-import zipfile
-import os
+#!/bin/sh
+# ------------------------------------------------------------------
+# FROST DEPLOYMENT PROTOCOL - SURGE.SH
+# Domain: frosttest.surge.sh
+# ------------------------------------------------------------------
 
-# --- SETTINGS ---
-ROKU_IP = "192.168.1.XX"  # Enter your Roku IP here
-PASSWORD = "YOUR_DEV_PASSWORD"
+PROJECT_DIR="./dist"  # Change this to your build folder (e.g., ./public or .)
+DOMAIN="frosttest.surge.sh"
 
-def push_frost():
-    # 1. Create the Channel Package
-    with zipfile.ZipFile('frost.zip', 'w') as z:
-        z.write('manifest')
-        for root, _, files in os.walk('components'):
-            for f in files: z.write(os.path.join(root, f))
-        for root, _, files in os.walk('source'):
-            for f in files: z.write(os.path.join(root, f))
+echo "[*] Initializing Frost Deployment Sequence..."
 
-    # 2. Push to Roku
-    url = f"http://{ROKU_IP}/plugin_install"
-    auth = HTTPDigestAuth('rokudev', PASSWORD)
-    files = {'mysubmit': 'Install', 'archive': open('frost.zip', 'rb')}
-    
-    print(f"Pushing FrostOS Skin to {ROKU_IP}...")
-    requests.post(url, auth=auth, files=files)
+# 1. CHECK DEPENDENCIES (Node.js & NPM)
+if ! command -v npm >/dev/null 2>&1; then
+    echo "[!] NPM not detected. Installing via BSD Package Manager..."
+    # Switch to root to install pkg
+    su root -c "pkg install -y node npm"
+else
+    echo "[+] Node.js/NPM detected."
+fi
 
-    # 3. Remote Restart via WAN/LAN Sequence
-    print("Sending Restart Sequence...")
-    ecp_url = f"http://{ROKU_IP}:8060/keypress/"
-    for key in ["Home"]*5 + ["Up", "Rev", "Rev", "Fwd", "Fwd"]:
-        requests.post(ecp_url + key)
-    print("Frost Channel Deployed & System Rebooting.")
+# 2. INSTALL SURGE (Global)
+if ! command -v surge >/dev/null 2>&1; then
+    echo "[!] Surge CLI not found. Installing..."
+    npm install --global surge
+fi
 
-if __name__ == "__main__":
-    push_frost()
+# 3. BUILD PROJECT (Optional - uncomment if you have a build step)
+# echo "[*] Building Project..."
+# npm run build
+
+# 4. DEPLOY TO FROSTTEST
+echo "------------------------------------------------------------------"
+echo "   TARGET: ${DOMAIN}"
+echo "   SOURCE: ${PROJECT_DIR}"
+echo "------------------------------------------------------------------"
+
+# The generic command is 'surge <folder> <domain>'
+# First run might require login credentials
+surge ${PROJECT_DIR} ${DOMAIN}
+
+echo "[SUCCESS] Deployed to https://${DOMAIN}"
