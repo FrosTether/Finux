@@ -1,0 +1,110 @@
+/* FINUX OS THEME - FROST VAULT */
+:root {
+    --finux-bg: #050510;
+    --finux-card: rgba(20, 30, 50, 0.6);
+    --finux-border: rgba(0, 243, 255, 0.2);
+    --frost-cyan: #00f3ff;
+    --frost-blue: #0077be;
+    --alert-red: #ff003c;
+    --font-mono: 'Roboto Mono', 'Courier New', monospace;
+}
+
+body {
+    background-color: var(--finux-bg);
+    background-image: 
+        radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.05) 0%, transparent 50%),
+        linear-gradient(0deg, rgba(0,0,0,0.8) 0%, transparent 1px);
+    background-size: 100% 100%, 100% 4px; /* Scanline effect */
+    color: #e0e0e0;
+    font-family: var(--font-mono);
+    margin: 0;
+    padding: 20px;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* HEADER AREA */
+.os-header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--finux-border);
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+.status-badge {
+    background: rgba(0, 243, 255, 0.1);
+    color: var(--frost-cyan);
+    padding: 5px 10px;
+    border: 1px solid var(--frost-cyan);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    box-shadow: 0 0 10px var(--frost-cyan);
+}
+
+/* ASSET GRID */
+.vault-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* THE "GLACIER" CARD */
+.asset-card {
+    background: var(--finux-card);
+    backdrop-filter: blur(10px); /* The Frosted Glass Effect */
+    border: 1px solid var(--finux-border);
+    padding: 20px;
+    position: relative;
+    transition: all 0.3s ease;
+    clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.asset-card:hover {
+    border-color: var(--frost-cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+}
+
+.asset-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.token-symbol {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+}
+
+.token-name {
+    font-size: 0.8rem;
+    color: #8899aa;
+    text-transform: uppercase;
+}
+
+.token-balance {
+    font-size: 2rem;
+    color: var(--frost-cyan);
+    text-shadow: 0 0 5px var(--frost-cyan);
+}
+
+.token-address {
+    font-size: 0.7rem;
+    color: #556677;
+    margin-top: 15px;
+    font-family: monospace;
+    word-break: break-all;
+}
+
+/* OTR SPECIAL STYLING */
+.asset-card.otr {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.5) 100%);
+}
+.asset-card.otr .token-symbol {
+    color: #aaa; /* Stealth Grey */
+}
