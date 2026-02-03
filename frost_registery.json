@@ -1,0 +1,62 @@
+{
+  "ecosystem": {
+    "name": "Frost OS Ecosystem Pro",
+    "network": "Base Mainnet",
+    "rpc_url": "https://mainnet.base.org",
+    "chain_id": 8453,
+    "owner_ens": "voluntaryistj.base.eth"
+  },
+  "contracts": {
+    "FTC": {
+      "name": "FrostCoin",
+      "address": "0x8c4281583b918f44a76cdefafde81cc24ba23fde",
+      "type": "Native Utility",
+      "use_case": "Mining Rewards (Frost Crush)"
+    },
+    "FRST": {
+      "name": "Frost Protocol Token",
+      "address": "0x9fcf79b6c8405a44fbf5b162f9d2004c8b12574b",
+      "type": "Governance",
+      "use_case": "Deep Freeze Staking"
+    },
+    "FETH": {
+      "name": "Frost Ethereum",
+      "address": "0xed87efae3ce92237f26e5ac9ff9eb3e121e3bacf",
+      "type": "Gas / Transport",
+      "use_case": "Network Fees"
+    },
+    "FCN": {
+      "name": "Frost Community Node",
+      "address": "0x9b605a1fd28331d9cfec4cbc0a39b67e8a151a8e",
+      "type": "Membership",
+      "use_case": "Access to Glacier Chat"
+    },
+    "FNR": {
+      "name": "Frost Reserve",
+      "address": "0x32fd87d023bcbc26b5d33946faaaa1b6657dcbb2",
+      "type": "Treasury",
+      "use_case": "Liquidity Backing"
+    },
+    "LEGACY_BTC": {
+      "name": "Old Bitcoin Wallet (Wrapped)",
+      "address": "0x6a5c9062648db45b0ff92b8d9b86cd755452a571",
+      "type": "Store of Value",
+      "use_case": "Emergency Reserves"
+    }
+  },
+  "apps": {
+    "com.frost.crush": {
+      "name": "Frost Crush",
+      "mining_target": "FTC",
+      "mining_multiplier": 1.0
+    },
+    "com.frost.vault": {
+      "name": "FrostVault",
+      "watched_assets": ["FTC", "FRST", "FETH", "FCN", "FNR"]
+    },
+    "com.frost.glacier": {
+      "name": "Glacier Chat",
+      "access_token": "FCN"
+    }
+  }
+}
