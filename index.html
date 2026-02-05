@@ -1,34 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>FrosTether | FrostChain Hub</title>
+<title>FrosTether | Sovereign Gateway</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
 <style>
-:root{--bg:#020202;--g:#FFD700;--gd:#B8860b;--p:#d500f9;--c:#0ff;--sb:env(safe-area-inset-bottom,20px)}
+:root{--bg:#020202;--g:#FFD700;--gd:#B8860b;--f:#111;--p:#d500f9;--c:#0ff;--sb:env(safe-area-inset-bottom,20px)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-body{background:var(--bg);color:var(--g);font-family:'Courier New',monospace;height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px}
-.h{width:100%;border-bottom:2px solid var(--c);padding-bottom:10px;margin-bottom:20px;display:flex;justify-content:space-between;font-size:.6rem;text-shadow:0 0 5px var(--c)}
-.card{width:100%;background:#0a0a0a;border:1px solid var(--gd);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 0 15px rgba(0,255,255,0.1)}
-.card-head{font-size:.8rem;font-weight:900;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-.stat-box{background:#000;border:1px solid #222;padding:8px;border-radius:6px;text-align:center;margin-top:5px}
-.btn-launch{width:100%;background:linear-gradient(180deg,var(--c),#008b8b);color:#000;border:1px solid #fff;padding:15px;border-radius:25px;font-size:.8rem;font-weight:900;margin-top:10px;text-decoration:none;display:block;text-align:center;text-transform:uppercase;box-shadow:0 0 15px var(--c)}
-#contract-link{font-size:.45rem;color:var(--c);text-decoration:none;display:block;margin-top:10px;text-align:center;opacity:0.7}
+body{background:var(--bg);color:var(--g);font-family:'Courier New',monospace;height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px;padding-bottom:calc(15px + var(--sb))}
+.h{width:100%;border-bottom:2px solid var(--c);padding-bottom:10px;margin-bottom:15px;display:flex;justify-content:space-between;font-size:.65rem;text-shadow:0 0 5px var(--c)}
+.card{width:100%;background:#0a0a0a;border:1px solid var(--gd);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 0 15px rgba(0,255,255,0.05)}
+.card-head{font-size:.8rem;font-weight:900;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-box{background:#000;border:1px solid #222;padding:8px;border-radius:6px;text-align:center}
+.stat-val{font-size:.9rem;color:#fff;display:block;margin-top:4px}
+.stat-label{font-size:.45rem;color:var(--gd);text-transform:uppercase}
+.btn-launch{width:100%;background:linear-gradient(180deg,var(--c),#008b8b);color:#000;border:1px solid #fff;padding:12px;border-radius:25px;font-size:.75rem;font-weight:900;margin-top:8px;text-decoration:none;display:block;text-align:center;text-transform:uppercase;box-shadow:0 0 10px var(--c)}
+.p-btn{background:linear-gradient(180deg,var(--p),#7b1fa2);border-color:#ea80fc;color:#fff;box-shadow:0 0 10px var(--p)}
+.f-btn{background:#111;border-color:var(--gd);color:var(--gd);box-shadow:none}
+#shield-info{font-size:.5rem;color:#0f0;text-align:center;margin-top:8px;letter-spacing:1px;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:0.3}}
 </style>
 </head>
 <body>
 <div class="h">
     <div>⛓️ FrostChain | voluntaryistj.base.eth</div>
-    <div style="color:var(--c)">PV: <span style="color:#0f0">ACTIVE</span></div>
+    <div style="color:var(--c)">PV SEED: <span id="pv-status">ACTIVE</span></div>
 </div>
 
 <div class="card">
-<div class="card-head">🕒 NETWORK STATUS <span>365.25 SYNC</span></div>
-<div style="font-size:1.4rem;font-weight:900;text-align:center;margin:10px 0;color:#fff" id="clock">00:00:00</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-    <div class="stat-box"><span style="font-size:.4rem;color:var(--gd)">FEA BALANCE</span><span style="font-size:.9rem;display:block" id="bal">0.00</span></div>
-    <div class="stat-box"><span style="font-size:.4rem;color:var(--gd)">PV SEED</span><span style="font-size:.6rem;display:block" id="seed">---</span></div>
+<div class="card-head">🕒 TEMPORAL MONITOR <span style="color:var(--c)">FEA SYNC</span></div>
+<div style="font-size:1.3rem;font-weight:900;text-align:center;margin:8px 0;color:#fff" id="clock">00:00:00</div>
+<div class="stat-grid">
+<div class="stat-box"><span class="stat-label">CASH Balance</span><span class="stat-val" id="cash">0.00</span></div>
+<div class="stat-box"><span class="stat-label">FEA Hashrate</span><span class="stat-val" id="hash">0</span></div>
 </div>
-<a id="contract-link" href="https://basescan.org/token/0x9b605a1fd28331d9cfec4cbc0a39b67e8a151a8e" target="_blank">FEA: 0x9b60...1A8E ↗</a>
+</div>
+
+<div class="card" style="border-color:var(--p)">
+<div class="card-head" style="color:var(--p)">🏦 SOVEREIGN VAULT</div>
+<div class="stat-grid">
+<div class="stat-box"><span class="stat-label">NFT Shards</span><span class="stat-val" id="shards">0</span></div>
+<div class="stat-box"><span class="stat-label">Wallet ID</span><span class="stat-val" style="font-size:.5rem;color:var(--c)">0x9b60...1A8E</span></div>
+</div>
+<button onclick="ignite('GraysonsWallet.html')" class="btn-launch p-btn">OPEN GRAYSON'S VAULT</button>
 </div>
 
 <div class="card">
@@ -39,13 +54,40 @@ body{background:var(--bg);color:var(--g);font-family:'Courier New',monospace;hei
 </div>
 </div>
 
+<div class="card" style="border:none; background:transparent">
+    <button onclick="ignite('FOTA.html')" class="btn-launch f-btn">F.O.T.A. NETWORK SYNC</button>
+    <div id="shield-info">AUTO-IGNITE ON ENTRY | 7.83Hz ENABLED</div>
+</div>
+
 <script>
-function ignite(url) { localStorage.setItem('autoMine', 'true'); setTimeout(() => { window.location.href = url; }, 150); }
+let A$={c:null};
+function initAudio() {
+    if(A$.c) return;
+    A$.c = new(window.AudioContext || window.webkitAudioContext)();
+    const hO = A$.c.createOscillator(); const hG = A$.c.createGain();
+    hO.type = 'sine'; hO.frequency.value = 7.83; hG.gain.value = 0.02;
+    hO.connect(hG).connect(A$.c.destination); hO.start();
+    const oL = A$.c.createOscillator(); const pL = A$.c.createStereoPanner(); const gL = A$.c.createGain();
+    oL.frequency.value = 432; pL.pan.value = -1; gL.gain.value = 0.015;
+    oL.connect(pL).connect(gL).connect(A$.c.destination); oL.start();
+    const oR = A$.c.createOscillator(); const pR = A$.c.createStereoPanner(); const gR = A$.c.createGain();
+    oR.frequency.value = 443.1; pR.pan.value = 1; gR.gain.value = 0.015;
+    oR.connect(pR).connect(gR).connect(A$.c.destination); oR.start();
+}
+
+function ignite(url) {
+    initAudio();
+    localStorage.setItem('autoMine', 'true');
+    document.getElementById('pv-status').innerText = "ENGAGED";
+    setTimeout(() => { window.location.href = url; }, 200);
+}
+
 function uU(){
-    const n = new Date(); const est = new Date(n.getTime() + (n.getTimezoneOffset() * 6e4) + (-5 * 36e5));
-    document.getElementById('clock').innerText = est.toLocaleTimeString('en-US', {hour12: false});
-    document.getElementById('bal').innerText = (Number(localStorage.getItem('ftc'))||0).toFixed(2);
-    document.getElementById('seed').innerText = (localStorage.getItem('pvSeed')||'---').slice(0,8);
+    const n = new Date(); const estD = new Date(n.getTime() + (n.getTimezoneOffset() * 6e4) + (-5 * 36e5));
+    document.getElementById('clock').innerText = estD.toLocaleTimeString('en-US', {hour12: false});
+    document.getElementById('cash').innerText = (Number(localStorage.getItem('ftc'))||0).toFixed(2);
+    document.getElementById('hash').innerText = localStorage.getItem('hr')||0;
+    document.getElementById('shards').innerText = localStorage.getItem('sh')||0;
 }
 setInterval(uU, 1000); uU();
 </script>
