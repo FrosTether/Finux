@@ -3,211 +3,146 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>FrostMines — RC110 | SPHYNX_FRST_HALVING</title>
-
+<title>FrostMines — RC111 | DOGE_ULTIMATE</title>
 <style>
 :root {
-  --bg: #000;
-  --aqua: oklch(75% 0.12 210);
-  --aqua-safe: color-mix(in oklch, oklch(75% 0.12 210) 92%, black);
-  --aqua-dim: oklch(40% 0.08 210);
-  --flash-bg: oklch(15% 0.04 210);
-  --text-soft: oklch(85% 0 0);
-  --glow: 0 0 clamp(3px, 1vw, 6px) oklch(75% 0.12 210 / 0.6);
-  --sig: oklch(55% 0.10 210);
+  --bg: #000; --aqua: oklch(75% 0.12 210); --aqua-safe: color-mix(in oklch, oklch(75% 0.12 210) 92%, black);
+  --aqua-dim: oklch(40% 0.08 210); --gold: oklch(80% 0.15 85); --flash-bg: oklch(15% 0.04 210);
+  --text-soft: oklch(85% 0 0); --glow: 0 0 clamp(3px, 1vw, 6px) oklch(75% 0.12 210 / 0.6);
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Courier New", monospace; }
-
-body {
-  background: var(--bg); color: var(--text-soft); height: 100dvh; overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; touch-action: none;
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-}
-
+body { background: var(--bg); color: var(--text-soft); height: 100dvh; overflow: hidden; display: flex; flex-direction: column; align-items: center; touch-action: none; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); transition: opacity 0.5s ease; }
 body.flash { background: var(--flash-bg); transition: background 120ms cubic-bezier(.2,.8,.2,1); }
-
-.ticker {
-  width: 100%; background: oklch(10% 0 0); border-bottom: 1px solid oklch(18% 0 0);
-  padding: 6px; font-size: 9px; color: var(--aqua-dim); overflow: hidden; white-space: nowrap;
-}
-
-.ticker-move { display: inline-block; animation: scroll 85s linear infinite; will-change: transform; }
+.ticker { width: 100%; background: oklch(10% 0 0); border-bottom: 1px solid oklch(18% 0 0); padding: 6px; font-size: 9px; color: var(--aqua-dim); overflow: hidden; white-space: nowrap; }
+.ticker-move { display: inline-block; animation: scroll 80s linear infinite; will-change: transform; }
 @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
-
 .header { width: 360px; display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 2px solid oklch(20% 0 0); z-index: 10; }
 #timer { font-size: 22px; font-weight: 900; color: oklch(75% 0.15 330); text-shadow: 0 0 6px oklch(75% 0.15 330 / 0.5); }
 #yield { font-size: 28px; font-weight: 900; color: var(--aqua); text-shadow: var(--glow); }
-
 .grid-wrap { padding: 6px; background: oklch(12% 0 0); border-radius: 14px; border: 2px solid oklch(22% 0 0); margin-top: 14px; contain: strict; }
 #grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; width: 340px; height: 340px; }
 .cell { background: oklch(6% 0 0); border-radius: 2px; border: 1px solid oklch(14% 0 0); }
 .filled { background: var(--aqua-safe); box-shadow: var(--glow); border: none; z-index: 2; }
-.snap-guide { background: oklch(75% 0.12 210 / 0.15) !important; border: 1px solid var(--sig); }
-
+.snap-guide { background: oklch(75% 0.12 210 / 0.15) !important; border: 1px solid oklch(55% 0.10 210); }
 .tray { width: 360px; height: 120px; display: flex; justify-content: space-around; align-items: center; margin-top: 14px; background: oklch(10% 0 0 / 0.3); border-radius: 20px; }
 .slot { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; transform: scale(1.1); }
 .drag-active { position: fixed; pointer-events: none; z-index: 1000; transform: translateY(-135px) scale(1.15); filter: drop-shadow(var(--glow)); }
-
-.ignite-btn {
-  width: 85%; padding: 18px; margin-top: auto; margin-bottom: 30px; border: 2px solid var(--aqua);
-  background: transparent; color: var(--aqua); font-weight: 900; letter-spacing: 5px; border-radius: 50px; text-shadow: var(--glow); cursor: pointer;
-}
+.ignite-btn { width: 85%; padding: 18px; margin-top: auto; margin-bottom: 30px; border: 2px solid var(--aqua); background: transparent; color: var(--aqua); font-weight: 900; letter-spacing: 5px; border-radius: 50px; text-shadow: var(--glow); cursor: pointer; transition: all 0.2s ease; }
+#doge-overlay { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 120px; z-index: 2000; pointer-events: none; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.wow-show { transform: translate(-50%, -50%) scale(1.2) rotate(10deg) !important; }
 </style>
 </head>
-
 <body onload="init()">
-
+<div id="doge-overlay">🐶</div>
 <div class="ticker">
   <div class="ticker-move">
-    SPHYNX_LIAISON: ACTIVE | TOKEN: FRST/FTC | REWARD: 13.37/5MIN | HALVING: 5y 8m | CONTRACT_MAX: 100M | SOVEREIGN_CAP: 21M | ID: voluntaryistj.base.eth | LIAISON: 0x6e47...114c | PROTECT: 0x8eA6...10E6
+    ULTIMATE_DOGE_EDITION | REWARD: 13.37/BLOCK | HALVING: 5y 8m | MAX: 100M | SOVEREIGN: 21M | ID: voluntaryistj.base.eth | LIAISON: 0x6e47...114c | WOW: ACTIVE
   </div>
 </div>
-
 <div class="header">
-  <div>
-    <div style="color:var(--aqua); font-size:10px; font-weight:900;">BLOCK CLOCK: 13.37 FTC</div>
-    <div id="timer">05:00</div>
-  </div>
-  <div style="text-align:right;">
-    <small style="color:var(--aqua-dim);">MINED_YIELD</small>
-    <div id="yield">0.0000</div>
-  </div>
+  <div><div style="color:var(--aqua); font-size:10px; font-weight:900;">BLOCK CLOCK: 13.37 FTC</div><div id="timer">05:00</div></div>
+  <div style="text-align:right;"><small style="color:var(--aqua-dim);">MINED_YIELD</small><div id="yield">0.0000</div></div>
 </div>
-
 <div class="grid-wrap"><div id="grid"></div></div>
 <div id="tray" class="tray"></div>
-
-<button class="ignite-btn" onclick="igniteEngine()">IGNITE SPHYNX PROTOCOL</button>
-
+<button class="ignite-btn" onclick="igniteEngine()">IGNITE DOGE PROTOCOL</button>
 <script>
-let board = Array(81).fill(0), ftc_yield = 0, block_timer = 300, active = false, audio = null;
-let cells = [], dragging = null, sessionStart = 0;
-
-const shapes = [[[1,1,1],[1,1,1]], [[1,1,1]], [[1,1],[1,1]], [[1]], [[1,1,1,1]], [[1,1,1],[0,1,0]]];
-
+let board = Array(81).fill(0), ftc_yield = 0, block_timer = 300, active = false, audio = null, cells = [], dragging = null, streak = 0, sessionStart = 0;
+const shapes = [[[1,1,1],[1,1,1]], [[1,1,1]], [[1,1],[1,1]], [[1]], [[1,1,1,1]], [[1,1,1],[0,1,0]], [[1,1,1,1,1]]];
 function init() {
-  const g = document.getElementById("grid");
-  const fragment = document.createDocumentFragment();
-  for (let i = 0; i < 81; i++) {
-    const c = document.createElement("div"); c.className = "cell"; c.id = "c-" + i; fragment.appendChild(c);
-  }
-  g.appendChild(fragment);
-  cells = Array.from({length: 81}, (_, i) => document.getElementById(`c-${i}`));
+  const g = document.getElementById("grid"), f = document.createDocumentFragment();
+  for (let i = 0; i < 81; i++) { const c = document.createElement("div"); c.className = "cell"; c.id = "c-" + i; f.appendChild(c); }
+  g.appendChild(f); cells = Array.from({length: 81}, (_, i) => document.getElementById(`c-${i}`));
   refreshTray();
 }
-
+function adaptiveGain(b) { const m = (Date.now() - sessionStart) / 60000; return b * Math.max(0.65, 1 - m * 0.025); }
 async function igniteEngine() {
   if (!audio) {
-    audio = new AudioContext();
-    if (audio.state === "suspended") await audio.resume();
-    active = true;
-    document.querySelector(".ignite-btn").style.display = "none";
-    
-    // 5-Minute Block Timer Loop
+    audio = new AudioContext(); if (audio.state === "suspended") await audio.resume();
+    sessionStart = Date.now(); active = true; document.querySelector(".ignite-btn").style.display = "none";
     setInterval(() => {
       if (!active) return;
-      if (block_timer > 0) {
-        block_timer--;
-        let m = Math.floor(block_timer / 60), s = block_timer % 60;
-        document.getElementById("timer").innerText = `${m}:${s < 10 ? '0'+s : s}`;
-      } else {
-        block_timer = 300; 
-      }
+      if (block_timer > 0) { block_timer--; let m = Math.floor(block_timer / 60), s = block_timer % 60; document.getElementById("timer").innerText = `${m}:${s < 10 ? '0'+s : s}`; }
+      else block_timer = 300;
     }, 1000);
   }
 }
-
+function percussive(f, d, vol) {
+  const o = audio.createOscillator(), g = audio.createGain();
+  o.frequency.setValueAtTime(f, audio.currentTime); o.connect(g).connect(audio.destination);
+  g.gain.setValueAtTime(adaptiveGain(vol), audio.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + d);
+  o.start(); o.stop(audio.currentTime + d);
+}
 function refreshTray() {
-  const t = document.getElementById("tray"); t.innerHTML = "";
+  const t = document.getElementById("tray"), f = document.createDocumentFragment();
   for (let i = 0; i < 3; i++) {
-    const s = shapes[Math.floor(Math.random() * shapes.length)];
-    const slot = document.createElement("div"); slot.className = "slot";
-    slot.appendChild(renderPiece(s, i, 20)); t.appendChild(slot);
+    const s = shapes[Math.floor(Math.random() * shapes.length)], slot = document.createElement("div");
+    slot.className = "slot"; slot.appendChild(renderPiece(s, i, 20)); f.appendChild(slot);
   }
+  t.innerHTML = ""; t.appendChild(f);
 }
-
-function renderPiece(shape, index, size) {
-  const container = document.createElement("div");
-  container.style.display = "grid"; container.style.gridTemplateColumns = `repeat(${shape[0].length}, ${size}px)`; container.style.gap = "2px";
-  shape.forEach(row => row.forEach(val => {
-    const c = document.createElement("div"); c.style.width = size + "px"; c.style.height = size + "px";
-    if (val) c.className = "cell filled"; else c.style.opacity = "0"; container.appendChild(c);
+function renderPiece(s, idx, sz) {
+  const c = document.createElement("div"); c.style.display = "grid"; c.style.gridTemplateColumns = `repeat(${s[0].length}, ${sz}px)`; c.style.gap = "2px";
+  s.forEach(r => r.forEach(v => {
+    const d = document.createElement("div"); d.style.width = sz + "px"; d.style.height = sz + "px";
+    if (v) d.className = "cell filled"; else d.style.opacity = "0"; c.appendChild(d);
   }));
-  if (index !== -1) container.ontouchstart = (e) => startDrag(e, shape, index);
-  return container;
+  if (idx !== -1) c.ontouchstart = (e) => startDrag(e, s, idx);
+  return c;
 }
-
-function startDrag(e, shape, index) {
-  if (!active) return; e.preventDefault();
-  dragging = { shape, index, el: renderPiece(shape, -1, 38) };
-  dragging.el.classList.add("drag-active"); document.body.appendChild(dragging.el);
-  moveAt(e.touches[0]);
-}
-
+function startDrag(e, s, idx) { if (!active) return; e.preventDefault(); dragging = { s, idx, el: renderPiece(s, -1, 38) }; dragging.el.classList.add("drag-active"); document.body.appendChild(dragging.el); moveAt(e.touches[0]); }
 function moveAt(t) {
-  if (!dragging) return;
-  dragging.el.style.left = t.clientX - (dragging.el.offsetWidth / 2) + "px";
-  dragging.el.style.top = t.clientY + "px";
-  cells.forEach(c => c.classList.remove("snap-guide"));
-  const target = document.elementFromPoint(t.clientX, t.clientY - 135);
-  if (target && target.classList.contains('cell')) {
-    const id = parseInt(target.id.split("-")[1]);
-    if (canPlace(id, dragging.shape)) showSnap(id, dragging.shape);
-  }
+  if (!dragging) return; dragging.el.style.left = t.clientX - (dragging.el.offsetWidth / 2) + "px"; dragging.el.style.top = t.clientY + "px";
+  cells.forEach(c => c.classList.remove("snap-guide")); const target = document.elementFromPoint(t.clientX, t.clientY - 135);
+  if (target && target.classList.contains('cell')) { const id = parseInt(target.id.split("-")[1]); if (canPlace(id, dragging.s)) showSnap(id, dragging.s); }
 }
-
 document.addEventListener("touchmove", (e) => { if (dragging) { e.preventDefault(); moveAt(e.touches[0]); } }, { passive: false });
-
 function canPlace(id, s) {
   const r = Math.floor(id / 9), c = id % 9;
-  for (let i = 0; i < s.length; i++) for (let j = 0; j < s[0].length; j++)
-    if (s[i][j]) { let nr = r+i, nc = c+j; if (nr >= 9 || nc >= 9 || board[nr*9+nc]) return false; }
+  for (let i = 0; i < s.length; i++) for (let j = 0; j < s[0].length; j++) if (s[i][j]) { let nr = r+i, nc = c+j; if (nr >= 9 || nc >= 9 || board[nr*9+nc]) return false; }
   return true;
 }
-
-function showSnap(id, s) {
-  const r = Math.floor(id / 9), c = id % 9;
-  s.forEach((row, i) => row.forEach((val, j) => { if (val) cells[(r+i)*9+(c+j)].classList.add("snap-guide"); }));
-}
-
+function showSnap(id, s) { const r = Math.floor(id / 9), c = id % 9; s.forEach((row, i) => row.forEach((val, j) => { if (val) cells[(r+i)*9+(c+j)].classList.add("snap-guide"); })); }
 document.ontouchend = (e) => {
-  if (!dragging) return;
-  const target = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY - 135);
+  if (!dragging) return; const target = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY - 135);
   if (target && target.classList.contains("cell")) {
     const id = parseInt(target.id.split("-")[1]);
-    if (canPlace(id, dragging.shape)) {
-      placePiece(id, dragging.shape);
-      document.getElementById("tray").children[dragging.index].innerHTML = "";
+    if (canPlace(id, dragging.shape || dragging.s)) {
+      placePiece(id, dragging.shape || dragging.s); document.getElementById("tray").children[dragging.index].innerHTML = "";
       if ([...document.getElementById("tray").querySelectorAll(".slot")].every(s => s.innerHTML === "")) refreshTray();
     }
   }
   dragging.el.remove(); dragging = null; cells.forEach(c => c.classList.remove("snap-guide"));
 };
-
 function placePiece(id, s) {
   const r = Math.floor(id / 9), c = id % 9;
-  s.forEach((row, i) => row.forEach((val, j) => { if (val) { board[(r+i)*9+c+j] = 1; cells[(r+i)*9+c+j].className = "cell filled"; } }));
-  if (navigator.vibrate) navigator.vibrate(8); checkClears();
+  s.forEach((row, i) => row.forEach((val, j) => { if (val) { board[(r + i) * 9 + c + j] = 1; cells[(r + i) * 9 + c + j].className = "cell filled"; } }));
+  percussive(620 + (streak * 100), 0.04, 0.05); if (navigator.vibrate) navigator.vibrate([15, 8, 25]); checkClears();
 }
-
 function checkClears() {
-  let rs = [], cs = [], sqs = [], cleared = [];
+  let rs = [], cs = [], cleared = [];
   for (let i = 0; i < 9; i++) {
     let rF = true, cF = true;
     for (let j = 0; j < 9; j++) { if (!board[i * 9 + j]) rF = false; if (!board[j * 9 + i]) cF = false; }
     if (rF) { rs.push(i); for (let j = 0; j < 9; j++) cleared.push(i * 9 + j); }
     if (cF) { cs.push(i); for (let j = 0; j < 9; j++) cleared.push(j * 9 + i); }
   }
-  const total = rs.length + cs.length;
-  if (total > 0) {
-    ftc_yield += total * 1.337; // Mined portion of the 13.37 block reward
+  if (rs.length + cs.length > 0) {
+    streak++; ftc_yield += (rs.length + cs.length) * 1.337 * (1 + streak * 0.1);
     document.getElementById("yield").innerText = ftc_yield.toFixed(4);
-    document.body.classList.add("flash"); setTimeout(() => document.body.classList.remove("flash"), 100);
+    document.body.classList.add("flash"); setTimeout(() => document.body.classList.remove("flash"), 120);
+    if (Math.random() < (0.08 + streak * 0.015)) triggerDoge();
     rs.forEach(r => { for (let c = 0; c < 9; c++) board[r * 9 + c] = 0; });
     cs.forEach(c => { for (let r = 0; r < 9; r++) board[r * 9 + c] = 0; });
     requestAnimationFrame(() => cleared.forEach(i => cells[i].classList.remove("filled")));
-  }
+    percussive(150, 0.4, 0.08);
+  } else { streak = 0; }
+}
+function triggerDoge() {
+  const d = document.getElementById("doge-overlay"); d.classList.add("wow-show");
+  if (navigator.vibrate) navigator.vibrate([20, 10, 20, 30, 10, 40, 80]);
+  percussive(660, 0.2, 0.1); setTimeout(() => percussive(880, 0.2, 0.1), 100);
+  setTimeout(() => d.classList.remove("wow-show"), 1500);
 }
 </script>
 </body>
