@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>FrostMines — RC111 | DOGE_ULTIMATE</title>
+<title>FrostMines — RC114 | SOVEREIGN_DOPAMINE</title>
 <style>
 :root {
   --bg: #000; --aqua: oklch(75% 0.12 210); --aqua-safe: color-mix(in oklch, oklch(75% 0.12 210) 92%, black);
@@ -14,7 +14,7 @@
 body { background: var(--bg); color: var(--text-soft); height: 100dvh; overflow: hidden; display: flex; flex-direction: column; align-items: center; touch-action: none; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); transition: opacity 0.5s ease; }
 body.flash { background: var(--flash-bg); transition: background 120ms cubic-bezier(.2,.8,.2,1); }
 .ticker { width: 100%; background: oklch(10% 0 0); border-bottom: 1px solid oklch(18% 0 0); padding: 6px; font-size: 9px; color: var(--aqua-dim); overflow: hidden; white-space: nowrap; }
-.ticker-move { display: inline-block; animation: scroll 80s linear infinite; will-change: transform; }
+.ticker-move { display: inline-block; animation: scroll 85s linear infinite; will-change: transform; }
 @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 .header { width: 360px; display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 2px solid oklch(20% 0 0); z-index: 10; }
 #timer { font-size: 22px; font-weight: 900; color: oklch(75% 0.15 330); text-shadow: 0 0 6px oklch(75% 0.15 330 / 0.5); }
@@ -36,7 +36,7 @@ body.flash { background: var(--flash-bg); transition: background 120ms cubic-bez
 <div id="doge-overlay">🐶</div>
 <div class="ticker">
   <div class="ticker-move">
-    ULTIMATE_DOGE_EDITION | REWARD: 13.37/BLOCK | HALVING: 5y 8m | MAX: 100M | SOVEREIGN: 21M | ID: voluntaryistj.base.eth | LIAISON: 0x6e47...114c | WOW: ACTIVE
+    RC114: SOVEREIGN_DOPAMINE | CAP: 80M | STAKE: 20M | REWARD: 13.37/BLOCK | HALVING: 5y 8m | ID: voluntaryistj.base.eth | PROTECT: 0x8eA6...10E6 | @agorajay -> AMIAH_DOODLES
   </div>
 </div>
 <div class="header">
@@ -45,9 +45,9 @@ body.flash { background: var(--flash-bg); transition: background 120ms cubic-bez
 </div>
 <div class="grid-wrap"><div id="grid"></div></div>
 <div id="tray" class="tray"></div>
-<button class="ignite-btn" onclick="igniteEngine()">IGNITE DOGE PROTOCOL</button>
+<button class="ignite-btn" onclick="igniteEngine()">IGNITE DOPAMINE NODE</button>
 <script>
-let board = Array(81).fill(0), ftc_yield = 0, block_timer = 300, active = false, audio = null, cells = [], dragging = null, streak = 0, sessionStart = 0;
+let board = Array(81).fill(0), ftc_yield = 0, b_timer = 300, active = false, audio = null, cells = [], dragging = null, streak = 0, sessionStart = 0;
 const shapes = [[[1,1,1],[1,1,1]], [[1,1,1]], [[1,1],[1,1]], [[1]], [[1,1,1,1]], [[1,1,1],[0,1,0]], [[1,1,1,1,1]]];
 function init() {
   const g = document.getElementById("grid"), f = document.createDocumentFragment();
@@ -62,10 +62,16 @@ async function igniteEngine() {
     sessionStart = Date.now(); active = true; document.querySelector(".ignite-btn").style.display = "none";
     setInterval(() => {
       if (!active) return;
-      if (block_timer > 0) { block_timer--; let m = Math.floor(block_timer / 60), s = block_timer % 60; document.getElementById("timer").innerText = `${m}:${s < 10 ? '0'+s : s}`; }
-      else block_timer = 300;
+      if (b_timer > 0) { b_timer--; let m = Math.floor(b_timer / 60), s = b_timer % 60; document.getElementById("timer").innerText = `${m}:${s < 10 ? '0'+s : s}`; }
+      else b_timer = 300;
     }, 1000);
+    setupBinaural(38, -1, 0.002); setupBinaural(49.5, 1, 0.002);
   }
+}
+function setupBinaural(f, p, v) {
+  const o = audio.createOscillator(), s = audio.createStereoPanner(), g = audio.createGain();
+  o.frequency.value = f; s.pan.value = p; g.gain.value = adaptiveGain(v);
+  o.connect(s).connect(g).connect(audio.destination); o.start();
 }
 function percussive(f, d, vol) {
   const o = audio.createOscillator(), g = audio.createGain();
@@ -107,8 +113,8 @@ document.ontouchend = (e) => {
   if (!dragging) return; const target = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY - 135);
   if (target && target.classList.contains("cell")) {
     const id = parseInt(target.id.split("-")[1]);
-    if (canPlace(id, dragging.shape || dragging.s)) {
-      placePiece(id, dragging.shape || dragging.s); document.getElementById("tray").children[dragging.index].innerHTML = "";
+    if (canPlace(id, dragging.s)) {
+      placePiece(id, dragging.s); document.getElementById("tray").children[dragging.idx].innerHTML = "";
       if ([...document.getElementById("tray").querySelectorAll(".slot")].every(s => s.innerHTML === "")) refreshTray();
     }
   }
