@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FrostGems | Titan Scale</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1,viewport-fit=cover">
+<meta charset="UTF-8">
+<style>
+:root{--bg:#050505;--g:#FFD700;--gd:#B8860b;--f:#1a130e;--p:#d500f9;--c:#0ff;--sb:env(safe-area-inset-bottom,20px)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:none}
+body{background:var(--bg);color:var(--g);font-family:'Courier New',monospace;height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center}
+.h{width:100%;background:#000;border-bottom:1px solid var(--gd);padding:8px 15px;display:flex;justify-content:space-between;font-size:.6rem;z-index:50}
+.d{width:96%;background:#111;border:1px solid var(--gd);border-radius:8px;margin:8px 0;padding:10px;box-shadow:0 0 15px rgba(255,215,0,.15)}
+.t{display:flex;justify-content:space-between;border-bottom:1px solid #333;margin-bottom:6px;padding-bottom:6px}
+.tv{font-size:.9rem;font-weight:900;color:#fff}
+.sr{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px}
+.ab{background:#000;border:1px solid #333;border-radius:4px;text-align:center;padding:4px;font-size:.5rem;color:#fff}
+.ba{width:100%;background:linear-gradient(180deg,#b8860b,#8b6508);color:#fff;border:1px solid #da0;padding:10px;border-radius:20px;font-size:.7rem;font-weight:900;box-shadow:0 2px 4px #000;margin-bottom:4px;text-transform:uppercase}
+.ba.a{background:#6b6;border-color:#1b5e20;box-shadow:0 0 15px #6b6}
+#grid{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;width:min(98vw, 55vh);height:min(98vw, 55vh);margin:auto;background:#222;border:4px solid var(--gd);padding:4px;border-radius:8px;margin-top:10px}
+.cell{background:var(--f);border-radius:4px;display:flex;justify-content:center;align-items:center;font-size:1.6rem;cursor:pointer;transition:0.2s}
+.sel{border:2px solid var(--p);transform:scale(0.85);box-shadow:0 0 15px var(--p)}
+.mat{background:linear-gradient(135deg,var(--g),#f80)!important;animation:pop 0.4s forwards}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.2);opacity:1}100%{transform:scale(0);opacity:0}}
+</style>
+</head>
+<body id="body">
+<div class="h"><div>⛓️ FrostGems | Titan Engine</div><div style="color:var(--p)">PF: <span id="seed" style="font-size:0.4rem">---</span></div></div>
+<div class="d">
+<div class="t">
+<div style="text-align:center"><div class="tv" id="fszt-t">60:00</div><div style="font-size:.4rem">FsZT FLUSH</div></div>
+<div style="text-align:center"><div class="tv" id="pf-t" style="color:#f80">02:30</div><div style="font-size:.4rem">PF ADJUST</div></div>
+<div style="text-align:center"><div class="tv" id="fz" style="color:var(--c)">24:00:00</div><div style="font-size:.4rem">FsZT TIME</div></div>
+</div>
+<div class="sr">
+<div class="ab">CASH: <span id="fb">0.000</span></div>
+<div class="ab">HASH: <span id="hr">0</span></div>
+<div class="ab">EPOCH: <span id="te" style="font-size:0.4rem">0</span></div>
+<div class="ab">SHARD: <span id="sh">0</span></div>
+</div>
+<button id="lb" class="ba" onclick="tL()">🫰 IGNITE 963Hz ENGINE</button>
+</div>
+<div id="grid"></div>
+<script>
+const COLS=9, ROWS=9, GEMS=['❄️','⚡','🅰️','🆔','🧊','🟣'];
+let grid=[], selected=null, F=Number(localStorage.getItem('ftc'))||0, R=Number(localStorage.getItem('hr'))||0, HS=3600, ZS=0, SH=Number(localStorage.getItem('sh'))||0, FT=150, lock=false, ENG=false;
+const A$={c:null,o:[],e:null};
+
+function pS(f,t,d,v=.25){if(!A$.c)return;const o=A$.c.createOscillator(),g=A$.c.createGain();o.type=t;o.frequency.setValueAtTime(f,A$.c.currentTime);g.gain.setValueAtTime(v,A$.c.currentTime);g.gain.exponentialRampToValueAtTime(.01,A$.c.currentTime+d);o.connect(g).connect(A$.c.destination);o.start();o.stop(A$.c.currentTime+d)}
+
+function tL(){if(!A$.c)A$.c=new(window.AudioContext||window.webkitAudioContext)();const b=document.getElementById('lb');if(ENG){ENG=false; if(A$.e){A$.e.stop();A$.e=null} A$.o.forEach(x=>x.stop()); A$.o=[]; b.classList.remove('a'); b.innerText="🫰 IGNITE 963Hz ENGINE";} else {ENG=true; [200, 240.4].forEach(f=>{const o=A$.c.createOscillator(),g=A$.c.createGain();o.frequency.value=f;g.gain.value=.03;o.connect(g).connect(A$.c.destination);o.start();A$.o.push(o)});const eO=A$.c.createOscillator(),eG=A$.c.createGain();eO.frequency.value=963;eG.gain.value=.01;eO.connect(eG).connect(A$.c.destination);eO.start();A$.e=eO;b.classList.add('a'); b.innerText="🟢 ENGINE ACTIVE";}}
+
+async function init(){
+    const g=document.getElementById('grid');g.innerHTML='';grid=[];
+    for(let i=0;i<81;i++){let d=document.createElement('div');d.className='cell';d.onclick=()=>click(i);grid.push({type:Math.floor(Math.random()*GEMS.length),el:d});g.appendChild(d)}render();
+    setInterval(()=>{if(ENG){HS--; if(HS<=0)HS=3600; FT--; if(FT<=0){FT=150; pS(1400,'sine',.2);}} uU();},1000);
+}
+function uU(){document.getElementById('fszt-t').innerText=fM(HS);document.getElementById('te').innerText=2147483647-Math.floor(Date.now()/1000);let h=Math.floor(ZS/3600),m=Math.floor((ZS%3600)/60),s=ZS%60;document.getElementById('fb').innerText=F.toFixed(3);document.getElementById('hr').innerText=Math.floor(R);}
+function fM(s){return Math.floor(s/60).toString().padStart(2,'0')+":"+(s%60).toString().padStart(2,'0')}
+function render(){grid.forEach(c=>{c.el.innerText=GEMS[c.type];c.el.style.color=(c.type===5)?'var(--p)':'white'})}
+function click(i){if(lock)return;pS(1800,'triangle',.05,.1);if(selected===null){selected=i;grid[i].el.classList.add('sel')}else if(selected===i){selected=null;grid[i].el.classList.remove('sel')}else{let a=selected,b=i;selected=null;grid[a].el.classList.remove('sel');if(Math.abs(a%9-b%9)+Math.abs(Math.floor(a/9)-Math.floor(b/9))===1)swap(a,b)}}
+async function swap(a,b){lock=true;let t=grid[a].type;grid[a].type=grid[b].type;grid[b].type=t;render();if(!await resolve()){await new Promise(r=>setTimeout(r,200));t=grid[a].type;grid[a].type=grid[b].type;grid[b].type=t;render()}else{pS(150,'sine',.25)}lock=false}
+async function resolve(){let m=new Set();for(let r=0;r<9;r++)for(let c=0;c<7;c++){let i=r*9+c,t=grid[i].type;if(t!==-1&&grid[i+1].type===t&&grid[i+2].type===t){m.add(i);m.add(i+1);m.add(i+2)}}for(let c=0;c<9;c++)for(let r=0;r<7;r++){let i=r*9+c,t=grid[i].type;if(t!==-1&&grid[i+9].type===t&&grid[i+18].type===t){m.add(i);m.add(i+9);m.add(i+18)}}if(m.size>0){m.forEach(i=>{if(GEMS[grid[i].type]==='🆔')R*=4;else R+=100;grid[i].el.classList.add('mat')});await new Promise(r=>setTimeout(r,300));m.forEach(i=>{grid[i].type=-1;grid[i].el.classList.remove('mat')});drop();await new Promise(r=>setTimeout(r,200));await resolve();return true}return false}
+function drop(){for(let c=0;c<9;c++){let eY=8;for(let r=8;r>=0;r--)if(grid[r*9+c].type!==-1){let t=grid[r*9+c].type;grid[r*9+c].type=-1;grid[eY*9+c].type=t;eY--}for(let r=eY;r>=0;r--)grid[r*9+c].type=Math.floor(Math.random()*GEMS.length)}render()}
+init();
+</script>
+</body>
+</html>
