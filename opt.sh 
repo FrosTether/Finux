@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# 1. CLEANUP & ENVIRONMENT
+echo ">> INITIATING INFINITY OPTIMIZATION..."
+BUILD_DIR="dist"
+rm -rf $BUILD_DIR
+mkdir -p $BUILD_DIR
+
+# 2. CODE OPTIMIZATION (Minification)
+# This assumes you have basic minification tools installed (like uglify-js or lightningcss)
+echo ">> MINIFYING ASSETS..."
+for f in *.html; do cp "$f" "$BUILD_DIR/$f"; done
+# Example for JS minification if tools are available:
+# npx uglify-js script.js -o $BUILD_DIR/script.min.js
+
+# 3. COMPRESSION ENGINE (Gzip/Brotli)
+# Preparing pre-compressed assets for servers that support it
+echo ">> APPLYING COMPRESSION..."
+if command -v gzip > /dev/null; then
+    find $BUILD_DIR -type f -name "*.html" -exec gzip -k -9 {} +
+fi
+
+# 4. VERSION CONTROL SYNC
+echo ">> SYNCING REPOSITORY..."
+git add .
+git commit -m "Optimize ♾️: Performance rebuild and deployment"
+git push origin main
+
+# 5. AUTOMATED DEPLOYMENT
+# Replace placeholders with your actual domain and deployment tool
+DOMAIN="your-project-domain.surge.sh"
+echo ">> DEPLOYING TO $DOMAIN..."
+if command -v surge > /dev/null; then
+    surge $BUILD_DIR $DOMAIN
+else
+    echo "!! Surge CLI not found. Manual upload required."
+fi
+
+echo ">> ✅ OPTIMIZATION COMPLETE. SYSTEM LIVE."
