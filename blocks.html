@@ -1,3 +1,13 @@
+// Optimized PV Seed Logic for the REAL FTC Contract
+const FTC_CONTRACT = "0xee132a0fa1f0724d3ec3936f0cdc5213af748c42";
+
+async function generatePVSeed() {
+    const serverSeed = crypto.getRandomValues(new Uint8Array(32));
+    const combined = new TextEncoder().encode(serverSeed.join('') + FTC_CONTRACT + Date.now());
+    const hashBuffer = await crypto.subtle.digest('SHA-256', combined);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
