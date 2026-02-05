@@ -1,162 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>FrostMines | AI Oracle 🔮</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+  <title>FrostMines | KOTH Restore 🧬</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta charset="UTF-8">
   <style>
     :root {
-      --bg: #010301; --grid: #000; --cell: #0a1a0a;
-      --gold: #ffd700; --gold-d: #b8860b; --cyan: #00e5ff;
-      --purple: #d500f9; --green: #00ff41; --text: #00ff41;
-      --sb: env(safe-area-inset-bottom, 24px);
+      --bg: #020005; --grid: #000; --cell: #0d001a;
+      --gold: #ffd700; --ice: #00e5ff; --purple: #d500f9;
+      --green: #00ff41; --neon: #f0f; --sb: env(safe-area-inset-bottom, 24px);
     }
     * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; touch-action:none; }
     body {
-      background: var(--bg); color: var(--text); font-family: 'Courier New', monospace;
+      background: var(--bg); color: var(--green); font-family: 'Courier New', monospace;
       height: 100dvh; overflow: hidden; display: flex; flex-direction: column; align-items: center;
-      padding: 10px 10px var(--sb) 10px;
+      padding: 10px 10px var(--sb) 10px; gap: 5px;
+      background-image: radial-gradient(circle at 50% 50%, #1a0033 0%, #020005 100%);
     }
-    .h { width: 100%; max-width: 420px; padding: 10px; background: rgba(0,255,65,0.1); border: 1px solid var(--green); border-radius: 10px; font-size: 12px; display: flex; justify-content: space-between; margin-bottom: 5px; }
-    .stats { width: 100%; max-width: 420px; padding: 10px; background: rgba(255,215,0,0.05); border: 1px solid var(--gold-d); border-radius: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; text-align: center; font-size: 10px; }
-    .stats span { color: var(--gold); font-weight: bold; }
-    #g { width: 100%; max-width: 400px; aspect-ratio: 1/1; background: var(--grid); border: 2px solid var(--green); border-radius: 8px; padding: 4px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; position: relative; margin-top: 5px; }
-    .c { background: var(--cell); border: 1px solid #111; border-radius: 2px; transition: 0.1s; }
-    .c.f { background: linear-gradient(135deg, var(--gold), var(--gold-d)); border-color: var(--gold); box-shadow: 0 0 8px rgba(255,215,0,0.5); }
-    .c.ghost { background: rgba(0, 255, 65, 0.2); border-color: var(--green); }
-    /* Blokie Oracle Suggestion Visual */
-    .c.oracle { background: rgba(213, 0, 249, 0.3); border: 2px dashed var(--purple); animation: pulse 1s infinite; }
-    @keyframes pulse { 50% { opacity: 0.4; } }
-    .tray { width: 100%; max-width: 400px; height: 100px; display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.5); border-radius: 12px; margin-top: 5px; }
-    .drag-piece { position: fixed; pointer-events: none; z-index: 1000; display: grid; gap: 2px; transform: translateY(-100px); } /* 100px LIFT */
-    .mining-btn { width: 80%; padding: 15px; background: var(--purple); border: 2px solid var(--purple); border-radius: 30px; color: #fff; font-weight: bold; margin-top: auto; }
-    .mining-btn.active { background: #00c853; border-color: #64dd17; }
+    .h { width: 100%; max-width: 420px; padding: 10px; background: rgba(213,0,249,0.1); border: 1px solid var(--purple); border-radius: 12px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; box-shadow: 0 0 15px var(--purple); }
+    .stats { width: 100%; max-width: 420px; padding: 10px; background: rgba(0,229,255,0.05); border: 1px solid var(--ice); border-radius: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; text-align: center; font-size: 10px; }
+    .streak-wrap { display: flex; gap: 4px; justify-content: center; align-items: center; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0, 229, 255, 0.1); border: 1px solid var(--ice); }
+    .dot.active { background: var(--ice); box-shadow: 0 0 10px var(--ice); }
+    #g { width: 100%; max-width: 400px; aspect-ratio: 1/1; background: var(--grid); border: 3px solid var(--ice); border-radius: 15px; padding: 5px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; position: relative; box-shadow: 0 0 30px rgba(0,229,255,0.2); margin-top: 10px; }
+    .c { background: var(--cell); border: 1px solid #1a0033; border-radius: 4px; transition: 0.1s; }
+    .c.f { background: linear-gradient(135deg, var(--purple), #7b00d4); border-color: var(--neon); box-shadow: 0 0 12px var(--purple); }
+    .c.ghost { background: rgba(213, 0, 249, 0.3); border-color: var(--purple); }
+    .tray { width: 100%; max-width: 420px; height: 120px; display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.6); border: 1px solid #333; border-radius: 20px; margin-top: 10px; }
+    .shape-slot { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; transform: scale(1.15); }
+    .drag-piece { position: fixed; pointer-events: none; z-index: 1000; display: grid; gap: 2px; transform: translateY(-110px); filter: drop-shadow(0 0 15px var(--neon)); }
+    .mining-btn { width: 90%; padding: 16px; background: linear-gradient(180deg, var(--purple), #4a0080); border: 2px solid var(--neon); border-radius: 35px; color: #fff; font-weight: 900; margin-top: auto; font-size: 18px; letter-spacing: 2px; box-shadow: 0 0 20px var(--purple); }
+    .mining-btn.active { background: linear-gradient(180deg, var(--green), #006400); border-color: #fff; box-shadow: 0 0 30px var(--green); }
+    #notif { position: fixed; top: 35%; background: linear-gradient(135deg, var(--ice), var(--purple)); padding: 25px 40px; border-radius: 20px; color: #fff; font-weight: bold; transform: scale(0); transition: 0.5s; z-index: 999; text-align: center; border: 2px solid #fff; }
+    #notif.show { transform: scale(1); box-shadow: 0 0 50px var(--ice); }
   </style>
 </head>
 <body onload="init()">
 
-<div class="h"><div>🧬 FrostMines | Blokie AI 🔮</div><div id="utc">UTC: --:--:--</div></div>
+<div class="h"><div>🧬 FrostMines | KOTH RC68</div><div id="utc">UTC: --:--:--</div></div>
 <div class="stats">
-  <div>FTC: <span id="ftc">0.000</span></div>
-  <div>HILL: <span id="score">0</span></div>
-  <div>DPR: <span id="burn">0</span></div>
-  <div>🐥: <span id="timer">150s</span></div>
+  <div class="streak-wrap"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <div>KOTH HIGH: <span id="high-score">0</span></div>
+  <div>CURRENT: <span id="score">0</span></div>
+  <div>KOTH RESET: <span id="timer">150s</span></div>
 </div>
 <div id="g"></div>
 <div class="tray" id="tray"></div>
-<button class="mining-btn" id="mine-btn" onclick="tL()">MINING</button>
+<button class="mining-btn" id="mine-btn" onclick="tL()">INITIATE 40Hz NEURAL LINK</button>
+<div id="notif"></div>
 
 <script>
-const FTC_CONTRACT = "0xee132a0fa1f0724d3ec3936f0cdc5213af748c42";
-let G=new Uint8Array(100), R=Number(localStorage.getItem('ftc'))||0, SCORE=0, HT=150, ENG=false, A$={c:null, hum:null};
-let shapes = [[[1,1,1,1]], [[1,1],[1,1]], [[1,1,1],[0,1,0]], [[1,1,1],[1,0,0]], [[1]], [[1,1]], [[1,1,1]]];
+let G=new Uint8Array(100), SCORE=0, HIGH=Number(localStorage.getItem('koth_high'))||0, HT=150, ENG=false, A$={c:null, h40:null, h7:null}, streak=0;
+let shapes = [[[1,1,1]], [[1,1],[1,1]], [[1,1,1],[0,1,0]], [[1,1],[1,0],[1,0]], [[1]], [[1,1,1,1]], [[1,1]], [[1,1,1],[1,0,0]]];
 let trayShapes = [], dragging = null;
 
 function tL() {
   if(!A$.c) A$.c = new (window.AudioContext || window.webkitAudioContext)();
-  ENG = !ENG; const b = document.getElementById('mine-btn');
-  if(ENG) { b.innerText="MINING ACTIVE"; b.classList.add('active'); startHum(); }
-  else { b.innerText="MINING"; b.classList.remove('active'); stopHum(); }
+  const b = document.getElementById('mine-btn');
+  ENG = !ENG;
+  if(ENG) { b.innerText="40Hz LINK ACTIVE"; b.classList.add('active'); startFocusWaves(); } 
+  else { b.innerText="INITIATE 40Hz NEURAL LINK"; b.classList.remove('active'); stopFocusWaves(); }
 }
 
-function startHum() { 
-  const osc = A$.c.createOscillator(); osc.type='sine'; osc.frequency.value=7.83; 
-  const g = A$.c.createGain(); g.gain.value=0.04; osc.connect(g).connect(A$.c.destination); 
-  osc.start(); A$.hum=osc; 
+function startFocusWaves() {
+  A$.h40 = A$.c.createOscillator(); A$.h40.type='sine'; A$.h40.frequency.value=40;
+  const g40 = A$.c.createGain(); g40.gain.value=0.03; A$.h40.connect(g40).connect(A$.c.destination);
+  A$.h40.start();
+  A$.h7 = A$.c.createOscillator(); A$.h7.type='sine'; A$.h7.frequency.value=7.83;
+  const g7 = A$.c.createGain(); g7.gain.value=0.06; A$.h7.connect(g7).connect(A$.c.destination);
+  A$.h7.start();
 }
 
-function stopHum() { if(A$.hum) { A$.hum.stop(); A$.hum=null; } }
+function stopFocusWaves() { if(A$.h40){A$.h40.stop();A$.h40=null;} if(A$.h7){A$.h7.stop();A$.h7=null;} }
 
 function init() {
   const gD = document.getElementById('g'); gD.innerHTML = ''; G.fill(0);
   for (let i=0; i<100; i++) {
     const c = document.createElement('div'); c.className = 'c'; c.id = 'c'+i; gD.appendChild(c);
   }
+  document.getElementById('high-score').innerText = HIGH;
   refreshTray();
-  setInterval(() => { if(ENG) { HT--; if(HT<=0) { HT=150; R+=6.685; SCORE=0; } uU(); } updateClock(); }, 1000);
+  setInterval(() => { 
+    if(ENG) { 
+      HT--; 
+      if(HT<=0) { HT=150; validateKOTH(); } 
+      uU(); 
+    } 
+    updateClock(); 
+  }, 1000);
 }
 
 function refreshTray() {
   const t = document.getElementById('tray'); t.innerHTML = ''; trayShapes = [];
   for(let i=0; i<3; i++) {
     let s = shapes[Math.floor(Math.random()*shapes.length)]; trayShapes.push(s);
-    let slot = document.createElement('div'); slot.style.width='80px'; slot.style.height='80px'; slot.style.display='flex'; slot.style.justifyContent='center'; slot.style.alignItems='center';
+    let slot = document.createElement('div'); slot.className = 'shape-slot';
     slot.appendChild(renderShape(s, i)); t.appendChild(slot);
   }
-  findBestMove(); // Trigger Blokie AI Heuristic on refresh
 }
 
 function renderShape(shape, trayIdx) {
   const container = document.createElement('div'); container.style.display = 'grid';
-  container.style.gridTemplateColumns = `repeat(${shape[0].length}, 12px)`; container.style.gap = '2px';
-  shape.flat().forEach(val => {
-    let cell = document.createElement('div'); cell.style.width = '12px'; cell.style.height = '12px';
+  container.style.gridTemplateColumns = `repeat(${shape[0].length}, 18px)`; container.style.gap = '2px';
+  shape.forEach(row => row.forEach(val => {
+    let cell = document.createElement('div'); cell.style.width = '18px'; cell.style.height = '18px';
     if(val) cell.className = 'c f'; container.appendChild(cell);
-  });
-  container.ontouchstart = (e) => startDrag(e, shape, trayIdx);
+  }));
+  container.addEventListener('touchstart', (e) => startDrag(e, shape, trayIdx));
   return container;
 }
 
-// --- BLOKIE AI HEURISTIC ---
-function findBestMove() {
-  document.querySelectorAll('.oracle').forEach(c => c.classList.remove('oracle'));
-  let bestScore = -Infinity, bestIdx = -1;
-  const currentShape = trayShapes.find(s => s !== null);
-  if(!currentShape) return;
-
-  for(let i=0; i<100; i++) {
-    if(canPlace(i, currentShape)) {
-      let score = calculateHeuristic(i, currentShape);
-      if(score > bestScore) { bestScore = score; bestIdx = i; }
-    }
-  }
-  if(bestIdx !== -1) {
-    currentShape.forEach((row, r) => row.forEach((val, c) => {
-      if(val) document.getElementById('c'+((Math.floor(bestIdx/10)+r)*10 + (bestIdx%10+c))).classList.add('oracle');
-    }));
-  }
-}
-
-function calculateHeuristic(idx, shape) {
-  let score = 0;
-  // Blokie Weight: Reward placing pieces low and filling rows
-  score -= Math.floor(idx / 10); 
-  // Reward potential line clears
-  // [Full heuristic logic from Blokie can be expanded here]
-  return score;
-}
-// ---------------------------
-
 function startDrag(e, shape, trayIdx) {
   if(!ENG) return;
+  const t = e.touches[0];
   dragging = { shape, trayIdx, el: document.createElement('div') };
+  const cs = document.getElementById('c0').offsetWidth;
   dragging.el.className = 'drag-piece';
-  dragging.el.style.gridTemplateColumns = `repeat(${shape[0].length}, 30px)`;
-  shape.flat().forEach(v => {
-    let d = document.createElement('div'); d.style.width='30px'; d.style.height='30px';
-    if(v) d.className='c f'; dragging.el.appendChild(d);
-  });
+  dragging.el.style.gridTemplateColumns = `repeat(${shape[0].length}, ${cs}px)`;
+  shape.forEach(row => row.forEach(val => {
+    let cell = document.createElement('div'); cell.style.width = cs+'px'; cell.style.height = cs+'px';
+    if(val) cell.className = 'c f'; dragging.el.appendChild(cell);
+  }));
+  dragging.el.style.left = (t.clientX - (shape[0].length * cs)/2) + 'px';
+  dragging.el.style.top = (t.clientY - 110) + 'px';
   document.body.appendChild(dragging.el);
-  updatePos(e);
 }
 
-function updatePos(e) {
-  if(!dragging) return; const t = e.touches[0];
+document.addEventListener('touchmove', e => {
+  if(!dragging) return; e.preventDefault();
+  const t = e.touches[0];
   dragging.el.style.left = (t.clientX - dragging.el.offsetWidth/2) + 'px';
-  dragging.el.style.top = t.clientY + 'px';
+  dragging.el.style.top = (t.clientY - 110) + 'px';
+  showGhost(t);
+}, {passive:false});
+
+function showGhost(t) {
   document.querySelectorAll('.ghost').forEach(c => c.classList.remove('ghost'));
-  const target = document.elementFromPoint(t.clientX, t.clientY - 100);
+  const target = document.elementFromPoint(t.clientX, t.clientY - 110);
   if(target && target.classList.contains('c')) {
     let idx = parseInt(target.id.replace('c',''));
-    if(canPlace(idx, dragging.shape)) showGhost(idx, dragging.shape);
+    if(canPlace(idx, dragging.shape)) placeShape(idx, dragging.shape, true);
   }
-}
-
-function showGhost(idx, s) {
-  const r = Math.floor(idx/10), c = idx%10;
-  s.forEach((row, ri) => row.forEach((val, ci) => {
-    if(val) document.getElementById('c'+((r+ri)*10 + (c+ci))).classList.add('ghost');
-  }));
 }
 
 function canPlace(idx, s) {
@@ -170,57 +154,66 @@ function canPlace(idx, s) {
   return true;
 }
 
-document.ontouchmove = (e) => { if(dragging) { e.preventDefault(); updatePos(e); } };
-document.ontouchend = (e) => {
+function placeShape(idx, s, ghost) {
+  const r = Math.floor(idx/10), c = idx%10;
+  s.forEach((row, ri) => row.forEach((val, ci) => {
+    if(val) {
+      const cell = document.getElementById('c'+((r+ri)*10 + (c+ci)));
+      if(ghost) cell.classList.add('ghost');
+      else { G[(r+ri)*10+(c+ci)]=1; cell.classList.add('f'); }
+    }
+  }));
+}
+
+document.addEventListener('touchend', e => {
   if(!dragging) return;
   const t = e.changedTouches[0];
-  const target = document.elementFromPoint(t.clientX, t.clientY - 100);
+  const target = document.elementFromPoint(t.clientX, t.clientY - 110);
   if(target && target.classList.contains('c')) {
     let idx = parseInt(target.id.replace('c',''));
     if(canPlace(idx, dragging.shape)) {
-      applyPlacement(idx, dragging.shape);
+      placeShape(idx, dragging.shape, false);
+      pS(1800, 'sine', 0.1); if(navigator.vibrate) navigator.vibrate(25);
+      checkLines();
       document.getElementById('tray').children[dragging.trayIdx].innerHTML = '';
       trayShapes[dragging.trayIdx] = null;
       if(trayShapes.every(s => s === null)) refreshTray();
-      else findBestMove();
     }
   }
   dragging.el.remove(); dragging = null;
   document.querySelectorAll('.ghost').forEach(c => c.classList.remove('ghost'));
-};
-
-function applyPlacement(idx, s) {
-  const r = Math.floor(idx/10), c = idx%10;
-  s.forEach((row, ri) => row.forEach((val, ci) => {
-    if(val) { G[(r+ri)*10+(c+ci)]=1; document.getElementById('c'+((r+ri)*10+(c+ci))).className='c f'; }
-  }));
-  checkLines();
-}
+});
 
 function checkLines() {
-  let cleared = 0;
-  for(let r=0; r<10; r++) { let f=true; for(let c=0; c<10; c++) if(!G[r*10+c]) f=false; if(f) { cleared++; for(let c=0; c<10; c++) G[r*10+c]=0; } }
-  for(let c=0; c<10; c++) { let f=true; for(let r=0; r<10; r++) if(!G[r*10+c]) f=false; if(f) { cleared++; for(let r=0; r<10; r++) G[r*10+c]=0; } }
-  if(cleared > 0) {
-    SCORE += cleared * 100;
-    G.forEach((v,i) => { if(!v) document.getElementById('c'+i).className='c'; });
-    const burn = (Number(localStorage.getItem('burnCount'))||0)+cleared;
-    localStorage.setItem('burnCount', burn);
+  let toClear = new Set();
+  for(let r=0; r<10; r++) { let f=true; for(let c=0; c<10; c++) if(!G[r*10+c]) f=false; if(f) for(let c=0; c<10; c++) toClear.add(r*10+c); }
+  for(let c=0; c<10; c++) { let f=true; for(let r=0; r<10; r++) if(!G[r*10+c]) f=false; if(f) for(let r=0; r<10; r++) toClear.add(r*10+c); }
+  if(toClear.size > 0) {
+    toClear.forEach(idx => { G[idx]=0; document.getElementById('c'+idx).classList.remove('f'); });
+    SCORE += toClear.size * 10; 
+    if(SCORE > HIGH) { HIGH = SCORE; localStorage.setItem('koth_high', HIGH); }
+    uU(); pS(963, 'triangle', 0.4);
   }
 }
 
-function uU() {
-  document.getElementById('ftc').innerText = R.toFixed(3);
-  document.getElementById('score').innerText = SCORE;
-  document.getElementById('timer').innerText = HT+"s";
-  document.getElementById('burn').innerText = localStorage.getItem('burnCount')||0;
+function pS(f,t,d) { if(!A$.c) return; const o=A$.c.createOscillator(), g=A$.c.createGain(); o.type=t; o.frequency.value=f; g.gain.setValueAtTime(0.15, A$.c.currentTime); g.gain.exponentialRampToValueAtTime(0.01, A$.c.currentTime+d); o.connect(g).connect(A$.c.destination); o.start(); o.stop(A$.c.currentTime+d); }
+
+function validateKOTH() { 
+  if(SCORE >= 1000) { 
+    streak++; 
+    if(streak>=3) { showNotif("KING OF THE HILL: ASCENDED! 👑"); streak=0; } 
+    else showNotif("HILL DEFENDED! 🛡️"); 
+  } else {
+    streak = 0;
+    showNotif("HILL LOST: REBOOTING...");
+  }
+  updateStreak(); 
 }
 
-function updateClock() {
-  const d = new Date();
-  document.getElementById('utc').innerText = `UTC: ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}:${String(d.getUTCSeconds()).padStart(2,'0')}`;
-}
-init();
+function updateStreak() { const ds=document.querySelectorAll('.dot'); ds.forEach((d,i) => d.className = i<streak ? 'dot active' : 'dot'); }
+function showNotif(txt) { const n=document.getElementById('notif'); n.innerText=txt; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'), 3000); }
+function uU() { document.getElementById('high-score').innerText = HIGH; document.getElementById('score').innerText = SCORE; document.getElementById('timer').innerText = HT+"s"; }
+function updateClock() { const d=new Date(); document.getElementById('utc').innerText = `UTC: ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}:${String(d.getUTCSeconds()).padStart(2,'0')}`; }
 </script>
 </body>
 </html>
