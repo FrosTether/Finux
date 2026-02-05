@@ -1,17 +1,7 @@
-// Optimized PV Seed Logic for the REAL FTC Contract
-const FTC_CONTRACT = "0xee132a0fa1f0724d3ec3936f0cdc5213af748c42";
-
-async function generatePVSeed() {
-    const serverSeed = crypto.getRandomValues(new Uint8Array(32));
-    const combined = new TextEncoder().encode(serverSeed.join('') + FTC_CONTRACT + Date.now());
-    const hashBuffer = await crypto.subtle.digest('SHA-256', combined);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>FrostMines | Shuffle Titan</title>
+<title>Frost Crush | Burn Pulse Sync</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1,viewport-fit=cover">
 <meta charset="UTF-8">
 <style>
@@ -20,75 +10,54 @@ async function generatePVSeed() {
 body{background:var(--bg);color:var(--g);font-family:'Courier New',monospace;height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center}
 .h{width:100%;background:#000;border-bottom:2px solid var(--c);padding:8px 15px;display:flex;justify-content:space-between;font-size:.6rem;z-index:50}
 .d{width:96%;background:#0a0a0a;border:2px solid var(--gd);border-radius:8px;margin:8px 0;padding:8px;box-shadow:0 0 20px rgba(255,215,0,.15)}
-#g{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;aspect-ratio:1/1;height:min(98vw,52vh);width:min(98vw,52vh);background:#050505;border:3px solid var(--c);padding:4px;position:relative}
+#g{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;aspect-ratio:1/1;height:min(98vw,50vh);width:min(98vw,50vh);background:#050505;border:3px solid var(--c);padding:4px;position:relative;transition:0.4s}
+/* Burn Pulse Ripple Animation */
+.burn-ripple{border-color:#fff !important; box-shadow: 0 0 40px var(--c), inset 0 0 20px #fff !important}
 .c{background:var(--f);width:100%;height:100%;display:flex;justify-content:center;align-items:center;border:1px solid #1a1a1a;position:relative}
 .fi{background:linear-gradient(135deg,var(--p),#7b1fa2);border:1px solid #ea80fc;box-shadow:0 0 15px var(--p);z-index:5}
 .hn{height:calc(20vh + var(--sb));width:100%;background:#050505;border-top:3px solid var(--p);display:flex;justify-content:center;gap:10px;align-items:center;padding-bottom:calc(var(--sb) + 35px)}
-.s{width:26%;height:85px;background:#000;border:2px solid #222;border-radius:12px;display:flex;justify-content:center;align-items:center}
-.ba{width:100%;background:linear-gradient(180deg,#b8860b,#8b6508);color:#fff;border:2px solid var(--gd);padding:10px;border-radius:20px;font-size:.7rem;font-weight:900;margin-bottom:4px}
+.ba{width:100%;background:linear-gradient(180deg,#b8860b,#8b6508);color:#fff;border:2px solid var(--gd);padding:10px;border-radius:20px;font-size:.7rem;font-weight:900}
 .ba.a{background:linear-gradient(180deg,var(--c),#008b8b);border-color:var(--c);color:#000}
-.shuffle-btn{width:20%;height:60px;background:rgba(0,255,255,0.1);border:1px solid var(--c);border-radius:50%;color:var(--c);font-size:.5rem;font-weight:900;display:flex;justify-content:center;align-items:center;opacity:0.2;transition:0.3s}
-.shuffle-ready{opacity:1;box-shadow:0 0 15px var(--c);animation:pulse 2s infinite}
-@keyframes pulse{50%{transform:scale(1.1)}}
 </style>
 </head>
-<body>
-<div class="h"><div>⛓️ FrostMines | Shuffle Titan</div><div id="te">UTC: 0</div></div>
+<body onload="init()">
+<div class="h"><div>👑 Frost Crush | FTC: $0.00078</div><div id="te">UTC: 0</div></div>
 <div class="d">
 <div class="sr" style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px">
-<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">FEA: <span id="hr">0</span></div>
-<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">FTC: <span id="ftc-val">0.0</span></div>
-<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">SHARD: <span id="sh">0</span></div>
-<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">PV: <span style="color:#0f0">READY</span></div>
+<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">FTC: <span id="hr">0</span></div>
+<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">HILL: <span id="score">0</span></div>
+<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">DPR: <span id="burn">0</span></div>
+<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">CYCLE: <span id="cycle">150s</span></div>
 </div>
 <button id="lb" class="ba" onclick="tL()">🫰 IGNITE ENGINE</button>
 </div>
 <div id="g"></div>
-<div class="hn">
-    <div id="hn" style="display:flex;gap:10px;width:80%;justify-content:center"></div>
-    <div id="shuff" class="shuffle-btn" onclick="executeShuffle()">SHUFFLE<br>(0.5 FTC)</div>
-</div>
+<div class="hn" id="hn"></div>
 
 <script>
-const S=[[[1]],[[1,1]],[[1,1,1]],[[1,1,1,1]],[[1,1,1,1,1]],[[1],[1]],[[1],[1],[1]],[[1,1],[1,1]],[[1,1,1],[1,1,1]],[[1,0],[1,1]],[[1,1,1],[0,1,0]],[[1,1,1,1],[1,1,1,1]]];
-let G=new Uint8Array(100),H=[],R=Number(localStorage.getItem('hr'))||0,FTC=0,SH=Number(localStorage.getItem('sh'))||0,A$={c:null,hum:null,e:null},ENG=false;
+const FTC_CONTRACT = "0xee132a0fa1f0724d3ec3936f0cdc5213af748c42";
+let G=new Uint8Array(100), R=Number(localStorage.getItem('hr'))||0, SCORE=0, HT=150, BURN=Number(localStorage.getItem('burnCount'))||0, A$={c:null,hum:null}, ENG=false;
 
-function pS(f,t,d,v=.15){if(!A$.c)return;const o=A$.c.createOscillator(),g=A$.c.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,A$.c.currentTime);g.gain.exponentialRampToValueAtTime(.01,A$.c.currentTime+d);o.connect(g).connect(A$.c.destination);o.start();o.stop(A$.c.currentTime+d);}
-function tL(){if(!A$.c)A$.c=new(window.AudioContext||window.webkitAudioContext)();const b=document.getElementById('lb');if(ENG){ENG=false;if(A$.hum){A$.hum.stop();A$.hum=null}b.classList.remove('a');b.innerText="🫰 IGNITE ENGINE";}else{ENG=true;const hO=A$.c.createOscillator(),hG=A$.c.createGain();hO.type='sine';hO.frequency.value=7.83;hG.gain.value=0.02;hO.connect(hG).connect(A$.c.destination);hO.start();A$.hum=hO;b.classList.add('a');b.innerText="🟢 MINING ACTIVE";}}
+function tL(){if(!A$.c)A$.c=new(window.AudioContext||window.webkitAudioContext)();const b=document.getElementById('lb');if(ENG){ENG=false;if(A$.hum)A$.hum.stop();b.innerText="🫰 IGNITE ENGINE";}else{ENG=true;const hO=A$.c.createOscillator();hO.type='sine';hO.frequency.value=7.83;hO.connect(A$.c.destination);hO.start();A$.hum=hO;b.innerText="🟢 MINING ACTIVE";}}
 
 function init(){
     const gD=document.getElementById('g');gD.innerHTML='';G.fill(0);
     for(let i=0;i<100;i++){let c=document.createElement('div');c.className='c';c.id='c'+i;gD.appendChild(c)}
-    sp(); setInterval(()=>{if(ENG){FTC+=0.005;uU();}},1000);
+    setInterval(()=>{if(ENG){HT--; if(HT<=0){HT=150; R+=6.685; localStorage.setItem('hr',R); triggerBurnPulse();} uU();}},1000);
+}
+
+function triggerBurnPulse(){
+    const g=document.getElementById('g'); g.classList.add('burn-ripple');
+    if(navigator.vibrate) navigator.vibrate([10, 40, 10]);
+    setTimeout(()=>g.classList.remove('burn-ripple'), 500);
 }
 
 function uU(){
-    document.getElementById('ftc-val').innerText=FTC.toFixed(2);
     document.getElementById('hr').innerText=Math.floor(R);
-    document.getElementById('sh').innerText=SH;
-    const btn=document.getElementById('shuff');
-    if(FTC>=0.5){btn.classList.add('shuffle-ready');}else{btn.classList.remove('shuffle-ready');}
+    document.getElementById('score').innerText=SCORE;
+    document.getElementById('burn').innerText=BURN;
+    document.getElementById('cycle').innerText=HT+"s";
 }
-
-function executeShuffle(){
-    if(FTC<0.5) return;
-    FTC -= 0.5; pS(1800,'sine',.2); if(navigator.vibrate)navigator.vibrate(20);
-    sp(); uU();
-}
-
-function sp(){
-    const hD=document.getElementById('hn');hD.innerHTML='';H=[];
-    for(let i=0;i<3;i++){
-        let m=S[Math.floor(Math.random()*S.length)];H.push({id:i,m:m,u:false});
-        let sl=document.createElement('div');sl.className='s';let p=document.createElement('div');p.style.display='grid';p.style.gap='2px';p.style.gridTemplateColumns=`repeat(${m[0].length},10px)`;
-        m.flat().forEach(v=>{let b=document.createElement('div');b.style.width='10px';b.style.height='10px';if(v)b.className='fi';p.appendChild(b)});
-        p.onmousedown=p.ontouchstart=e=>dr(e,i);sl.appendChild(p);hD.appendChild(sl);
-    }
-}
-// [DRAG LOGIC PERSISTS FROM RC45]
-let D=null;function dr(e,x){if(H[x].u)return;e.preventDefault();pS(432,'triangle',.05,.05);const tX=e.touches?e.touches[0].clientX:e.clientX;const it=H[x],el=e.target.closest('.s').firstElementChild;el.style.opacity=0;const px=document.createElement('div');px.style.position='fixed';px.style.display='grid';px.style.gap='2px';px.style.zIndex='999';const gR=document.getElementById('g').getBoundingClientRect(),cs=gR.width/10;px.style.gridTemplateColumns=`repeat(${it.m[0].length},${cs}px)`;it.m.flat().forEach(v=>{let b=document.createElement('div');b.style.width=cs+'px';b.style.height=cs+'px';if(v)b.className='fi';px.appendChild(b)});document.body.appendChild(px);D={it,px,el,cs,gR,x};mv(e);document.addEventListener('touchmove',mv,{passive:false});document.addEventListener('touchend',dop);}
-function mv(e){if(!D)return;const t=e.touches?e.touches[0]:e;D.px.style.left=(t.clientX-D.px.offsetWidth/2)+'px';D.px.style.top=(t.clientY-D.px.offsetHeight-100)+'px';}
-function dop(){document.removeEventListener('touchmove',mv);document.removeEventListener('touchend',dop);if(D)D.px.remove();if(D)D.el.style.opacity=1;D=null;if(H.every(x=>x.u))sp();}
 init();
 </script>
 </body>
