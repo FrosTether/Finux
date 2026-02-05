@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>FrostMines | Hatchling 🐥</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>FrostMines | AI Oracle 🔮</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
   <meta charset="UTF-8">
   <style>
     :root {
@@ -15,92 +15,212 @@
     body {
       background: var(--bg); color: var(--text); font-family: 'Courier New', monospace;
       height: 100dvh; overflow: hidden; display: flex; flex-direction: column; align-items: center;
-      padding: 10px 10px var(--sb) 10px; gap: 8px;
+      padding: 10px 10px var(--sb) 10px;
     }
-    .h { width: 100%; max-width: 420px; padding: 10px; background: rgba(0,255,65,0.1); border: 1px solid var(--green); border-radius: 10px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; }
-    .stats { width: 100%; max-width: 420px; padding: 10px; background: rgba(255,215,0,0.05); border: 1px solid var(--gold-d); border-radius: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; text-align: center; font-size: 11px; }
+    .h { width: 100%; max-width: 420px; padding: 10px; background: rgba(0,255,65,0.1); border: 1px solid var(--green); border-radius: 10px; font-size: 12px; display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .stats { width: 100%; max-width: 420px; padding: 10px; background: rgba(255,215,0,0.05); border: 1px solid var(--gold-d); border-radius: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; text-align: center; font-size: 10px; }
     .stats span { color: var(--gold); font-weight: bold; }
-    #streak-viz { display: flex; gap: 8px; justify-content: center; margin-bottom: 2px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.3); }
-    .dot.active { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
-    #g { width: 100%; max-width: 400px; aspect-ratio: 1/1; background: var(--grid); border: 3px solid var(--green); border-radius: 12px; padding: 4px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; box-shadow: 0 0 20px rgba(0,255,65,0.15); margin-bottom: 100px; }
-    .c { background: var(--cell); border: 1px solid #111; border-radius: 3px; transition: 0.15s; position: relative; }
-    .c.f { background: linear-gradient(135deg, var(--gold), var(--gold-d)); border-color: var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.6); }
-    .mining-btn { position: fixed; bottom: calc(var(--sb) + 16px); padding: 14px 35px; background: var(--purple); border: 2px solid var(--purple); border-radius: 30px; color: #fff; font-weight: bold; box-shadow: 0 0 20px rgba(213,0,249,0.5); z-index: 100; transition: 0.3s; }
-    .mining-btn.active { background: #00c853; border-color: #64dd17; box-shadow: 0 0 25px rgba(100,221,23,0.6); }
-    #notif { position: fixed; top: 40%; background: linear-gradient(135deg, var(--cyan), var(--purple)); padding: 20px; border-radius: 15px; color: #fff; font-weight: bold; transform: scale(0); transition: 0.5s; z-index: 999; }
-    #notif.show { transform: scale(1); }
+    #g { width: 100%; max-width: 400px; aspect-ratio: 1/1; background: var(--grid); border: 2px solid var(--green); border-radius: 8px; padding: 4px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; position: relative; margin-top: 5px; }
+    .c { background: var(--cell); border: 1px solid #111; border-radius: 2px; transition: 0.1s; }
+    .c.f { background: linear-gradient(135deg, var(--gold), var(--gold-d)); border-color: var(--gold); box-shadow: 0 0 8px rgba(255,215,0,0.5); }
+    .c.ghost { background: rgba(0, 255, 65, 0.2); border-color: var(--green); }
+    /* Blokie Oracle Suggestion Visual */
+    .c.oracle { background: rgba(213, 0, 249, 0.3); border: 2px dashed var(--purple); animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { opacity: 0.4; } }
+    .tray { width: 100%; max-width: 400px; height: 100px; display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.5); border-radius: 12px; margin-top: 5px; }
+    .drag-piece { position: fixed; pointer-events: none; z-index: 1000; display: grid; gap: 2px; transform: translateY(-100px); } /* 100px LIFT */
+    .mining-btn { width: 80%; padding: 15px; background: var(--purple); border: 2px solid var(--purple); border-radius: 30px; color: #fff; font-weight: bold; margin-top: auto; }
+    .mining-btn.active { background: #00c853; border-color: #64dd17; }
   </style>
 </head>
 <body onload="init()">
 
-<div class="h"><div>🧬 FrostMines | Hatchling 🐥</div><div id="utc">UTC: --:--:--</div></div>
+<div class="h"><div>🧬 FrostMines | Blokie AI 🔮</div><div id="utc">UTC: --:--:--</div></div>
 <div class="stats">
-  <div id="streak-viz"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-  <div>FTC: <span id="ftc">13.370</span></div>
+  <div>FTC: <span id="ftc">0.000</span></div>
   <div>HILL: <span id="score">0</span></div>
+  <div>DPR: <span id="burn">0</span></div>
   <div>🐥: <span id="timer">150s</span></div>
 </div>
 <div id="g"></div>
+<div class="tray" id="tray"></div>
 <button class="mining-btn" id="mine-btn" onclick="tL()">MINING</button>
-<div id="notif"></div>
 
 <script>
-let G=new Uint8Array(100), R=Number(localStorage.getItem('ftc'))||13.37, SCORE=0, HT=150, ENG=false, A$={c:null, hum:null}, drag=null, streak=0;
+const FTC_CONTRACT = "0xee132a0fa1f0724d3ec3936f0cdc5213af748c42";
+let G=new Uint8Array(100), R=Number(localStorage.getItem('ftc'))||0, SCORE=0, HT=150, ENG=false, A$={c:null, hum:null};
+let shapes = [[[1,1,1,1]], [[1,1],[1,1]], [[1,1,1],[0,1,0]], [[1,1,1],[1,0,0]], [[1]], [[1,1]], [[1,1,1]]];
+let trayShapes = [], dragging = null;
 
 function tL() {
   if(!A$.c) A$.c = new (window.AudioContext || window.webkitAudioContext)();
-  const b = document.getElementById('mine-btn');
-  ENG = !ENG;
+  ENG = !ENG; const b = document.getElementById('mine-btn');
   if(ENG) { b.innerText="MINING ACTIVE"; b.classList.add('active'); startHum(); }
   else { b.innerText="MINING"; b.classList.remove('active'); stopHum(); }
 }
 
-function startHum() { humOsc = A$.c.createOscillator(); humOsc.type='sine'; humOsc.frequency.value=7.83; const g = A$.c.createGain(); g.gain.value=0.05; humOsc.connect(g).connect(A$.c.destination); humOsc.start(); A$.hum=humOsc; }
+function startHum() { 
+  const osc = A$.c.createOscillator(); osc.type='sine'; osc.frequency.value=7.83; 
+  const g = A$.c.createGain(); g.gain.value=0.04; osc.connect(g).connect(A$.c.destination); 
+  osc.start(); A$.hum=osc; 
+}
+
 function stopHum() { if(A$.hum) { A$.hum.stop(); A$.hum=null; } }
 
 function init() {
   const gD = document.getElementById('g'); gD.innerHTML = ''; G.fill(0);
   for (let i=0; i<100; i++) {
-    const c = document.createElement('div'); c.className = 'c'; c.dataset.idx = i;
-    c.addEventListener('touchstart', e => { if(ENG && G[i]) drag=i; });
-    gD.appendChild(c);
+    const c = document.createElement('div'); c.className = 'c'; c.id = 'c'+i; gD.appendChild(c);
   }
-  document.addEventListener('touchmove', e => {
-    if(drag === null) return;
-    const t = e.touches[0]; const el = document.elementFromPoint(t.clientX, t.clientY);
-    const cell = el?.closest('.c'); if(!cell) return;
-    const ni = +cell.dataset.idx;
-    if(ni !== drag && !G[ni]) {
-      G[drag]=0; G[ni]=1; document.getElementById('g').children[drag].classList.remove('f');
-      document.getElementById('g').children[ni].classList.add('f'); drag=ni;
-      pS(1800, 'sine', 0.1); if(navigator.vibrate) navigator.vibrate(15);
-    }
-  });
-  document.addEventListener('touchend', () => { if(drag!==null) { checkLines(); drag=null; } });
-  sp(8); updateUI();
-  setInterval(() => { if(ENG) { HT--; if(HT<=0) { HT=150; R+=6.685; checkHatch(); } updateUI(); } updateClock(); }, 1000);
+  refreshTray();
+  setInterval(() => { if(ENG) { HT--; if(HT<=0) { HT=150; R+=6.685; SCORE=0; } uU(); } updateClock(); }, 1000);
 }
 
-function pS(f,t,d) { const o=A$.c.createOscillator(); const g=A$.c.createGain(); o.type=t; o.frequency.value=f; g.gain.setValueAtTime(0.1, A$.c.currentTime); g.gain.exponentialRampToValueAtTime(0.01, A$.c.currentTime+d); o.connect(g).connect(A$.c.destination); o.start(); o.stop(A$.c.currentTime+d); }
+function refreshTray() {
+  const t = document.getElementById('tray'); t.innerHTML = ''; trayShapes = [];
+  for(let i=0; i<3; i++) {
+    let s = shapes[Math.floor(Math.random()*shapes.length)]; trayShapes.push(s);
+    let slot = document.createElement('div'); slot.style.width='80px'; slot.style.height='80px'; slot.style.display='flex'; slot.style.justifyContent='center'; slot.style.alignItems='center';
+    slot.appendChild(renderShape(s, i)); t.appendChild(slot);
+  }
+  findBestMove(); // Trigger Blokie AI Heuristic on refresh
+}
+
+function renderShape(shape, trayIdx) {
+  const container = document.createElement('div'); container.style.display = 'grid';
+  container.style.gridTemplateColumns = `repeat(${shape[0].length}, 12px)`; container.style.gap = '2px';
+  shape.flat().forEach(val => {
+    let cell = document.createElement('div'); cell.style.width = '12px'; cell.style.height = '12px';
+    if(val) cell.className = 'c f'; container.appendChild(cell);
+  });
+  container.ontouchstart = (e) => startDrag(e, shape, trayIdx);
+  return container;
+}
+
+// --- BLOKIE AI HEURISTIC ---
+function findBestMove() {
+  document.querySelectorAll('.oracle').forEach(c => c.classList.remove('oracle'));
+  let bestScore = -Infinity, bestIdx = -1;
+  const currentShape = trayShapes.find(s => s !== null);
+  if(!currentShape) return;
+
+  for(let i=0; i<100; i++) {
+    if(canPlace(i, currentShape)) {
+      let score = calculateHeuristic(i, currentShape);
+      if(score > bestScore) { bestScore = score; bestIdx = i; }
+    }
+  }
+  if(bestIdx !== -1) {
+    currentShape.forEach((row, r) => row.forEach((val, c) => {
+      if(val) document.getElementById('c'+((Math.floor(bestIdx/10)+r)*10 + (bestIdx%10+c))).classList.add('oracle');
+    }));
+  }
+}
+
+function calculateHeuristic(idx, shape) {
+  let score = 0;
+  // Blokie Weight: Reward placing pieces low and filling rows
+  score -= Math.floor(idx / 10); 
+  // Reward potential line clears
+  // [Full heuristic logic from Blokie can be expanded here]
+  return score;
+}
+// ---------------------------
+
+function startDrag(e, shape, trayIdx) {
+  if(!ENG) return;
+  dragging = { shape, trayIdx, el: document.createElement('div') };
+  dragging.el.className = 'drag-piece';
+  dragging.el.style.gridTemplateColumns = `repeat(${shape[0].length}, 30px)`;
+  shape.flat().forEach(v => {
+    let d = document.createElement('div'); d.style.width='30px'; d.style.height='30px';
+    if(v) d.className='c f'; dragging.el.appendChild(d);
+  });
+  document.body.appendChild(dragging.el);
+  updatePos(e);
+}
+
+function updatePos(e) {
+  if(!dragging) return; const t = e.touches[0];
+  dragging.el.style.left = (t.clientX - dragging.el.offsetWidth/2) + 'px';
+  dragging.el.style.top = t.clientY + 'px';
+  document.querySelectorAll('.ghost').forEach(c => c.classList.remove('ghost'));
+  const target = document.elementFromPoint(t.clientX, t.clientY - 100);
+  if(target && target.classList.contains('c')) {
+    let idx = parseInt(target.id.replace('c',''));
+    if(canPlace(idx, dragging.shape)) showGhost(idx, dragging.shape);
+  }
+}
+
+function showGhost(idx, s) {
+  const r = Math.floor(idx/10), c = idx%10;
+  s.forEach((row, ri) => row.forEach((val, ci) => {
+    if(val) document.getElementById('c'+((r+ri)*10 + (c+ci))).classList.add('ghost');
+  }));
+}
+
+function canPlace(idx, s) {
+  const r = Math.floor(idx/10), c = idx%10;
+  for(let ri=0; ri<s.length; ri++) for(let ci=0; ci<s[0].length; ci++) {
+    if(s[ri][ci]) {
+      let nr = r+ri, nc = c+ci;
+      if(nr>=10 || nc>=10 || G[nr*10+nc]) return false;
+    }
+  }
+  return true;
+}
+
+document.ontouchmove = (e) => { if(dragging) { e.preventDefault(); updatePos(e); } };
+document.ontouchend = (e) => {
+  if(!dragging) return;
+  const t = e.changedTouches[0];
+  const target = document.elementFromPoint(t.clientX, t.clientY - 100);
+  if(target && target.classList.contains('c')) {
+    let idx = parseInt(target.id.replace('c',''));
+    if(canPlace(idx, dragging.shape)) {
+      applyPlacement(idx, dragging.shape);
+      document.getElementById('tray').children[dragging.trayIdx].innerHTML = '';
+      trayShapes[dragging.trayIdx] = null;
+      if(trayShapes.every(s => s === null)) refreshTray();
+      else findBestMove();
+    }
+  }
+  dragging.el.remove(); dragging = null;
+  document.querySelectorAll('.ghost').forEach(c => c.classList.remove('ghost'));
+};
+
+function applyPlacement(idx, s) {
+  const r = Math.floor(idx/10), c = idx%10;
+  s.forEach((row, ri) => row.forEach((val, ci) => {
+    if(val) { G[(r+ri)*10+(c+ci)]=1; document.getElementById('c'+((r+ri)*10+(c+ci))).className='c f'; }
+  }));
+  checkLines();
+}
 
 function checkLines() {
-  let cl=0;
-  for(let r=0; r<10; r++) { let f=true; for(let c=0;c<10;c++) if(!G[r*10+c])f=false; if(f) { cl++; for(let c=0;c<10;c++) G[r*10+c]=0; } }
-  if(cl) { SCORE += cl*100; R+=0.01; sp(cl*4); renderGrid(); }
+  let cleared = 0;
+  for(let r=0; r<10; r++) { let f=true; for(let c=0; c<10; c++) if(!G[r*10+c]) f=false; if(f) { cleared++; for(let c=0; c<10; c++) G[r*10+c]=0; } }
+  for(let c=0; c<10; c++) { let f=true; for(let r=0; r<10; r++) if(!G[r*10+c]) f=false; if(f) { cleared++; for(let r=0; r<10; r++) G[r*10+c]=0; } }
+  if(cleared > 0) {
+    SCORE += cleared * 100;
+    G.forEach((v,i) => { if(!v) document.getElementById('c'+i).className='c'; });
+    const burn = (Number(localStorage.getItem('burnCount'))||0)+cleared;
+    localStorage.setItem('burnCount', burn);
+  }
 }
 
-function checkHatch() {
-  if(SCORE > 800) { streak++; if(streak>=3) { showNotif("RARE SPRITE! ❄️"); streak=0; } else showNotif("HATCHED! 🐥"); }
-  else streak=0; SCORE=0; updateStreak();
+function uU() {
+  document.getElementById('ftc').innerText = R.toFixed(3);
+  document.getElementById('score').innerText = SCORE;
+  document.getElementById('timer').innerText = HT+"s";
+  document.getElementById('burn').innerText = localStorage.getItem('burnCount')||0;
 }
 
-function updateStreak() { const ds=document.querySelectorAll('.dot'); ds.forEach((d,i) => d.className = i<streak ? 'dot active' : 'dot'); }
-function showNotif(txt) { const n=document.getElementById('notif'); n.innerText=txt; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'), 2500); }
-function sp(n) { let p=0; while(p<n) { let i=Math.floor(Math.random()*100); if(!G[i]) { G[i]=1; p++; } } renderGrid(); }
-function renderGrid() { G.forEach((v,i) => document.getElementById('g').children[i].className = v ? 'c f' : 'c'); }
-function updateUI() { document.getElementById('ftc').innerText = R.toFixed(3); document.getElementById('score').innerText = SCORE; document.getElementById('timer').innerText = HT+"s"; }
-function updateClock() { const d=new Date(); document.getElementById('utc').innerText = `UTC: ${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}`; }
+function updateClock() {
+  const d = new Date();
+  document.getElementById('utc').innerText = `UTC: ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}:${String(d.getUTCSeconds()).padStart(2,'0')}`;
+}
+init();
 </script>
 </body>
 </html>
