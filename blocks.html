@@ -1,197 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>FAI | RC107_SOFT_GLOW 🧬</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <style>
-        :root {
-            --bg: #000;
-            --aqua: oklch(75% 0.12 210);
-            --aqua-dim: oklch(40% 0.08 210);
-            --glow: 0 0 6px rgba(0, 242, 255, 0.6);
-            --flash-bg: oklch(15% 0.04 210);
-            --text-soft: oklch(85% 0 0);
-        }
-        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family: 'Courier New', monospace; }
-        body {
-            background: var(--bg); color: var(--text-soft); height: 100dvh; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; touch-action: none;
-        }
-        body.flash { background: var(--flash-bg) !important; transition: background 0.05s ease-out; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>FrostMines — RC110 | SPHYNX_FRST_HALVING</title>
 
-        .ticker { width: 100%; background: #080808; border-bottom: 1px solid #222; padding: 5px; font-size: 8px; color: var(--aqua-dim); overflow: hidden; white-space: nowrap; }
-        .ticker-move { display: inline-block; animation: scroll 80s linear infinite; will-change: transform; }
-        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+<style>
+:root {
+  --bg: #000;
+  --aqua: oklch(75% 0.12 210);
+  --aqua-safe: color-mix(in oklch, oklch(75% 0.12 210) 92%, black);
+  --aqua-dim: oklch(40% 0.08 210);
+  --flash-bg: oklch(15% 0.04 210);
+  --text-soft: oklch(85% 0 0);
+  --glow: 0 0 clamp(3px, 1vw, 6px) oklch(75% 0.12 210 / 0.6);
+  --sig: oklch(55% 0.10 210);
+}
 
-        .header { width: 360px; display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 2px solid #222; }
-        #timer { font-size: 24px; font-weight: 900; color: #f0f; text-shadow: 0 0 6px #f0f; }
-        #yield { font-size: 28px; color: var(--aqua); text-shadow: var(--glow); font-weight: 900; }
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Courier New", monospace; }
 
-        .grid-wrap { padding: 6px; background: #111; border-radius: 12px; border: 2px solid #222; margin-top: 15px; position: relative; }
-        #grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; width: 340px; height: 340px; }
-        .cell { background: #050505; border-radius: 2px; border: 1px solid #151515; }
-        .filled { background: var(--aqua); box-shadow: var(--glow); border: none; z-index: 2; }
-        .snap-guide { background: rgba(0, 242, 255, 0.15) !important; border: 1px solid var(--aqua-dim); }
+body {
+  background: var(--bg); color: var(--text-soft); height: 100dvh; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; touch-action: none;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
 
-        .tray { width: 360px; height: 120px; display: flex; justify-content: space-around; align-items: center; margin-top: 15px; background: rgba(255,255,255,0.01); border-radius: 20px; }
-        .slot { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; transform: scale(1.1); }
-        .drag-active { position: fixed; pointer-events: none; z-index: 1000; transform: translateY(-135px) scale(1.15); filter: drop-shadow(var(--glow)); will-change: transform; }
+body.flash { background: var(--flash-bg); transition: background 120ms cubic-bezier(.2,.8,.2,1); }
 
-        .ignite-btn { width: 85%; padding: 18px; margin-top: auto; margin-bottom: 30px; border: 2px solid var(--aqua-dim); background: transparent; color: var(--aqua); font-weight: 900; letter-spacing: 5px; border-radius: 50px; cursor: pointer; transition: all 0.1s; }
-        .ignite-btn:active { transform: scale(0.98); background: rgba(0,242,255,0.05); }
-    </style>
+.ticker {
+  width: 100%; background: oklch(10% 0 0); border-bottom: 1px solid oklch(18% 0 0);
+  padding: 6px; font-size: 9px; color: var(--aqua-dim); overflow: hidden; white-space: nowrap;
+}
+
+.ticker-move { display: inline-block; animation: scroll 85s linear infinite; will-change: transform; }
+@keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+.header { width: 360px; display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 2px solid oklch(20% 0 0); z-index: 10; }
+#timer { font-size: 22px; font-weight: 900; color: oklch(75% 0.15 330); text-shadow: 0 0 6px oklch(75% 0.15 330 / 0.5); }
+#yield { font-size: 28px; font-weight: 900; color: var(--aqua); text-shadow: var(--glow); }
+
+.grid-wrap { padding: 6px; background: oklch(12% 0 0); border-radius: 14px; border: 2px solid oklch(22% 0 0); margin-top: 14px; contain: strict; }
+#grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; width: 340px; height: 340px; }
+.cell { background: oklch(6% 0 0); border-radius: 2px; border: 1px solid oklch(14% 0 0); }
+.filled { background: var(--aqua-safe); box-shadow: var(--glow); border: none; z-index: 2; }
+.snap-guide { background: oklch(75% 0.12 210 / 0.15) !important; border: 1px solid var(--sig); }
+
+.tray { width: 360px; height: 120px; display: flex; justify-content: space-around; align-items: center; margin-top: 14px; background: oklch(10% 0 0 / 0.3); border-radius: 20px; }
+.slot { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; transform: scale(1.1); }
+.drag-active { position: fixed; pointer-events: none; z-index: 1000; transform: translateY(-135px) scale(1.15); filter: drop-shadow(var(--glow)); }
+
+.ignite-btn {
+  width: 85%; padding: 18px; margin-top: auto; margin-bottom: 30px; border: 2px solid var(--aqua);
+  background: transparent; color: var(--aqua); font-weight: 900; letter-spacing: 5px; border-radius: 50px; text-shadow: var(--glow); cursor: pointer;
+}
+</style>
 </head>
+
 <body onload="init()">
 
 <div class="ticker">
-    <div class="ticker-move">
-        EYE_OPTIMIZED: OKLCH_75% | ID: voluntaryistj.base.eth | LIAISON: 0x6e47...114c | PROTECT: 0x8eA6...10E6 | LIQUIDITY_LOCK: ACTIVE | SCARCITY: 21M | AIRDROP: 0xc668...664f
-    </div>
+  <div class="ticker-move">
+    SPHYNX_LIAISON: ACTIVE | TOKEN: FRST/FTC | REWARD: 13.37/5MIN | HALVING: 5y 8m | CONTRACT_MAX: 100M | SOVEREIGN_CAP: 21M | ID: voluntaryistj.base.eth | LIAISON: 0x6e47...114c | PROTECT: 0x8eA6...10E6
+  </div>
 </div>
 
 <div class="header">
-    <div><div style="color:var(--aqua-dim); font-size: 11px;">FAI // RC107</div><div id="timer">150s</div></div>
-    <div style="text-align:right"><small style="color:#444">YIELD_MINED</small><div id="yield">0.0000</div></div>
+  <div>
+    <div style="color:var(--aqua); font-size:10px; font-weight:900;">BLOCK CLOCK: 13.37 FTC</div>
+    <div id="timer">05:00</div>
+  </div>
+  <div style="text-align:right;">
+    <small style="color:var(--aqua-dim);">MINED_YIELD</small>
+    <div id="yield">0.0000</div>
+  </div>
 </div>
 
 <div class="grid-wrap"><div id="grid"></div></div>
 <div id="tray" class="tray"></div>
 
-<button class="ignite-btn" onclick="ignite()">IGNITE SOFT GLOW</button>
+<button class="ignite-btn" onclick="igniteEngine()">IGNITE SPHYNX PROTOCOL</button>
 
 <script>
-    let board = Array(81).fill(0), yield_val = 0, timer = 150, active = false, dragging = null, audio = null;
-    const shapes = [[[1,1,1],[1,1,1]], [[1,1,1]], [[1,1],[1,1]], [[1]], [[1,1,1,1]], [[1,1,1],[0,1,0]]];
+let board = Array(81).fill(0), ftc_yield = 0, block_timer = 300, active = false, audio = null;
+let cells = [], dragging = null, sessionStart = 0;
 
-    function init() {
-        const g = document.getElementById('grid'), f = document.createDocumentFragment();
-        for(let i=0; i<81; i++) {
-            let c = document.createElement('div'); c.className = 'cell'; c.id = 'c-'+i; f.appendChild(c);
-        }
-        g.appendChild(f); refreshTray();
+const shapes = [[[1,1,1],[1,1,1]], [[1,1,1]], [[1,1],[1,1]], [[1]], [[1,1,1,1]], [[1,1,1],[0,1,0]]];
+
+function init() {
+  const g = document.getElementById("grid");
+  const fragment = document.createDocumentFragment();
+  for (let i = 0; i < 81; i++) {
+    const c = document.createElement("div"); c.className = "cell"; c.id = "c-" + i; fragment.appendChild(c);
+  }
+  g.appendChild(fragment);
+  cells = Array.from({length: 81}, (_, i) => document.getElementById(`c-${i}`));
+  refreshTray();
+}
+
+async function igniteEngine() {
+  if (!audio) {
+    audio = new AudioContext();
+    if (audio.state === "suspended") await audio.resume();
+    active = true;
+    document.querySelector(".ignite-btn").style.display = "none";
+    
+    // 5-Minute Block Timer Loop
+    setInterval(() => {
+      if (!active) return;
+      if (block_timer > 0) {
+        block_timer--;
+        let m = Math.floor(block_timer / 60), s = block_timer % 60;
+        document.getElementById("timer").innerText = `${m}:${s < 10 ? '0'+s : s}`;
+      } else {
+        block_timer = 300; 
+      }
+    }, 1000);
+  }
+}
+
+function refreshTray() {
+  const t = document.getElementById("tray"); t.innerHTML = "";
+  for (let i = 0; i < 3; i++) {
+    const s = shapes[Math.floor(Math.random() * shapes.length)];
+    const slot = document.createElement("div"); slot.className = "slot";
+    slot.appendChild(renderPiece(s, i, 20)); t.appendChild(slot);
+  }
+}
+
+function renderPiece(shape, index, size) {
+  const container = document.createElement("div");
+  container.style.display = "grid"; container.style.gridTemplateColumns = `repeat(${shape[0].length}, ${size}px)`; container.style.gap = "2px";
+  shape.forEach(row => row.forEach(val => {
+    const c = document.createElement("div"); c.style.width = size + "px"; c.style.height = size + "px";
+    if (val) c.className = "cell filled"; else c.style.opacity = "0"; container.appendChild(c);
+  }));
+  if (index !== -1) container.ontouchstart = (e) => startDrag(e, shape, index);
+  return container;
+}
+
+function startDrag(e, shape, index) {
+  if (!active) return; e.preventDefault();
+  dragging = { shape, index, el: renderPiece(shape, -1, 38) };
+  dragging.el.classList.add("drag-active"); document.body.appendChild(dragging.el);
+  moveAt(e.touches[0]);
+}
+
+function moveAt(t) {
+  if (!dragging) return;
+  dragging.el.style.left = t.clientX - (dragging.el.offsetWidth / 2) + "px";
+  dragging.el.style.top = t.clientY + "px";
+  cells.forEach(c => c.classList.remove("snap-guide"));
+  const target = document.elementFromPoint(t.clientX, t.clientY - 135);
+  if (target && target.classList.contains('cell')) {
+    const id = parseInt(target.id.split("-")[1]);
+    if (canPlace(id, dragging.shape)) showSnap(id, dragging.shape);
+  }
+}
+
+document.addEventListener("touchmove", (e) => { if (dragging) { e.preventDefault(); moveAt(e.touches[0]); } }, { passive: false });
+
+function canPlace(id, s) {
+  const r = Math.floor(id / 9), c = id % 9;
+  for (let i = 0; i < s.length; i++) for (let j = 0; j < s[0].length; j++)
+    if (s[i][j]) { let nr = r+i, nc = c+j; if (nr >= 9 || nc >= 9 || board[nr*9+nc]) return false; }
+  return true;
+}
+
+function showSnap(id, s) {
+  const r = Math.floor(id / 9), c = id % 9;
+  s.forEach((row, i) => row.forEach((val, j) => { if (val) cells[(r+i)*9+(c+j)].classList.add("snap-guide"); }));
+}
+
+document.ontouchend = (e) => {
+  if (!dragging) return;
+  const target = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY - 135);
+  if (target && target.classList.contains("cell")) {
+    const id = parseInt(target.id.split("-")[1]);
+    if (canPlace(id, dragging.shape)) {
+      placePiece(id, dragging.shape);
+      document.getElementById("tray").children[dragging.index].innerHTML = "";
+      if ([...document.getElementById("tray").querySelectorAll(".slot")].every(s => s.innerHTML === "")) refreshTray();
     }
+  }
+  dragging.el.remove(); dragging = null; cells.forEach(c => c.classList.remove("snap-guide"));
+};
 
-    function ignite() {
-        if(!audio) {
-            audio = new AudioContext();
-            setupBinaural(38, -1); setupBinaural(49.5, 1);
-            active = true; document.querySelector('.ignite-btn').style.display = 'none';
-            setInterval(() => { if(timer > 0) { timer--; document.getElementById('timer').innerText = timer + "s"; } else location.reload(); }, 1000);
-            setInterval(tick, 600); 
-        }
-    }
+function placePiece(id, s) {
+  const r = Math.floor(id / 9), c = id % 9;
+  s.forEach((row, i) => row.forEach((val, j) => { if (val) { board[(r+i)*9+c+j] = 1; cells[(r+i)*9+c+j].className = "cell filled"; } }));
+  if (navigator.vibrate) navigator.vibrate(8); checkClears();
+}
 
-    function setupBinaural(f, p) {
-        let o = audio.createOscillator(), s = audio.createStereoPanner(), g = audio.createGain();
-        o.frequency.value = f; s.pan.value = p; g.gain.value = 0.002;
-        o.connect(s).connect(g).connect(audio.destination); o.start();
-    }
-
-    function tick() { if(active) { percussive(60, 0.12, 0.04); percussive(10800, 0.01, 0.02); } }
-
-    function percussive(f, d, vol) {
-        let o = audio.createOscillator(), g = audio.createGain();
-        o.frequency.setValueAtTime(f, audio.currentTime); o.connect(g).connect(audio.destination);
-        g.gain.setValueAtTime(vol, audio.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + d);
-        o.start(); o.stop(audio.currentTime + d);
-    }
-
-    function refreshTray() {
-        const t = document.getElementById('tray'), f = document.createDocumentFragment();
-        for(let i=0; i<3; i++) {
-            let s = shapes[Math.floor(Math.random() * shapes.length)], slot = document.createElement('div');
-            slot.className = 'slot'; slot.appendChild(renderPiece(s, i, 20)); f.appendChild(slot);
-        }
-        t.innerHTML = ''; t.appendChild(f);
-    }
-
-    function renderPiece(s, idx, sz) {
-        const c = document.createElement('div'); c.style.display = 'grid';
-        c.style.gridTemplateColumns = `repeat(${s[0].length}, ${sz}px)`; c.style.gap = '2px';
-        s.forEach(r => r.forEach(v => {
-            let d = document.createElement('div'); d.style.width = sz+'px'; d.style.height = sz+'px';
-            if(v) d.className = 'cell filled'; else d.style.opacity = '0'; c.appendChild(d);
-        }));
-        if(idx !== -1) c.ontouchstart = (e) => startDrag(e, s, idx);
-        return c;
-    }
-
-    function startDrag(e, s, idx) {
-        if(!active) return; dragging = { s, idx, el: renderPiece(s, -1, 38) };
-        dragging.el.classList.add('drag-active'); document.body.appendChild(dragging.el); move(e.touches[0]);
-    }
-
-    function move(t) {
-        if(!dragging) return;
-        dragging.el.style.left = (t.clientX - dragging.el.offsetWidth / 2) + 'px';
-        dragging.el.style.top = t.clientY + 'px';
-        document.querySelectorAll('.cell').forEach(c => c.classList.remove('snap-guide'));
-        let target = document.elementFromPoint(t.clientX, t.clientY - 135);
-        if(target && target.classList.contains('cell')) {
-            let id = parseInt(target.id.split('-')[1]);
-            if(canPlace(id, dragging.s)) showSnap(id, dragging.s);
-        }
-    }
-
-    document.ontouchmove = (e) => { if(dragging) { e.preventDefault(); move(e.touches[0]); } };
-
-    function canPlace(id, s) {
-        let r = Math.floor(id/9), c = id%9;
-        for(let i=0; i<s.length; i++) for(let j=0; j<s[0].length; j++)
-            if(s[i][j]) { let nr=r+i, nc=c+j; if(nr>=9 || nc>=9 || board[nr*9+nc]) return false; }
-        return true;
-    }
-
-    function showSnap(id, s) {
-        let r = Math.floor(id/9), c = id%9;
-        s.forEach((row, i) => row.forEach((v, j) => {
-            if(v) document.getElementById('c-' + ((r+i)*9 + (c+j))).classList.add('snap-guide');
-        }));
-    }
-
-    document.ontouchend = (e) => {
-        if(!dragging) return;
-        let t = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY - 135);
-        if(t && t.classList.contains('cell')) {
-            let id = parseInt(t.id.split('-')[1]);
-            if(canPlace(id, dragging.s)) {
-                place(id, dragging.s); document.getElementById('tray').children[dragging.idx].innerHTML = '';
-                if([...document.getElementById('tray').children].every(s => s.innerHTML === '')) refreshTray();
-            }
-        }
-        dragging.el.remove(); dragging = null;
-    };
-
-    function place(id, s) {
-        let r = Math.floor(id/9), c = id%9;
-        s.forEach((row, i) => row.forEach((v, j) => {
-            if(v) { board[(r+i)*9+c+j]=1; document.getElementById('c-'+((r+i)*9+c+j)).className='cell filled'; }
-        }));
-        if(navigator.vibrate) navigator.vibrate(8); checkClears();
-    }
-
-    function checkClears() {
-        let rs=[], cs=[], sqs=[];
-        for(let i=0; i<9; i++) {
-            let rF=true, cF=true;
-            for(let j=0; j<9; j++) { if(!board[i*9+j]) rF=false; if(!board[j*9+i]) cF=false; }
-            if(rF) rs.push(i); if(cF) cs.push(i);
-        }
-        for(let y=0; y<9; y+=3) for(let x=0; x<9; x+=3) {
-            let sF=true; for(let i=0; i<3; i++) for(let j=0; j<3; j++) if(!board[(y+i)*9+(x+j)]) sF=false;
-            if(sF) sqs.push({y,x});
-        }
-        if(rs.length + cs.length + sqs.length > 0) {
-            yield_val += (rs.length + cs.length + sqs.length) * 0.444; document.getElementById('yield').innerText = yield_val.toFixed(4);
-            document.body.classList.add('flash'); setTimeout(() => document.body.classList.remove('flash'), 100);
-            rs.forEach(r => { for(let c=0; c<9; c++) board[r*9+c]=0; });
-            cs.forEach(c => { for(let r=0; r<9; r++) board[r*9+c]=0; });
-            sqs.forEach(s => { for(let i=0; i<3; i++) for(let j=0; j<3; j++) board[(s.y+i)*9+(s.x+j)]=0; });
-            setTimeout(redraw, 150);
-        }
-    }
-
-    function redraw() { for(let i=0; i<81; i++) document.getElementById('c-'+i).className = board[i] ? 'cell filled' : 'cell'; }
+function checkClears() {
+  let rs = [], cs = [], sqs = [], cleared = [];
+  for (let i = 0; i < 9; i++) {
+    let rF = true, cF = true;
+    for (let j = 0; j < 9; j++) { if (!board[i * 9 + j]) rF = false; if (!board[j * 9 + i]) cF = false; }
+    if (rF) { rs.push(i); for (let j = 0; j < 9; j++) cleared.push(i * 9 + j); }
+    if (cF) { cs.push(i); for (let j = 0; j < 9; j++) cleared.push(j * 9 + i); }
+  }
+  const total = rs.length + cs.length;
+  if (total > 0) {
+    ftc_yield += total * 1.337; // Mined portion of the 13.37 block reward
+    document.getElementById("yield").innerText = ftc_yield.toFixed(4);
+    document.body.classList.add("flash"); setTimeout(() => document.body.classList.remove("flash"), 100);
+    rs.forEach(r => { for (let c = 0; c < 9; c++) board[r * 9 + c] = 0; });
+    cs.forEach(c => { for (let r = 0; r < 9; r++) board[r * 9 + c] = 0; });
+    requestAnimationFrame(() => cleared.forEach(i => cells[i].classList.remove("filled")));
+  }
+}
 </script>
 </body>
 </html>
