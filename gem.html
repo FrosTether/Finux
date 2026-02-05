@@ -1,42 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>FrostGems | PV Match</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1,viewport-fit=cover">
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>⛓️‍💥 duku — RC169 | GEN_CRUSH_UNIFIED</title>
 <style>
-:root{--bg:#020202;--g:#FFD700;--gd:#B8860b;--f:#0a0a0a;--p:#d500f9;--c:#0ff;--sb:env(safe-area-inset-bottom,20px)}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:none}
-body{background:var(--bg);color:var(--g);font-family:'Courier New',monospace;height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center}
-.h{width:100%;background:#000;border-bottom:2px solid var(--c);padding:8px 15px;display:flex;justify-content:space-between;font-size:.6rem;z-index:50}
-.d{width:96%;background:#0a0a0a;border:2px solid var(--gd);border-radius:8px;margin:8px 0;padding:10px;box-shadow:0 0 15px rgba(255,215,0,.15)}
-#grid{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;width:min(98vw, 55vh);height:min(98vw, 55vh);margin:auto;background:#222;border:4px solid var(--gd);padding:4px;border-radius:8px;margin-top:10px}
-.cell{background:var(--f);border-radius:4px;display:flex;justify-content:center;align-items:center;font-size:1.6rem;cursor:pointer;transition:0.2s}
-.sel{border:2px solid var(--p);transform:scale(0.85);box-shadow:0 0 15px var(--p)}
-.mat{background:linear-gradient(135deg,var(--g),#f80)!important;animation:pop 0.4s forwards}
-@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.2);opacity:1}100%{transform:scale(0);opacity:0}}
-.ba{width:100%;background:linear-gradient(180deg,var(--c),#008b8b);color:#000;border:1px solid #fff;padding:10px;border-radius:20px;font-size:.7rem;font-weight:900;}
+:root {
+  --bg: #000; --aqua: oklch(75% 0.12 210); --ice: oklch(85% 0.15 230);
+  --leet: oklch(90% 0.4 100); --gem-pink: oklch(70% 0.3 330); --burn: oklch(55% 0.25 20);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Courier New", monospace; }
+body { background: var(--bg); color: #fff; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 8px; }
+.ticker { width: 100%; border-bottom: 2px solid #222; padding: 4px; font-size: 7px; color: var(--aqua); white-space: nowrap; overflow: hidden; background: #080808; }
+.ticker-scroll { display: inline-block; animation: scroll 50s linear infinite; }
+@keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+.header { width: 100%; max-width: 380px; display: flex; justify-content: space-between; padding: 8px; border-bottom: 2px solid var(--gem-pink); }
+#yield { font-size: 28px; font-weight: 900; color: var(--leet); text-shadow: 0 0 15px var(--leet); }
+.grid-container { width: 100%; max-width: 380px; aspect-ratio: 1/1; display: grid; grid-template-rows: repeat(3, 1fr); background: #0a0a0a; border-radius: 12px; padding: 4px; margin: 8px 0; border: 2px solid #222; box-shadow: 0 0 30px rgba(0,0,0,1); }
+.layer-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #050505; }
+.cell { background: #000; border: 1px solid #111; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.gem { width: 80%; height: 80%; border-radius: 4px; animation: gem-pulse 1s infinite alternate; }
+@keyframes gem-pulse { from { transform: scale(0.9); opacity: 0.8; } to { transform: scale(1); opacity: 1; } }
+.tray-container { width: 100%; max-width: 380px; display: flex; gap: 8px; margin-top: 10px; }
+.tray { flex: 3; height: 100px; display: flex; justify-content: space-around; align-items: center; background: #0a0a0a; border-radius: 15px; border: 1px solid #222; }
+.ignite-btn { width: 90%; padding: 22px; margin-top: auto; margin-bottom: 15px; border: 5px solid var(--gem-pink); color: var(--gem-pink); font-weight: 900; border-radius: 50px; background: transparent; letter-spacing: 12px; box-shadow: 0 0 30px var(--gem-pink); cursor: pointer; }
+.status-log { font-size: 7px; color: var(--aqua); margin-top: 4px; font-weight: 900; text-transform: uppercase; }
 </style>
 </head>
-<body id="body">
-<div class="h"><div>⛓️ FrostGems | PV Feather</div><div style="color:var(--c)">BASE: 0x9b60...1A8E</div></div>
-<div class="d">
-<button id="lb" class="ba" onclick="tL()">🟢 MINING ACTIVE</button>
+<body onload="init()">
+<div class="ticker"><div class="ticker-scroll">⛓️‍💥 duku: RC169 | GEN_CRUSH_UNIFIED | 963 Hz_RESONANCE | x31337_OVERDRIVE | ❤️‍🔥 10% BURN | ID: voluntaryist.frostchain</div></div>
+<div class="header">
+  <div><div style="color:var(--gem-pink); font-size:9px;">TEMPORAL_CRUSH</div><div id="freq-tag" style="font-size:18px; color:var(--ice);">963 Hz</div></div>
+  <div style="text-align:right;"><div style="font-size:7px; color:var(--leet);">GEN_YIELD</div><div id="yield">0.0000</div></div>
 </div>
-<div id="grid"></div>
+<div class="grid-container" id="main-grid">
+  <div class="layer-row" id="L1"></div>
+  <div class="layer-row" id="L2" style="border: 1.5px solid var(--gem-pink);"></div>
+  <div class="layer-row" id="L3"></div>
+</div>
+<div class="tray-container">
+  <div class="tray" id="tray"></div>
+  <div style="flex:1; background:#111; border:2px solid var(--burn); border-radius:15px; color:var(--burn); display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:900;">⛽<br>BURN</div>
+</div>
+<div class="status-log" id="log">STATUS: UNIFIED_INDEX_READY_FOR_963Hz_SYNC</div>
+<button class="ignite-btn" onclick="ignite()">IGNITE GEN_CRUSH</button>
 <script>
-const GEMS=['❄️','⚡','🅰️','🆔','🧊','🟣'];
-let grid=[], selected=null, ENG=false, A$={c:null,hum:null,e:null};
-const FEA_CONTRACT = "0x9b605a1fd28331d9cfec4cbc0a39b67e8a151a8e";
-
-function tL(){if(!A$.c)A$.c=new(window.AudioContext||window.webkitAudioContext)();const b=document.getElementById('lb');if(ENG){ENG=false;if(A$.hum){A$.hum.stop();A$.hum=null}if(A$.e){A$.e.stop();A$.e=null}b.innerText="🫰 IGNITE ENGINE";b.style.background="linear-gradient(180deg,#b8860b,#8b6508)";}else{ENG=true;const hO=A$.c.createOscillator(),hG=A$.c.createGain();hO.type='sine';hO.frequency.value=7.83;hG.gain.value=0.02;hO.connect(hG).connect(A$.c.destination);hO.start();A$.hum=hO;b.innerText="🟢 MINING ACTIVE";b.style.background="linear-gradient(180deg,var(--c),#008b8b)";}}
-async function init(){const g=document.getElementById('grid');g.innerHTML='';grid=[];for(let i=0;i<81;i++){let d=document.createElement('div');d.className='cell';d.onclick=()=>click(i);grid.push({type:Math.floor(Math.random()*GEMS.length),el:d});g.appendChild(d)}render();}
-function render(){grid.forEach(c=>{c.el.innerText=GEMS[c.type];c.el.style.color=(c.type===5)?'var(--p)':'white'})}
-function click(i){if(selected===null){selected=i;grid[i].el.classList.add('sel')}else if(selected===i){selected=null;grid[i].el.classList.remove('sel')}else{let a=selected,b=i;selected=null;grid[a].el.classList.remove('sel');if(Math.abs(a%9-b%9)+Math.abs(Math.floor(a/9)-Math.floor(b/9))===1)swap(a,b)}}
-async function swap(a,b){let t=grid[a].type;grid[a].type=grid[b].type;grid[b].type=t;render();if(!await resolve()){t=grid[a].type;grid[a].type=grid[b].type;grid[b].type=t;render();}}
-async function resolve(){let m=new Set();for(let r=0;r<9;r++)for(let c=0;c<7;c++){let i=r*9+c,t=grid[i].type;if(t!==-1&&grid[i+1].type===t&&grid[i+2].type===t){m.add(i);m.add(i+1);m.add(i+2)}}for(let c=0;c<9;c++)for(let r=0;r<7;r++){let i=r*9+c,t=grid[i].type;if(t!==-1&&grid[i+9].type===t&&grid[i+18].type===t){m.add(i);m.add(i+9);m.add(i+18)}}if(m.size>0){m.forEach(i=>{grid[i].el.classList.add('mat')});await new Promise(r=>setTimeout(r,300));m.forEach(i=>{grid[i].type=-1;grid[i].el.classList.remove('mat')});drop();await resolve();return true}return false}
-function drop(){for(let c=0;c<9;c++){let eY=8;for(let r=8;r>=0;r--)if(grid[r*9+c].type!==-1){let t=grid[r*9+c].type;grid[r*9+c].type=-1;grid[eY*9+c].type=t;eY--}for(let r=eY;r>=0;r--)grid[r*9+c].type=Math.floor(Math.random()*GEMS.length)}render()}
-init();
+let board = Array(81).fill(0), yieldVal = 0, active = false, audio = null, cells = [];
+const gemTypes = ['💎', '🍬', '⚡', '🔥'];
+function init() {
+  const layers = ['L1', 'L2', 'L3'];
+  layers.forEach((l, li) => {
+    const row = document.getElementById(l);
+    for(let s=0; s<3; s++) {
+      const g = document.createElement('div'); g.className = 'mini-grid';
+      for(let c=0; c<9; c++) {
+        const cell = document.createElement('div'); cell.className = 'cell';
+        const idx = (li * 27) + (s * 9) + c; cell.id = 'c-'+idx;
+        cell.innerText = gemTypes[Math.floor(Math.random() * gemTypes.length)];
+        g.appendChild(cell); cells[idx] = cell;
+      }
+      row.appendChild(g);
+    }
+  });
+}
+function ignite() { 
+  active = true; document.querySelector('.ignite-btn').style.display = 'none';
+  document.getElementById('log').innerText = "GEN_CRUSH_UNIFIED: ACTIVE | 963 Hz SPECTRUM: SYNCED";
+  audio = new (window.AudioContext || window.webkitAudioContext)();
+}
 </script>
 </body>
 </html>
