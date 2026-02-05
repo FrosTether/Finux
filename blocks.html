@@ -1,105 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>FrostMines | RC62 Optimized 🧬</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1,viewport-fit=cover">
-<meta charset="UTF-8">
-<style>
-:root{--bg:#010301;--g:#FFD700;--gd:#B8860b;--f:#0a0a0a;--p:#d500f9;--c:#00ff41;--ice:#00e5ff;--sb:env(safe-area-inset-bottom,20px)}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:none}
-body{background:var(--bg);color:var(--c);font-family:'Courier New',monospace;height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:env(safe-area-inset-top,10px) 10px var(--sb) 10px}
-.h{width:100%;max-width:400px;display:flex;justify-content:space-between;padding:10px;font-size:14px;font-weight:bold;background:rgba(0,255,65,0.1);border:1px solid var(--c);border-radius:8px;margin-bottom:10px}
-.d{width:100%;max-width:400px;margin-bottom:10px;padding:8px;background:rgba(255,215,0,0.05);border:1px solid var(--gd);border-radius:8px}
-#g{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;width:100%;max-width:400px;aspect-ratio:1;background:var(--f);border:2px solid var(--c);border-radius:8px;padding:4px;margin-bottom:100px;position:relative;transition:0.3s}
-.c{background:rgba(0,255,65,0.1);border:1px solid rgba(0,255,65,0.2);border-radius:3px;transition:all 0.15s ease}
-.c.f{background:linear-gradient(135deg, var(--g) 0%, var(--gd) 100%);border-color:var(--g);box-shadow:0 0 10px rgba(255,215,0,0.6)}
-.surge-gold{border-color:var(--g) !important;box-shadow:0 0 40px var(--g) !important;background:rgba(255,215,0,0.05) !important}
-.ice-mode{border-color:var(--ice) !important;box-shadow:0 0 50px var(--ice) !important}
-.hn{position:fixed;bottom:calc(var(--sb) + 10px);left:50%;transform:translateX(-50%);padding:12px 24px;background:linear-gradient(135deg, var(--p) 0%, #7b00d4 100%);border:2px solid var(--p);border-radius:25px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;box-shadow:0 4px 20px rgba(213,0,249,0.5);z-index:100}
-#nft-notif{position:fixed;top:50%;left:50%;transform:translate(-50%, -50%) scale(0);background:linear-gradient(135deg, var(--ice), var(--p));padding:30px;border-radius:20px;font-size:24px;font-weight:bold;color:#fff;box-shadow:0 0 60px rgba(0,229,255,0.8);transition:transform 0.5s ease;z-index:1000;text-align:center}
-#nft-notif.show{transform:translate(-50%, -50%) scale(1)}
-</style>
+  <title>FrostMines | Hatchling 🐥</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta charset="UTF-8">
+  <style>
+    :root {
+      --bg: #010301; --grid: #000; --cell: #0a1a0a;
+      --gold: #ffd700; --gold-d: #b8860b; --cyan: #00e5ff;
+      --purple: #d500f9; --green: #00ff41; --text: #00ff41;
+      --sb: env(safe-area-inset-bottom, 24px);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; touch-action:none; }
+    body {
+      background: var(--bg); color: var(--text); font-family: 'Courier New', monospace;
+      height: 100dvh; overflow: hidden; display: flex; flex-direction: column; align-items: center;
+      padding: 10px 10px var(--sb) 10px; gap: 8px;
+    }
+    .h { width: 100%; max-width: 420px; padding: 10px; background: rgba(0,255,65,0.1); border: 1px solid var(--green); border-radius: 10px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; }
+    .stats { width: 100%; max-width: 420px; padding: 10px; background: rgba(255,215,0,0.05); border: 1px solid var(--gold-d); border-radius: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; text-align: center; font-size: 11px; }
+    .stats span { color: var(--gold); font-weight: bold; }
+    #streak-viz { display: flex; gap: 8px; justify-content: center; margin-bottom: 2px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.3); }
+    .dot.active { background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+    #g { width: 100%; max-width: 400px; aspect-ratio: 1/1; background: var(--grid); border: 3px solid var(--green); border-radius: 12px; padding: 4px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; box-shadow: 0 0 20px rgba(0,255,65,0.15); margin-bottom: 100px; }
+    .c { background: var(--cell); border: 1px solid #111; border-radius: 3px; transition: 0.15s; position: relative; }
+    .c.f { background: linear-gradient(135deg, var(--gold), var(--gold-d)); border-color: var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.6); }
+    .mining-btn { position: fixed; bottom: calc(var(--sb) + 16px); padding: 14px 35px; background: var(--purple); border: 2px solid var(--purple); border-radius: 30px; color: #fff; font-weight: bold; box-shadow: 0 0 20px rgba(213,0,249,0.5); z-index: 100; transition: 0.3s; }
+    .mining-btn.active { background: #00c853; border-color: #64dd17; box-shadow: 0 0 25px rgba(100,221,23,0.6); }
+    #notif { position: fixed; top: 40%; background: linear-gradient(135deg, var(--cyan), var(--purple)); padding: 20px; border-radius: 15px; color: #fff; font-weight: bold; transform: scale(0); transition: 0.5s; z-index: 999; }
+    #notif.show { transform: scale(1); }
+  </style>
 </head>
 <body onload="init()">
-<div class="h"><div>🧬 FrostMines | Hatchling 🐥</div><div id="te">UTC: --:--:--</div></div>
-<div class="d">
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;text-align:center">
-        <div class="ab">FTC: <span id="hr">0.000</span></div>
-        <div class="ab">HILL: <span id="score">0</span></div>
-        <div class="ab">DPR: <span id="burn">0</span></div>
-        <div class="ab">🐥: <span id="cycle">150s</span></div>
-    </div>
+
+<div class="h"><div>🧬 FrostMines | Hatchling 🐥</div><div id="utc">UTC: --:--:--</div></div>
+<div class="stats">
+  <div id="streak-viz"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <div>FTC: <span id="ftc">13.370</span></div>
+  <div>HILL: <span id="score">0</span></div>
+  <div>🐥: <span id="timer">150s</span></div>
 </div>
 <div id="g"></div>
-<div class="hn" id="lb" onclick="tL()">🫰 IGNITE ENGINE</div>
-<div id="nft-notif"></div>
+<button class="mining-btn" id="mine-btn" onclick="tL()">MINING</button>
+<div id="notif"></div>
 
 <script>
-const FTC_CONTRACT = "0xee132a0fa1f0724d3ec3936f0cdc5213af748c42";
-let G = new Uint8Array(100), R = Number(localStorage.getItem('ftc')) || 0, SCORE = 0, HT = 150, BURN = Number(localStorage.getItem('burnCount')) || 0, SHARDS = Number(localStorage.getItem('sh')) || 0;
-let cycleStreak = 0, A$ = {c: null, hum: null}, ENG = false, dragCell = null;
-
-async function gPV(){const s=crypto.getRandomValues(new Uint8Array(16));const c=new TextEncoder().encode(s.join('')+FTC_CONTRACT+Date.now());const h=await crypto.subtle.digest('SHA-256',c);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,12).toUpperCase();}
-function pS(f, t, d, v = 0.15) { if (!A$.c) return; const o = A$.c.createOscillator(); const g = A$.c.createGain(); o.type = t; o.frequency.value = f; g.gain.setValueAtTime(v, A$.c.currentTime); g.gain.exponentialRampToValueAtTime(0.01, A$.c.currentTime + d); o.connect(g).connect(A$.c.destination); o.start(); o.stop(A$.c.currentTime + d); }
-function playSuccessChime() { pS(7.83, 'sine', 1.2, 0.1); pS(15.66, 'sine', 1.0, 0.08); pS(963, 'triangle', 0.3, 0.12); }
+let G=new Uint8Array(100), R=Number(localStorage.getItem('ftc'))||13.37, SCORE=0, HT=150, ENG=false, A$={c:null, hum:null}, drag=null, streak=0;
 
 function tL() {
-    if (!A$.c) A$.c = new (window.AudioContext || window.webkitAudioContext)();
-    const b = document.getElementById('lb');
-    if (ENG) { ENG = false; if (A$.hum) A$.hum.stop(); b.innerText = "🫰 IGNITE ENGINE"; }
-    else { ENG = true; const hO = A$.c.createOscillator(); hO.type = 'sine'; hO.frequency.value = 7.83; const g = A$.c.createGain(); g.gain.value = 0.05; hO.connect(g).connect(A$.c.destination); hO.start(); A$.hum = hO; b.innerText = "🟢 MINING ACTIVE"; }
+  if(!A$.c) A$.c = new (window.AudioContext || window.webkitAudioContext)();
+  const b = document.getElementById('mine-btn');
+  ENG = !ENG;
+  if(ENG) { b.innerText="MINING ACTIVE"; b.classList.add('active'); startHum(); }
+  else { b.innerText="MINING"; b.classList.remove('active'); stopHum(); }
 }
+
+function startHum() { humOsc = A$.c.createOscillator(); humOsc.type='sine'; humOsc.frequency.value=7.83; const g = A$.c.createGain(); g.gain.value=0.05; humOsc.connect(g).connect(A$.c.destination); humOsc.start(); A$.hum=humOsc; }
+function stopHum() { if(A$.hum) { A$.hum.stop(); A$.hum=null; } }
 
 function init() {
-    const gD = document.getElementById('g'); gD.innerHTML = ''; G.fill(0);
-    for (let i = 0; i < 100; i++) {
-        let c = document.createElement('div'); c.className = 'c'; c.id = 'c' + i; c.dataset.idx = i;
-        c.addEventListener('mousedown', startDrag); c.addEventListener('touchstart', startDrag);
-        gD.appendChild(c);
+  const gD = document.getElementById('g'); gD.innerHTML = ''; G.fill(0);
+  for (let i=0; i<100; i++) {
+    const c = document.createElement('div'); c.className = 'c'; c.dataset.idx = i;
+    c.addEventListener('touchstart', e => { if(ENG && G[i]) drag=i; });
+    gD.appendChild(c);
+  }
+  document.addEventListener('touchmove', e => {
+    if(drag === null) return;
+    const t = e.touches[0]; const el = document.elementFromPoint(t.clientX, t.clientY);
+    const cell = el?.closest('.c'); if(!cell) return;
+    const ni = +cell.dataset.idx;
+    if(ni !== drag && !G[ni]) {
+      G[drag]=0; G[ni]=1; document.getElementById('g').children[drag].classList.remove('f');
+      document.getElementById('g').children[ni].classList.add('f'); drag=ni;
+      pS(1800, 'sine', 0.1); if(navigator.vibrate) navigator.vibrate(15);
     }
-    document.addEventListener('mousemove', onDrag); document.addEventListener('touchmove', onDrag);
-    document.addEventListener('mouseup', endDrag); document.addEventListener('touchend', endDrag);
-    sp(); setInterval(() => { if (ENG) { HT--; if (HT <= 0) { HT = 150; R += 6.685; localStorage.setItem('ftc', R); checkHatch(); } uU(); } updateClock(); }, 1000);
+  });
+  document.addEventListener('touchend', () => { if(drag!==null) { checkLines(); drag=null; } });
+  sp(8); updateUI();
+  setInterval(() => { if(ENG) { HT--; if(HT<=0) { HT=150; R+=6.685; checkHatch(); } updateUI(); } updateClock(); }, 1000);
 }
 
-function sp() { for (let i = 0; i < 8; i++) { const idx = Math.floor(Math.random() * 100); if (G[idx] === 0) { G[idx] = 1; document.getElementById('c' + idx).classList.add('f'); } } }
-function startDrag(e) { e.preventDefault(); const idx = parseInt(e.target.dataset.idx); if (G[idx] === 1) { dragCell = idx; e.target.classList.add('dragging'); } }
-function onDrag(e) { if (dragCell === null) return; e.preventDefault(); const touch = e.touches ? e.touches[0] : e; const elem = document.elementFromPoint(touch.clientX, touch.clientY); if (elem && elem.classList.contains('c')) { const newIdx = parseInt(elem.dataset.idx); if (newIdx !== dragCell && G[newIdx] === 0) { G[dragCell] = 0; G[newIdx] = 1; document.getElementById('c' + dragCell).classList.remove('f', 'dragging'); document.getElementById('c' + newIdx).classList.add('f'); dragCell = newIdx; triggerAddictionSnap(); } } }
-function endDrag() { if (dragCell !== null) { document.getElementById('c' + dragCell).classList.remove('dragging'); dragCell = null; checkLines(); } }
+function pS(f,t,d) { const o=A$.c.createOscillator(); const g=A$.c.createGain(); o.type=t; o.frequency.value=f; g.gain.setValueAtTime(0.1, A$.c.currentTime); g.gain.exponentialRampToValueAtTime(0.01, A$.c.currentTime+d); o.connect(g).connect(A$.c.destination); o.start(); o.stop(A$.c.currentTime+d); }
 
 function checkLines() {
-    let cleared = 0;
-    for (let r = 0; r < 10; r++) { let f = true; for (let c = 0; c < 10; c++) if (G[r * 10 + c] === 0) f = false; if (f) { cleared++; for (let c = 0; c < 10; c++) clearCell(r * 10 + c); } }
-    for (let c = 0; c < 10; c++) { let f = true; for (let r = 0; r < 10; r++) if (G[r * 10 + c] === 0) f = false; if (f) { cleared++; for (let r = 0; r < 10; r++) clearCell(r * 10 + c); } }
-    if (cleared > 0) { SCORE += cleared * 100; if (cleared >= 3) { playSuccessChime(); document.getElementById('g').classList.add('ice-mode'); setTimeout(() => document.getElementById('g').classList.remove('ice-mode'), 800); } triggerBurnSurge(); sp(); }
-}
-function clearCell(idx) { G[idx] = 0; const cell = document.getElementById('c' + idx); cell.classList.add('snap-flash'); cell.classList.remove('f'); setTimeout(() => cell.classList.remove('snap-flash'), 200); }
-function triggerAddictionSnap() { pS(1800, 'sine', 0.1, 0.2); if (navigator.vibrate) navigator.vibrate(15); }
-function triggerBurnSurge() { BURN++; localStorage.setItem('burnCount', BURN); pS(963, 'square', 0.15, 0.15); document.getElementById('g').classList.add('surge-gold'); setTimeout(() => document.getElementById('g').classList.remove('surge-gold'), 500); }
-
-async function checkHatch() {
-    if (SCORE > 800) { // Rare Hatch Threshold
-        cycleStreak++;
-        if (cycleStreak >= 3) { await mintRareHatch(); cycleStreak = 0; }
-        else { SHARDS++; localStorage.setItem('sh', SHARDS); showNFTNotif("🐥 NFT SHARD HATCHED!"); pS(2200, 'sine', 0.6); }
-    } else { cycleStreak = 0; }
-    SCORE = 0;
+  let cl=0;
+  for(let r=0; r<10; r++) { let f=true; for(let c=0;c<10;c++) if(!G[r*10+c])f=false; if(f) { cl++; for(let c=0;c<10;c++) G[r*10+c]=0; } }
+  if(cl) { SCORE += cl*100; R+=0.01; sp(cl*4); renderGrid(); }
 }
 
-async function mintRareHatch() {
-    const rareId = await gPV();
-    const rareNFTs = JSON.parse(localStorage.getItem('rareNFTs') || '[]');
-    rareNFTs.push({id: rareId, type: 'Ice Blue Sprite', timestamp: Date.now()});
-    localStorage.setItem('rareNFTs', JSON.stringify(rareNFTs));
-    showNFTNotif("❄️ RARE ICE BLUE SPRITE!");
-    pS(432, 'sine', 2.0, 0.4); pS(443.1, 'sine', 2.0, 0.4);
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+function checkHatch() {
+  if(SCORE > 800) { streak++; if(streak>=3) { showNotif("RARE SPRITE! ❄️"); streak=0; } else showNotif("HATCHED! 🐥"); }
+  else streak=0; SCORE=0; updateStreak();
 }
 
-function showNFTNotif(msg) { const notif = document.getElementById('nft-notif'); notif.innerHTML = `${msg}<br><small>Vault Sync Active</small>`; notif.classList.add('show'); setTimeout(() => notif.classList.remove('show'), 3000); }
-function uU() { document.getElementById('hr').innerText = R.toFixed(3); document.getElementById('score').innerText = SCORE; document.getElementById('burn').innerText = BURN; document.getElementById('cycle').innerText = HT + "s"; }
-function updateClock() { const now = new Date(); document.getElementById('te').innerText = `UTC: ${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')}:${String(now.getUTCSeconds()).padStart(2,'0')}`; }
-init();
+function updateStreak() { const ds=document.querySelectorAll('.dot'); ds.forEach((d,i) => d.className = i<streak ? 'dot active' : 'dot'); }
+function showNotif(txt) { const n=document.getElementById('notif'); n.innerText=txt; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'), 2500); }
+function sp(n) { let p=0; while(p<n) { let i=Math.floor(Math.random()*100); if(!G[i]) { G[i]=1; p++; } } renderGrid(); }
+function renderGrid() { G.forEach((v,i) => document.getElementById('g').children[i].className = v ? 'c f' : 'c'); }
+function updateUI() { document.getElementById('ftc').innerText = R.toFixed(3); document.getElementById('score').innerText = SCORE; document.getElementById('timer').innerText = HT+"s"; }
+function updateClock() { const d=new Date(); document.getElementById('utc').innerText = `UTC: ${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}`; }
 </script>
 </body>
 </html>
