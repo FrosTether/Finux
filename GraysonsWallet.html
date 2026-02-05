@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Grayson's Vault | DPR Leaderboard</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1,viewport-fit=cover">
+<style>
+:root{--bg:#010101;--c:#0ff;--p:#d500f9;--gd:#B8860b;--sb:env(safe-area-inset-bottom,20px)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--c);font-family:'Courier New',monospace;height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px;overflow:hidden}
+.v-head{width:100%;border-bottom:2px solid var(--c);padding-bottom:10px;margin-bottom:15px;text-align:center}
+.leaderboard{width:100%;background:#0a0a0a;border:1px solid var(--gd);border-radius:12px;padding:15px;flex-grow:1;overflow-y:auto;box-shadow:0 0 20px rgba(0,255,255,0.05)}
+.rank-row{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #222;font-size:.65rem}
+.rank-row span:first-child{color:var(--gd);width:20px}
+.rank-row.self{background:rgba(0,255,255,0.1);border-color:var(--c);color:#fff}
+.dpr-tag{font-size:.5rem;color:var(--p);margin-top:2px}
+.btn-back{width:100%;background:#111;color:#666;border:1px solid #333;padding:12px;border-radius:25px;margin-top:10px;margin-bottom:var(--sb);text-decoration:none;text-align:center;font-size:.7rem}
+</style>
+</head>
+<body onload="renderDPR()">
+<div class="v-head">
+    <h2 style="font-size:1.1rem;letter-spacing:2px">DPR BURN LEADERBOARD</h2>
+    <div style="font-size:.45rem;color:var(--gd)">VERIFIED BY FEA CONTRACT</div>
+</div>
+
+<div class="leaderboard" id="board">
+    </div>
+
+<div style="width:100%;padding:10px;background:#000;border:1px solid #222;border-radius:8px;margin-top:10px">
+    <div style="display:flex;justify-content:space-between;font-size:.6rem">
+        <span>YOUR DPR RATING:</span><span id="my-dpr" style="color:#0f0">0 DPR</span>
+    </div>
+</div>
+
+<a href="index.html" class="btn-back">HUB TERMINAL</a>
+
+<script>
+const FEA = "0x9b605a1fd28331d9cfec4cbc0a39b67e8a151a8e";
+const nodes = [
+    {id: "voluntaryistj.base.eth", dpr: 0},
+    {id: "frost_node_01", dpr: 142},
+    {id: "alpha_miner", dpr: 98},
+    {id: "base_ghost", dpr: 76},
+    {id: "crypto_jacob", dpr: 54},
+    {id: "feather_king", dpr: 43},
+    {id: "schumann_res", dpr: 29},
+    {id: "neon_titan", dpr: 15},
+    {id: "ice_blue_miner", dpr: 8},
+    {id: "sovereign_0x", dpr: 3}
+];
+
+function renderDPR() {
+    const myBurn = Number(localStorage.getItem('burnCount')) || 0;
+    nodes[0].dpr = myBurn;
+    document.getElementById('my-dpr').innerText = myBurn + " DPR";
+    
+    const board = document.getElementById('board');
+    board.innerHTML = '';
+    
+    // Sort by DPR
+    const sorted = nodes.sort((a,b) => b.dpr - a.dpr);
+    
+    sorted.forEach((n, i) => {
+        const row = document.createElement('div');
+        row.className = `rank-row ${n.id === "voluntaryistj.base.eth" ? 'self' : ''}`;
+        row.innerHTML = `
+            <span>${i+1}</span>
+            <div style="flex-grow:1;padding-left:10px">
+                <div>${n.id}</div>
+                <div class="dpr-tag">PV HASH: ${Math.random().toString(16).slice(2,10).toUpperCase()}</div>
+            </div>
+            <span style="color:var(--c);font-weight:900">${n.dpr} DPR</span>
+        `;
+        board.appendChild(row);
+    });
+}
+</script>
+</body>
+</html>
