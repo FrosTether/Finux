@@ -1,88 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>FAI | LIQUIDITY_RUN 🪶</title>
+    <title>FAI | ASSET_PROTECT 🧬</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta charset="UTF-8">
     <style>
         :root {
-            --bg: #000; --grid: #050505; --cell: #080808;
-            --cyan: #00f2ff; --magenta: #ff00ff; --gold: #ffd700;
+            --bg: #000; --thermal: #fff000; --glow: 0 0 20px #fff000; --fnr: #00f2ff;
         }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family: 'Courier New', monospace; }
         body {
             background: var(--bg); color: #fff; height: 100dvh; overflow: hidden;
             display: flex; flex-direction: column; align-items: center;
-            background-image: radial-gradient(circle at center, #0a001a 0%, #000 100%);
-            touch-action: none;
+            transition: background 0.1s ease-out; touch-action: none;
         }
+        body.sync-pulse { background: #1a1a00 !important; }
 
-        /* 🪶 REAL-TIME DATA STREAM BACKGROUND */
-        body::before {
-            content: 'NODE_SYNC: OK // FTC_CONTRACT: 0xee...8c42 // STATUS: MINING';
-            position: fixed; top: 10px; left: 10px; font-size: 8px; color: rgba(0,242,255,0.2);
-            white-space: pre; z-index: 0; pointer-events: none;
-        }
+        /* SOVEREIGN TICKER */
+        .network-ticker { width: 100%; background: #080808; border-bottom: 1px solid #222; padding: 5px; font-size: 8px; color: #555; overflow: hidden; white-space: nowrap; }
+        .ticker-move { display: inline-block; animation: ticker 65s linear infinite; }
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        .header { width: 360px; display: flex; justify-content: space-between; padding: 20px 0; z-index: 10; border-bottom: 1px solid #1a1a1a; }
-        #score { font-size: 32px; font-weight: 900; color: #fff; text-shadow: 0 0 15px var(--cyan); }
-        .status-tag { font-size: 10px; color: var(--gold); text-transform: uppercase; font-weight: bold; }
+        .header { width: 360px; display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 2px solid #222; z-index: 10; }
+        #timer { font-size: 24px; font-weight: 900; color: #f0f; text-shadow: 0 0 10px #f0f; }
+        #yield { font-size: 28px; color: var(--thermal); text-shadow: var(--glow); font-weight: 900; }
 
-        .grid-wrap { 
-            padding: 6px; background: #111; border-radius: 8px; border: 1px solid #333;
-            box-shadow: 0 0 40px rgba(0,0,255,0.1); margin-top: 15px; position: relative;
-        }
-        #grid {
-            display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px;
-            width: 360px; height: 360px;
-        }
+        .grid-wrap { padding: 6px; background: #111; border-radius: 12px; border: 2px solid #333; margin-top: 15px; position: relative; }
+        #grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; width: 340px; height: 340px; }
+        .cell { background: #050505; border-radius: 2px; border: 1px solid #111; }
+        .filled { background: var(--thermal); box-shadow: var(--glow); border: none; z-index: 2; }
+        .snap-guide { background: rgba(255, 240, 0, 0.3) !important; border: 1px solid var(--thermal); }
 
-        .cell { background: var(--cell); border-radius: 2px; position: relative; }
-        .filled { 
-            background: linear-gradient(135deg, var(--gold), #fff); 
-            box-shadow: 0 0 15px var(--gold); border: none; z-index: 2;
-        }
+        .tray { width: 360px; height: 120px; display: flex; justify-content: space-around; align-items: center; margin-top: 15px; background: rgba(255,255,255,0.02); border-radius: 20px; }
+        .slot { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; transform: scale(1.1); }
+        .drag-active { position: fixed; pointer-events: none; z-index: 1000; transform: translateY(-135px) scale(1.15); filter: drop-shadow(var(--glow)); }
 
-        .tray { width: 360px; height: 130px; display: flex; justify-content: space-around; align-items: center; margin-top: 20px; }
-        .slot { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; }
-        
-        /* THE SNAPPY SNAP (🪶) */
-        .drag-active { 
-            position: fixed; pointer-events: none; z-index: 1000; 
-            transform: translateY(-135px) scale(1.1); 
-            filter: brightness(1.2); will-change: transform;
-        }
-
-        .btn-sync {
-            width: 80%; padding: 20px; margin-top: auto; margin-bottom: 25px;
-            border: 1px solid var(--gold); background: #000; color: var(--gold);
-            font-weight: 900; letter-spacing: 5px; text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); border-radius: 2px;
-        }
+        .ignite-btn { width: 85%; padding: 18px; margin-top: auto; margin-bottom: 30px; border: 2px solid var(--thermal); background: transparent; color: var(--thermal); font-weight: 900; letter-spacing: 5px; border-radius: 50px; text-shadow: var(--glow); cursor: pointer; }
     </style>
 </head>
 <body onload="init()">
 
-<div class="header">
-    <div>
-        <div style="color:var(--gold); font-size: 14px;">FAI // LIQUIDITY_RUN</div>
-        <div class="status-tag" id="status">BUFFER: STANDBY</div>
-    </div>
-    <div style="text-align:right">
-        <small style="color:#666">YIELD SCORE</small>
-        <div id="score">0</div>
+<div class="network-ticker">
+    <div class="ticker-move">
+        LIQUID_PROTECT: 0x8eA6...10E6 (RECEIVE_ONLY) | ALLOCATED_FUEL: 2.2M SPHYNX + 1,000 TUSD | VAULT: 0x465e...b0f5 | FNR_HOLDER: 0x5147...7da1d | TRUMP: 0xda5e...bef6 | FRST: 0x9fcf...574b | FROSH: 0xdeec...7a0e | BTC_LEGACY: 1Cn654KAo1rmLKkxqr5ubnmhU9dFD3ZNnZ
     </div>
 </div>
 
-<div class="grid-wrap"><div id="grid"></div></div>
-<div class="tray" id="tray"></div>
+<div class="header">
+    <div>
+        <div style="color:var(--thermal); font-size: 11px; font-weight: 900;">FAI // ASSET_PROTECT</div>
+        <div id="timer">150s</div>
+    </div>
+    <div style="text-align:right"><small style="color:#444">X25_EXTRACTION_YIELD</small><div id="yield">0.0000</div></div>
+</div>
 
-<button class="btn-sync" id="startBtn" onclick="igniteEngine()">Establish Secure Link</button>
+<div class="grid-wrap"><div id="grid"></div></div>
+<div id="tray" class="tray"></div>
+
+<button class="ignite-btn" onclick="igniteEngine()">IGNITE SOVEREIGN SPRINT</button>
 
 <script>
-    let board = Array(81).fill(0), score = 0, overdrive = 0.15;
-    let dragging = null, audio = null, rhythmLog = [];
-    const shapes = [[[1,1,1]], [[1,1],[1,1]], [[1,1,1],[0,1,0]], [[1,1,1,1,1]], [[1]], [[1,1,1],[1,1,1]], [[1,1,1],[1,0,0],[1,0,0]]];
+    let board = Array(81).fill(0), yield_extracted = 0, timer = 150, active = false;
+    let audio = null, beatCount = 0, dragging = null;
+    const woodokuShapes = [[[1,1,1],[1,1,1]], [[1,1,1]], [[1,1],[1,1]], [[1]], [[1,1,1,1]], [[1,1,1],[0,1,0]], [[1,1,1,1,1]]];
 
     function init() {
         const g = document.getElementById('grid'); g.innerHTML = '';
@@ -95,79 +74,95 @@
     function igniteEngine() {
         if(!audio) {
             audio = new (window.AudioContext || window.webkitAudioContext)();
-            setupBinaural(40, -1); setupBinaural(51.11, 1);
-            document.getElementById('startBtn').style.display = 'none';
-            document.getElementById('status').innerText = "11.11Hz SYNCED // MINING ACTIVE";
-            setInterval(playRhythm, 1500);
-            sfx(528, 'sine', 0.6); 
+            setupBinaural(40, -1); setupBinaural(51.11, 1); // 11.11Hz Sync
+            active = true;
+            document.querySelector('.ignite-btn').style.display = 'none';
+            setInterval(() => {
+                if(timer > 0) {
+                    timer--; document.getElementById('timer').innerText = timer + "s";
+                } else {
+                    active = false; alert("ASSET EXTRACTION SECURED. YIELD ROUTED TO 0x8eA6...10E6: " + yield_extracted.toFixed(4) + " FTC"); location.reload();
+                }
+            }, 1000);
+            setInterval(engineTick, 500); // 120BPM Sync
         }
     }
 
     function setupBinaural(f, p) {
         let o = audio.createOscillator(), s = audio.createStereoPanner(), g = audio.createGain();
-        o.frequency.value = f; s.pan.value = p; g.gain.value = 0.02;
+        o.frequency.value = f; s.pan.value = p; g.gain.value = 0.01;
         o.connect(s).connect(g).connect(audio.destination); o.start();
     }
 
-    function playRhythm() {
-        if (rhythmLog.length < 2) return;
-        rhythmLog.slice(-3).forEach((t, i) => {
-            setTimeout(() => sfx(120 + (i * 30), 'square', 0.12), i * 350);
-        });
+    function engineTick() {
+        if(!active) return;
+        beatCount++;
+        if(beatCount % 4 === 0) {
+            document.body.classList.add('sync-pulse');
+            setTimeout(() => document.body.classList.remove('sync-pulse'), 50);
+            percussive(60, 0.15, 'sine'); // Industrial Kick
+        }
+        percussive(11500, 0.01, 'white-noise'); // Hi-Hat
     }
 
-    function sfx(f, type, d) {
-        if(!audio) return;
-        let o = audio.createOscillator(), g = audio.createGain();
-        o.type = type; o.frequency.setValueAtTime(f, audio.currentTime);
-        g.gain.setValueAtTime(overdrive, audio.currentTime);
+    function percussive(f, d, type) {
+        let g = audio.createGain();
+        if(type === 'white-noise') {
+            const buf = audio.createBuffer(1, audio.sampleRate * d, audio.sampleRate);
+            const data = buf.getChannelData(0);
+            for(let i=0; i<buf.length; i++) data[i] = Math.random() * 2 - 1;
+            const src = audio.createBufferSource();
+            src.buffer = buf; src.connect(g).connect(audio.destination); src.start();
+        } else {
+            let o = audio.createOscillator(); o.type = type;
+            o.frequency.setValueAtTime(f, audio.currentTime);
+            o.frequency.exponentialRampToValueAtTime(0.01, audio.currentTime + d);
+            o.connect(g).connect(audio.destination); o.start(); o.stop(audio.currentTime + d);
+        }
+        g.gain.setValueAtTime(0.06, audio.currentTime);
         g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + d);
-        o.connect(g).connect(audio.destination); o.start(); o.stop(audio.currentTime + d);
     }
 
     function refreshTray() {
         const t = document.getElementById('tray'); t.innerHTML = '';
         for(let i=0; i<3; i++) {
-            let s = shapes[Math.floor(Math.random() * shapes.length)];
+            let s = woodokuShapes[Math.floor(Math.random() * woodokuShapes.length)];
             let slot = document.createElement('div'); slot.className = 'slot';
-            slot.appendChild(renderPiece(s, i, false)); t.appendChild(slot);
+            slot.appendChild(renderPiece(s, i, 20)); t.appendChild(slot);
         }
     }
 
-    function renderPiece(shape, index, isDrag) {
+    function renderPiece(shape, index, size) {
         const container = document.createElement('div');
         container.style.display = 'grid';
-        container.style.gridTemplateColumns = `repeat(${shape[0].length}, ${isDrag ? '38px' : '20px'})`;
+        container.style.gridTemplateColumns = `repeat(${shape[0].length}, ${size}px)`;
         container.style.gap = '2px';
         shape.forEach(row => row.forEach(val => {
-            let c = document.createElement('div');
-            c.style.width = isDrag ? '38px' : '20px'; c.style.height = isDrag ? '38px' : '20px';
+            let c = document.createElement('div'); c.style.width = size+'px'; c.style.height = size+'px';
             if(val) c.className = 'cell filled'; else c.style.opacity = '0';
             container.appendChild(c);
         }));
-        if(!isDrag) container.ontouchstart = (e) => startDrag(e, shape, index);
+        if(index !== -1) container.ontouchstart = (e) => startDrag(e, shape, index);
         return container;
     }
 
     function startDrag(e, shape, index) {
-        if(!audio) igniteEngine();
-        const t = e.touches[0];
-        dragging = { shape, index, el: renderPiece(shape, -1, true) };
+        if(!active) return;
+        dragging = { shape, index, el: renderPiece(shape, -1, 38) };
         dragging.el.classList.add('drag-active');
         document.body.appendChild(dragging.el);
-        moveAt(t);
+        moveAt(e.touches[0]);
     }
 
     function moveAt(t) {
         if(!dragging) return;
-        dragging.el.style.left = t.clientX - (dragging.el.offsetWidth/2) + 'px';
+        dragging.el.style.left = t.clientX - (dragging.el.offsetWidth / 2) + 'px';
         dragging.el.style.top = t.clientY + 'px';
-        
-        document.querySelectorAll('.cell').forEach(c => c.style.background = '');
-        const target = document.elementFromPoint(t.clientX, t.clientY - 135);
+        document.querySelectorAll('.cell').forEach(c => c.classList.remove('snap-guide'));
+        const target = document.elementFromPoint(t.clientX, t.clientY - 135); // 135px S25 FE Lift
         if(target && target.classList.contains('cell')) {
             const id = parseInt(target.id.split('-')[1]);
-            if(canPlace(id, dragging.shape)) showShadow(id, dragging.shape);
+            if(canPlace(id, dragging.shape)) showSnap(id, dragging.shape);
         }
     }
 
@@ -180,13 +175,10 @@
         return true;
     }
 
-    function showShadow(id, s) {
+    function showSnap(id, s) {
         const r = Math.floor(id/9), c = id%9;
         s.forEach((row, i) => row.forEach((val, j) => {
-            if(val) {
-                const target = document.getElementById('c-' + ((r+i)*9 + (c+j)));
-                if(target) target.style.background = 'rgba(255, 215, 0, 0.2)';
-            }
+            if(val) document.getElementById('c-' + ((r+i)*9 + (c+j))).classList.add('snap-guide');
         }));
     }
 
@@ -197,7 +189,6 @@
             const id = parseInt(target.id.split('-')[1]);
             if(canPlace(id, dragging.shape)) {
                 placePiece(id, dragging.shape);
-                rhythmLog.push(Date.now());
                 document.getElementById('tray').children[dragging.index].innerHTML = '';
                 if([...document.getElementById('tray').querySelectorAll('.slot')].every(s => s.innerHTML === '')) refreshTray();
             }
@@ -210,8 +201,8 @@
         s.forEach((row, i) => row.forEach((val, j) => {
             if(val) { board[(r+i)*9+c+j]=1; document.getElementById('c-'+((r+i)*9+c+j)).className='cell filled'; }
         }));
-        sfx(60, 'square', 0.1); 
-        if(navigator.vibrate) navigator.vibrate(15);
+        percussive(2200, 0.04, 'triangle'); 
+        if(navigator.vibrate) navigator.vibrate(10);
         checkClears();
     }
 
@@ -227,22 +218,18 @@
             for(let i=0; i<3; i++) for(let j=0; j<3; j++) if(!board[(y+i)*9+(x+j)]) sF=false;
             if(sF) sqs.push({y,x});
         }
-        let tot = rs.length + cs.length + sqs.length;
-        if(tot > 0) {
-            score += tot * 777; // THE JACKPOT CLEAR
-            overdrive = Math.min(0.7, overdrive + 0.05);
-            document.getElementById('score').innerText = score;
+        let total = rs.length + cs.length + sqs.length;
+        if(total > 0) {
+            yield_extracted += total * 0.444; // THE X25 MULTIPLIER (Base extraction)
+            document.getElementById('yield').innerText = yield_extracted.toFixed(4);
             rs.forEach(r => { for(let c=0; c<9; c++) board[r*9+c]=0; });
             cs.forEach(c => { for(let r=0; r<9; r++) board[r*9+c]=0; });
             sqs.forEach(s => { for(let i=0; i<3; i++) for(let j=0; j<3; j++) board[(s.y+i)*9+(s.x+j)]=0; });
-            setTimeout(redraw, 150);
-            sfx(880, 'triangle', 0.4);
+            setTimeout(redraw, 150); percussive(150, 0.4, 'triangle'); 
         }
     }
 
-    function redraw() {
-        for(let i=0; i<81; i++) document.getElementById('c-'+i).className = board[i] ? 'cell filled' : 'cell';
-    }
+    function redraw() { for(let i=0; i<81; i++) document.getElementById('c-'+i).className = board[i] ? 'cell filled' : 'cell'; }
 </script>
 </body>
 </html>
