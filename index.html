@@ -5,81 +5,43 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1,viewport-fit=cover">
 <meta charset="UTF-8">
 <style>
-:root{--bg:#050505;--g:#FFD700;--gd:#B8860b;--f:#111;--p:#d500f9;--c:#0ff;--sb:env(safe-area-inset-bottom,20px)}
+:root{--bg:#020202;--g:#FFD700;--gd:#B8860b;--p:#d500f9;--c:#0ff;--sb:env(safe-area-inset-bottom,20px)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
 body{background:var(--bg);color:var(--g);font-family:'Courier New',monospace;height:100vh;display:flex;flex-direction:column;align-items:center;padding:15px}
-.h{width:100%;border-bottom:1px solid var(--gd);padding-bottom:10px;margin-bottom:20px;display:flex;justify-content:space-between;font-size:.7rem}
-.u38{color:#0f0;font-weight:900;text-shadow:0 0 5px #0f0}
-.card{width:100%;background:#111;border:1px solid var(--gd);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 0 15px rgba(255,215,0,.1)}
+.h{width:100%;border-bottom:2px solid var(--c);padding-bottom:10px;margin-bottom:20px;display:flex;justify-content:space-between;font-size:.7rem;text-shadow:0 0 5px var(--c)}
+.card{width:100%;background:#0a0a0a;border:1px solid var(--gd);border-radius:12px;padding:15px;margin-bottom:15px;box-shadow:0 0 15px rgba(0,255,255,0.1)}
 .card-head{font-size:.9rem;font-weight:900;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat-box{background:#000;border:1px solid #333;padding:10px;border-radius:6px;text-align:center}
-.stat-val{font-size:1.1rem;color:#fff;display:block;margin-top:5px}
-.stat-label{font-size:.5rem;color:var(--gd);text-transform:uppercase}
-.btn-launch{width:100%;background:linear-gradient(180deg,#b8860b,#8b6508);color:#fff;border:1px solid #da0;padding:15px;border-radius:25px;font-size:.8rem;font-weight:900;margin-top:10px;text-decoration:none;display:block;text-align:center;text-transform:uppercase}
-.mart-box{border-color:var(--p);box-shadow:0 0 20px rgba(213,0,249,.15)}
-.mart-btn{background:linear-gradient(180deg,var(--p),#7b1fa2);border-color:#ea80fc}
-#clock{font-size:1.4rem;font-weight:900;color:var(--c);text-align:center;margin:10px 0}
+.btn-launch{width:100%;background:linear-gradient(180deg,var(--c),#008b8b);color:#000;border:1px solid #fff;padding:15px;border-radius:25px;font-size:.8rem;font-weight:900;margin-top:10px;text-decoration:none;display:block;text-align:center;text-transform:uppercase;box-shadow:0 0 15px var(--c)}
+#shield-info{font-size:.55rem;color:#0f0;text-align:center;margin-top:12px;letter-spacing:1px;animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:0.5}}
 </style>
 </head>
 <body>
 <div class="h">
-<div>⛓️ voluntaryistj.base.eth</div>
-<div class="u38">EPOCH: <span id="te">0</span></div>
+    <div>⛓️ voluntaryistj.base.eth</div>
+    <div style="color:var(--c)">AUTO-MINE: <span style="color:#0f0">READY</span></div>
+</div>
+
+<div class="card" style="border-color:var(--p)">
+<div class="card-head" style="color:var(--p)">🛒 FROSTMART</div>
+<button onclick="nav('mart.html')" class="btn-launch" style="background:var(--p);color:#fff">ENTER EXCHANGE</button>
 </div>
 
 <div class="card">
-<div class="card-head">🕒 TEMPORAL MONITOR <span>365.25 SYNC</span></div>
-<div id="clock">00:00:00</div>
-<div class="stat-grid">
-<div class="stat-box"><span class="stat-label">FsZT Flush</span><span class="stat-val" id="fszt">60:00</span></div>
-<div class="stat-box"><span class="stat-label">FETH Settle</span><span class="stat-val" id="feth">24:00:00</span></div>
-</div>
-</div>
-
-<div class="card mart-box">
-<div class="card-head" style="color:var(--p)">🛒 FROSTMART <span>v1.0</span></div>
-<p style="font-size:.6rem;color:#aaa;margin-bottom:10px">DECENTRALIZED COMMERCE & SHARD EXCHANGE</p>
-<div class="stat-grid">
-<div class="stat-box"><span class="stat-label">NFT Shards</span><span class="stat-val" id="shards">0</span></div>
-<div class="stat-box"><span class="stat-label">Market Status</span><span class="stat-val" style="color:#0f0">OPEN</span></div>
-</div>
-<a href="mart.html" class="btn-launch mart-btn">ENTER FROSTMART</a>
-</div>
-
-<div class="card">
-<div class="card-head">⛏️ MINING NODES</div>
-<div class="stat-grid">
-<div class="stat-box"><span class="stat-label">Total Cash</span><span class="stat-val" id="cash">0.000</span></div>
-<div class="stat-box"><span class="stat-label">Current Hash</span><span class="stat-val" id="hash">0</span></div>
-</div>
+<div class="card-head">⛏️ MINING SECTOR</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-<a href="blocks.html" class="btn-launch">TITAN BLOCKS</a>
-<a href="gem.html" class="btn-launch">TITAN GEMS</a>
+    <button onclick="ignite('blocks.html')" class="btn-launch">FROSTMINES</button>
+    <button onclick="ignite('gem.html')" class="btn-launch">FROSTGEMS</button>
 </div>
+<div id="shield-info">TAPPING ICON AUTO-IGNITES ENGINE</div>
 </div>
 
 <script>
-function uU(){
-    const n=new Date();
-    const estD=new Date(n.getTime()+(n.getTimezoneOffset()*6e4)+(-5*36e5));
-    document.getElementById('clock').innerText=estD.toLocaleTimeString('en-US',{hour12:false});
-    
-    let t=new Date(estD); t.setHours(5,0,0,0); if(estD>=t)t.setDate(t.getDate()+1);
-    const zS=Math.floor((t-estD)/1000);
-    const h=Math.floor(zS/3600),m=Math.floor((zS%3600)/60),s=zS%60;
-    document.getElementById('feth').innerText=`${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    
-    const hS=3600-(Math.floor(Date.now()/1000)%3600);
-    document.getElementById('fszt').innerText=Math.floor(hS/60).toString().padStart(2,'0')+":"+(hS%60).toString().padStart(2,'0');
-    
-    document.getElementById('te').innerText=2147483647-Math.floor(Date.now()/1000);
-    
-    document.getElementById('cash').innerText=(Number(localStorage.getItem('ftc'))||0).toFixed(3);
-    document.getElementById('hash').innerText=localStorage.getItem('hr')||0;
-    document.getElementById('shards').innerText=localStorage.getItem('sh')||0;
+function ignite(url) {
+    localStorage.setItem('autoMine', 'true');
+    setTimeout(() => { window.location.href = url; }, 150);
 }
-setInterval(uU,1000); uU();
+function nav(url) { window.location.href = url; }
 </script>
 </body>
 </html>
