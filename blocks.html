@@ -1,219 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>FrostMines | KOTH Restore 🧬</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta charset="UTF-8">
-  <style>
-    :root {
-      --bg: #020005; --grid: #000; --cell: #0d001a;
-      --gold: #ffd700; --ice: #00e5ff; --purple: #d500f9;
-      --green: #00ff41; --neon: #f0f; --sb: env(safe-area-inset-bottom, 24px);
-    }
-    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; touch-action:none; }
-    body {
-      background: var(--bg); color: var(--green); font-family: 'Courier New', monospace;
-      height: 100dvh; overflow: hidden; display: flex; flex-direction: column; align-items: center;
-      padding: 10px 10px var(--sb) 10px; gap: 5px;
-      background-image: radial-gradient(circle at 50% 50%, #1a0033 0%, #020005 100%);
-    }
-    .h { width: 100%; max-width: 420px; padding: 10px; background: rgba(213,0,249,0.1); border: 1px solid var(--purple); border-radius: 12px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; box-shadow: 0 0 15px var(--purple); }
-    .stats { width: 100%; max-width: 420px; padding: 10px; background: rgba(0,229,255,0.05); border: 1px solid var(--ice); border-radius: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; text-align: center; font-size: 10px; }
-    .streak-wrap { display: flex; gap: 4px; justify-content: center; align-items: center; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(0, 229, 255, 0.1); border: 1px solid var(--ice); }
-    .dot.active { background: var(--ice); box-shadow: 0 0 10px var(--ice); }
-    #g { width: 100%; max-width: 400px; aspect-ratio: 1/1; background: var(--grid); border: 3px solid var(--ice); border-radius: 15px; padding: 5px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; position: relative; box-shadow: 0 0 30px rgba(0,229,255,0.2); margin-top: 10px; }
-    .c { background: var(--cell); border: 1px solid #1a0033; border-radius: 4px; transition: 0.1s; }
-    .c.f { background: linear-gradient(135deg, var(--purple), #7b00d4); border-color: var(--neon); box-shadow: 0 0 12px var(--purple); }
-    .c.ghost { background: rgba(213, 0, 249, 0.3); border-color: var(--purple); }
-    .tray { width: 100%; max-width: 420px; height: 120px; display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.6); border: 1px solid #333; border-radius: 20px; margin-top: 10px; }
-    .shape-slot { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; transform: scale(1.15); }
-    .drag-piece { position: fixed; pointer-events: none; z-index: 1000; display: grid; gap: 2px; transform: translateY(-110px); filter: drop-shadow(0 0 15px var(--neon)); }
-    .mining-btn { width: 90%; padding: 16px; background: linear-gradient(180deg, var(--purple), #4a0080); border: 2px solid var(--neon); border-radius: 35px; color: #fff; font-weight: 900; margin-top: auto; font-size: 18px; letter-spacing: 2px; box-shadow: 0 0 20px var(--purple); }
-    .mining-btn.active { background: linear-gradient(180deg, var(--green), #006400); border-color: #fff; box-shadow: 0 0 30px var(--green); }
-    #notif { position: fixed; top: 35%; background: linear-gradient(135deg, var(--ice), var(--purple)); padding: 25px 40px; border-radius: 20px; color: #fff; font-weight: bold; transform: scale(0); transition: 0.5s; z-index: 999; text-align: center; border: 2px solid #fff; }
-    #notif.show { transform: scale(1); box-shadow: 0 0 50px var(--ice); }
-  </style>
+    <title>FAI | FrostBlocks ❄️</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --bg: #050505; --grid: #111; --cell: #1a1a1a;
+            --frost-blue: #00f2ff; --frost-purple: #bc13fe;
+            --voluntaryist-gold: #ffd700; --shadow: rgba(0, 242, 255, 0.2);
+            --sb: env(safe-area-inset-bottom, 20px);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body {
+            background: var(--bg); color: #fff; height: 100dvh; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 15px 15px var(--sb) 15px;
+            background-image: linear-gradient(to bottom, #000 0%, #050505 100%);
+        }
+        /* Header & Stats */
+        .fai-header { width: 100%; max-width: 400px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--frost-purple); padding-bottom: 5px; }
+        .logo { font-weight: 900; letter-spacing: 2px; color: var(--frost-blue); text-shadow: 0 0 10px var(--frost-blue); }
+        .score-box { text-align: right; }
+        .score-box div { font-size: 10px; text-transform: uppercase; color: var(--frost-purple); }
+        .score-box span { font-size: 20px; font-weight: bold; color: #fff; }
+
+        /* The Grid */
+        #grid {
+            width: 100%; max-width: 380px; aspect-ratio: 1/1;
+            background: var(--grid); border: 2px solid #333; border-radius: 8px;
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; padding: 4px;
+            box-shadow: 0 0 20px rgba(0,0,0,1); position: relative;
+        }
+        .cell { background: var(--cell); border-radius: 2px; transition: background 0.2s, box-shadow 0.2s; }
+        .cell.filled { 
+            background: linear-gradient(135deg, var(--frost-blue), var(--frost-purple)); 
+            box-shadow: inset 0 0 5px rgba(255,255,255,0.4), 0 0 10px var(--frost-purple);
+            border: none;
+        }
+        .cell.shadow { background: var(--shadow); border: 1px dashed var(--frost-blue); }
+
+        /* Piece Tray */
+        .tray {
+            width: 100%; max-width: 400px; height: 120px;
+            display: flex; justify-content: space-around; align-items: center;
+            margin-top: 20px; background: rgba(255,255,255,0.03); border-radius: 15px;
+            border: 1px solid #222;
+        }
+        .piece-slot { width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; }
+        .drag-active { position: fixed; pointer-events: none; z-index: 100; transform: translateY(-120px) scale(1.1); filter: drop-shadow(0 0 15px var(--frost-blue)); }
+
+        /* Controls */
+        .btn-link {
+            width: 90%; padding: 15px; margin-top: auto; border: none; border-radius: 30px;
+            background: linear-gradient(90deg, var(--frost-purple), var(--frost-blue));
+            color: #fff; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(188, 19, 254, 0.4);
+        }
+        .btn-link:active { transform: scale(0.98); opacity: 0.8; }
+    </style>
 </head>
 <body onload="init()">
 
-<div class="h"><div>🧬 FrostMines | KOTH RC68</div><div id="utc">UTC: --:--:--</div></div>
-<div class="stats">
-  <div class="streak-wrap"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-  <div>KOTH HIGH: <span id="high-score">0</span></div>
-  <div>CURRENT: <span id="score">0</span></div>
-  <div>KOTH RESET: <span id="timer">150s</span></div>
+<div class="fai-header">
+    <div class="logo">FAI // FROSTBLOCKS</div>
+    <div class="score-box">
+        <div>KOTH High Score</div>
+        <span id="highScore">0</span>
+    </div>
 </div>
-<div id="g"></div>
+
+<div id="grid"></div>
+
 <div class="tray" id="tray"></div>
-<button class="mining-btn" id="mine-btn" onclick="tL()">INITIATE 40Hz NEURAL LINK</button>
-<div id="notif"></div>
+
+<div style="margin-top: 15px; font-size: 12px; color: var(--frost-blue);">
+    AI ORACLE: <span id="oracleStatus">IDLE</span> | VOLUNTARYIST NFT SYNCED
+</div>
+
+<button class="btn-link" onclick="toggleAI()">Engage FAI Neural Link</button>
 
 <script>
-let G=new Uint8Array(100), SCORE=0, HIGH=Number(localStorage.getItem('koth_high'))||0, HT=150, ENG=false, A$={c:null, h40:null, h7:null}, streak=0;
-let shapes = [[[1,1,1]], [[1,1],[1,1]], [[1,1,1],[0,1,0]], [[1,1],[1,0],[1,0]], [[1]], [[1,1,1,1]], [[1,1]], [[1,1,1],[1,0,0]]];
-let trayShapes = [], dragging = null;
+    let board = Array(100).fill(0);
+    let score = 0;
+    let high = localStorage.getItem('fai_high') || 0;
+    let dragging = null;
+    let audioCtx = null;
 
-function tL() {
-  if(!A$.c) A$.c = new (window.AudioContext || window.webkitAudioContext)();
-  const b = document.getElementById('mine-btn');
-  ENG = !ENG;
-  if(ENG) { b.innerText="40Hz LINK ACTIVE"; b.classList.add('active'); startFocusWaves(); } 
-  else { b.innerText="INITIATE 40Hz NEURAL LINK"; b.classList.remove('active'); stopFocusWaves(); }
-}
+    const shapes = [
+        [[1,1,1]], [[1,1],[1,1]], [[1,1,1],[0,1,0]], [[1,1],[1,0],[1,0]], [[1]], [[1,1,1,1]], [[1,1,1],[1,0,0]]
+    ];
 
-function startFocusWaves() {
-  A$.h40 = A$.c.createOscillator(); A$.h40.type='sine'; A$.h40.frequency.value=40;
-  const g40 = A$.c.createGain(); g40.gain.value=0.03; A$.h40.connect(g40).connect(A$.c.destination);
-  A$.h40.start();
-  A$.h7 = A$.c.createOscillator(); A$.h7.type='sine'; A$.h7.frequency.value=7.83;
-  const g7 = A$.c.createGain(); g7.gain.value=0.06; A$.h7.connect(g7).connect(A$.c.destination);
-  A$.h7.start();
-}
-
-function stopFocusWaves() { if(A$.h40){A$.h40.stop();A$.h40=null;} if(A$.h7){A$.h7.stop();A$.h7=null;} }
-
-function init() {
-  const gD = document.getElementById('g'); gD.innerHTML = ''; G.fill(0);
-  for (let i=0; i<100; i++) {
-    const c = document.createElement('div'); c.className = 'c'; c.id = 'c'+i; gD.appendChild(c);
-  }
-  document.getElementById('high-score').innerText = HIGH;
-  refreshTray();
-  setInterval(() => { 
-    if(ENG) { 
-      HT--; 
-      if(HT<=0) { HT=150; validateKOTH(); } 
-      uU(); 
-    } 
-    updateClock(); 
-  }, 1000);
-}
-
-function refreshTray() {
-  const t = document.getElementById('tray'); t.innerHTML = ''; trayShapes = [];
-  for(let i=0; i<3; i++) {
-    let s = shapes[Math.floor(Math.random()*shapes.length)]; trayShapes.push(s);
-    let slot = document.createElement('div'); slot.className = 'shape-slot';
-    slot.appendChild(renderShape(s, i)); t.appendChild(slot);
-  }
-}
-
-function renderShape(shape, trayIdx) {
-  const container = document.createElement('div'); container.style.display = 'grid';
-  container.style.gridTemplateColumns = `repeat(${shape[0].length}, 18px)`; container.style.gap = '2px';
-  shape.forEach(row => row.forEach(val => {
-    let cell = document.createElement('div'); cell.style.width = '18px'; cell.style.height = '18px';
-    if(val) cell.className = 'c f'; container.appendChild(cell);
-  }));
-  container.addEventListener('touchstart', (e) => startDrag(e, shape, trayIdx));
-  return container;
-}
-
-function startDrag(e, shape, trayIdx) {
-  if(!ENG) return;
-  const t = e.touches[0];
-  dragging = { shape, trayIdx, el: document.createElement('div') };
-  const cs = document.getElementById('c0').offsetWidth;
-  dragging.el.className = 'drag-piece';
-  dragging.el.style.gridTemplateColumns = `repeat(${shape[0].length}, ${cs}px)`;
-  shape.forEach(row => row.forEach(val => {
-    let cell = document.createElement('div'); cell.style.width = cs+'px'; cell.style.height = cs+'px';
-    if(val) cell.className = 'c f'; dragging.el.appendChild(cell);
-  }));
-  dragging.el.style.left = (t.clientX - (shape[0].length * cs)/2) + 'px';
-  dragging.el.style.top = (t.clientY - 110) + 'px';
-  document.body.appendChild(dragging.el);
-}
-
-document.addEventListener('touchmove', e => {
-  if(!dragging) return; e.preventDefault();
-  const t = e.touches[0];
-  dragging.el.style.left = (t.clientX - dragging.el.offsetWidth/2) + 'px';
-  dragging.el.style.top = (t.clientY - 110) + 'px';
-  showGhost(t);
-}, {passive:false});
-
-function showGhost(t) {
-  document.querySelectorAll('.ghost').forEach(c => c.classList.remove('ghost'));
-  const target = document.elementFromPoint(t.clientX, t.clientY - 110);
-  if(target && target.classList.contains('c')) {
-    let idx = parseInt(target.id.replace('c',''));
-    if(canPlace(idx, dragging.shape)) placeShape(idx, dragging.shape, true);
-  }
-}
-
-function canPlace(idx, s) {
-  const r = Math.floor(idx/10), c = idx%10;
-  for(let ri=0; ri<s.length; ri++) for(let ci=0; ci<s[0].length; ci++) {
-    if(s[ri][ci]) {
-      let nr = r+ri, nc = c+ci;
-      if(nr>=10 || nc>=10 || G[nr*10+nc]) return false;
+    function init() {
+        const g = document.getElementById('grid');
+        g.innerHTML = '';
+        for(let i=0; i<100; i++) {
+            let c = document.createElement('div');
+            c.className = 'cell'; c.id = 'cell-' + i;
+            g.appendChild(c);
+        }
+        document.getElementById('highScore').innerText = high;
+        refreshTray();
     }
-  }
-  return true;
-}
 
-function placeShape(idx, s, ghost) {
-  const r = Math.floor(idx/10), c = idx%10;
-  s.forEach((row, ri) => row.forEach((val, ci) => {
-    if(val) {
-      const cell = document.getElementById('c'+((r+ri)*10 + (c+ci)));
-      if(ghost) cell.classList.add('ghost');
-      else { G[(r+ri)*10+(c+ci)]=1; cell.classList.add('f'); }
+    function toggleAI() {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        document.getElementById('oracleStatus').innerText = "ACTIVE (40Hz)";
+        playSfx(440, 'sine', 0.2);
     }
-  }));
-}
 
-document.addEventListener('touchend', e => {
-  if(!dragging) return;
-  const t = e.changedTouches[0];
-  const target = document.elementFromPoint(t.clientX, t.clientY - 110);
-  if(target && target.classList.contains('c')) {
-    let idx = parseInt(target.id.replace('c',''));
-    if(canPlace(idx, dragging.shape)) {
-      placeShape(idx, dragging.shape, false);
-      pS(1800, 'sine', 0.1); if(navigator.vibrate) navigator.vibrate(25);
-      checkLines();
-      document.getElementById('tray').children[dragging.trayIdx].innerHTML = '';
-      trayShapes[dragging.trayIdx] = null;
-      if(trayShapes.every(s => s === null)) refreshTray();
+    function refreshTray() {
+        const t = document.getElementById('tray');
+        t.innerHTML = '';
+        for(let i=0; i<3; i++) {
+            let s = shapes[Math.floor(Math.random() * shapes.length)];
+            let slot = document.createElement('div');
+            slot.className = 'piece-slot';
+            slot.appendChild(renderPiece(s, i));
+            t.appendChild(slot);
+        }
     }
-  }
-  dragging.el.remove(); dragging = null;
-  document.querySelectorAll('.ghost').forEach(c => c.classList.remove('ghost'));
-});
 
-function checkLines() {
-  let toClear = new Set();
-  for(let r=0; r<10; r++) { let f=true; for(let c=0; c<10; c++) if(!G[r*10+c]) f=false; if(f) for(let c=0; c<10; c++) toClear.add(r*10+c); }
-  for(let c=0; c<10; c++) { let f=true; for(let r=0; r<10; r++) if(!G[r*10+c]) f=false; if(f) for(let r=0; r<10; r++) toClear.add(r*10+c); }
-  if(toClear.size > 0) {
-    toClear.forEach(idx => { G[idx]=0; document.getElementById('c'+idx).classList.remove('f'); });
-    SCORE += toClear.size * 10; 
-    if(SCORE > HIGH) { HIGH = SCORE; localStorage.setItem('koth_high', HIGH); }
-    uU(); pS(963, 'triangle', 0.4);
-  }
-}
+    function renderPiece(shape, index) {
+        const container = document.createElement('div');
+        container.style.display = 'grid';
+        container.style.gridTemplateColumns = `repeat(${shape[0].length}, 20px)`;
+        container.style.gap = '2px';
+        shape.forEach(row => row.forEach(val => {
+            let c = document.createElement('div');
+            c.style.width = '20px'; c.style.height = '20px';
+            if(val) {
+                c.className = 'cell filled';
+                c.style.background = 'var(--frost-blue)';
+            } else {
+                c.style.opacity = '0';
+            }
+            container.appendChild(c);
+        }));
+        container.ontouchstart = (e) => startDrag(e, shape, index);
+        return container;
+    }
 
-function pS(f,t,d) { if(!A$.c) return; const o=A$.c.createOscillator(), g=A$.c.createGain(); o.type=t; o.frequency.value=f; g.gain.setValueAtTime(0.15, A$.c.currentTime); g.gain.exponentialRampToValueAtTime(0.01, A$.c.currentTime+d); o.connect(g).connect(A$.c.destination); o.start(); o.stop(A$.c.currentTime+d); }
+    function startDrag(e, shape, index) {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const touch = e.touches[0];
+        dragging = { shape, index, el: renderPiece(shape, -1) };
+        dragging.el.classList.add('drag-active');
+        document.body.appendChild(dragging.el);
+        moveDrag(touch);
+    }
 
-function validateKOTH() { 
-  if(SCORE >= 1000) { 
-    streak++; 
-    if(streak>=3) { showNotif("KING OF THE HILL: ASCENDED! 👑"); streak=0; } 
-    else showNotif("HILL DEFENDED! 🛡️"); 
-  } else {
-    streak = 0;
-    showNotif("HILL LOST: REBOOTING...");
-  }
-  updateStreak(); 
-}
+    document.ontouchmove = (e) => {
+        if(!dragging) return;
+        e.preventDefault();
+        moveDrag(e.touches[0]);
+    };
 
-function updateStreak() { const ds=document.querySelectorAll('.dot'); ds.forEach((d,i) => d.className = i<streak ? 'dot active' : 'dot'); }
-function showNotif(txt) { const n=document.getElementById('notif'); n.innerText=txt; n.classList.add('show'); setTimeout(()=>n.classList.remove('show'), 3000); }
-function uU() { document.getElementById('high-score').innerText = HIGH; document.getElementById('score').innerText = SCORE; document.getElementById('timer').innerText = HT+"s"; }
-function updateClock() { const d=new Date(); document.getElementById('utc').innerText = `UTC: ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}:${String(d.getUTCSeconds()).padStart(2,'0')}`; }
+    function moveDrag(touch) {
+        dragging.el.style.left = touch.clientX - (dragging.el.offsetWidth / 2) + 'px';
+        dragging.el.style.top = touch.clientY + 'px';
+        
+        // Shadow Logic (AI Oracle assist)
+        document.querySelectorAll('.cell').forEach(c => c.classList.remove('shadow'));
+        const target = document.elementFromPoint(touch.clientX, touch.clientY - 120);
+        if(target && target.classList.contains('cell')) {
+            const id = parseInt(target.id.split('-')[1]);
+            if(canPlace(id, dragging.shape)) showShadow(id, dragging.shape);
+        }
+    }
+
+    function canPlace(id, shape) {
+        const r = Math.floor(id/10), c = id%10;
+        for(let i=0; i<shape.length; i++) {
+            for(let j=0; j<shape[0].length; j++) {
+                if(shape[i][j]) {
+                    let nr = r+i, nc = c+j;
+                    if(nr >= 10 || nc >= 10 || board[nr*10 + nc]) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    function showShadow(id, shape) {
+        const r = Math.floor(id/10), c = id%10;
+        shape.forEach((row, i) => row.forEach((val, j) => {
+            if(val) document.getElementById('cell-' + ((r+i)*10 + (c+j))).classList.add('shadow');
+        }));
+    }
+
+    document.ontouchend = (e) => {
+        if(!dragging) return;
+        const touch = e.changedTouches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY - 120);
+        
+        if(target && target.classList.contains('cell')) {
+            const id = parseInt(target.id.split('-')[1]);
+            if(canPlace(id, dragging.shape)) {
+                placePiece(id, dragging.shape);
+                document.getElementById('tray').children[dragging.index].innerHTML = '';
+                if([...document.getElementById('tray').querySelectorAll('.piece-slot')].every(s => s.innerHTML === '')) refreshTray();
+            }
+        }
+        
+        dragging.el.remove();
+        dragging = null;
+        document.querySelectorAll('.cell').forEach(c => c.classList.remove('shadow'));
+    };
+
+    function placePiece(id, shape) {
+        const r = Math.floor(id/10), c = id%10;
+        shape.forEach((row, i) => row.forEach((val, j) => {
+            if(val) {
+                board[(r+i)*10 + (c+j)] = 1;
+                document.getElementById('cell-' + ((r+i)*10 + (c+j))).classList.add('filled');
+            }
+        }));
+        playSfx(600, 'triangle', 0.1);
+        checkClears();
+    }
+
+    function checkClears() {
+        let rows = [], cols = [];
+        for(let i=0; i<10; i++) {
+            let rF = true, cF = true;
+            for(let j=0; j<10; j++) {
+                if(!board[i*10 + j]) rF = false;
+                if(!board[j*10 + i]) cF = false;
+            }
+            if(rF) rows.push(i);
+            if(cF) cols.push(i);
+        }
+
+        rows.forEach(r => { for(let c=0; c<10; c++) board[r*10+c]=0; });
+        cols.forEach(c => { for(let r=0; r<10; r++) board[r*10+c]=0; });
+
+        if(rows.length > 0 || cols.length > 0) {
+            score += (rows.length + cols.length) * 100;
+            if(score > high) { high = score; localStorage.setItem('fai_high', high); }
+            document.getElementById('highScore').innerText = high;
+            playSfx(880, 'square', 0.3);
+            setTimeout(initBoard, 200);
+        }
+    }
+
+    function initBoard() {
+        for(let i=0; i<100; i++) {
+            const c = document.getElementById('cell-' + i);
+            c.className = board[i] ? 'cell filled' : 'cell';
+        }
+    }
+
+    function playSfx(f, type, d) {
+        if(!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type; osc.frequency.value = f;
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + d);
+    }
 </script>
 </body>
 </html>
