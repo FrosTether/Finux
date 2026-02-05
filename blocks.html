@@ -1,92 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<title>Frost Crush | Burn Pulse Sync</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,maximum-scale=1,viewport-fit=cover">
-<meta charset="UTF-8">
-<style>
-:root{--bg:#020202;--g:#FFD700;--gd:#B8860b;--f:#0a0a0a;--p:#d500f9;--c:#0ff;--sb:env(safe-area-inset-bottom,20px)}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;touch-action:none}
-body{background:var(--bg);color:var(--g);font-family:'Courier New',monospace;height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center}
-.h{width:100%;background:#000;border-bottom:2px solid var(--c);padding:8px 15px;display:flex;justify-content:space-between;font-size:.6rem;z-index:50}
-.d{width:96%;background:#0a0a0a;border:2px solid var(--gd);border-radius:8px;margin:8px 0;padding:8px;box-shadow:0 0 20px rgba(255,215,0,.15)}
-#g{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;aspect-ratio:1/1;height:min(98vw,50vh);width:min(98vw,50vh);background:#050505;border:3px solid var(--c);padding:4px;position:relative;transition:0.4s}
-/* Burn Pulse Ripple Animation */
-.burn-ripple{border-color:#fff !important; box-shadow: 0 0 40px var(--c), inset 0 0 20px #fff !important}
-.c{background:var(--f);width:100%;height:100%;display:flex;justify-content:center;align-items:center;border:1px solid #1a1a1a;position:relative}
-.fi{background:linear-gradient(135deg,var(--p),#7b1fa2);border:1px solid #ea80fc;box-shadow:0 0 15px var(--p);z-index:5}
-.hn{height:calc(20vh + var(--sb));width:100%;background:#050505;border-top:3px solid var(--p);display:flex;justify-content:center;gap:10px;align-items:center;padding-bottom:calc(var(--sb) + 35px)}
-.ba{width:100%;background:linear-gradient(180deg,#b8860b,#8b6508);color:#fff;border:2px solid var(--gd);padding:10px;border-radius:20px;font-size:.7rem;font-weight:900}
-.ba.a{background:linear-gradient(180deg,var(--c),#008b8b);border-color:var(--c);color:#000}
-</style>
-</head>
-<body onload="init()">
-<div class="h"><div>👑 Frost Crush | FTC: $0.00078</div><div id="te">UTC: 0</div></div>
-<div class="d">
-<div class="sr" style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px">
-<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">FTC: <span id="hr">0</span></div>
-<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">HILL: <span id="score">0</span></div>
-<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">DPR: <span id="burn">0</span></div>
-<div class="ab" style="background:#000;border:1px solid #333;text-align:center;font-size:.5rem;color:#fff">CYCLE: <span id="cycle">150s</span></div>
-</div>
-<button id="lb" class="ba" onclick="tL()">🫰 IGNITE ENGINE</button>
-</div>
-<div id="g"></div>
-<div class="hn" id="hn"></div>
+let cycleStreak = 0; // Persistent streak tracker
 
-<script>
-const FTC_CONTRACT = "0xee132a0fa1f0724d3ec3936f0cdc5213af748c42";
-let G=new Uint8Array(100), R=Number(localStorage.getItem('hr'))||0, SCORE=0, HT=150, BURN=Number(localStorage.getItem('burnCount'))||0, A$={c:null,hum:null}, ENG=false;
-
-function tL(){if(!A$.c)A$.c=new(window.AudioContext||window.webkitAudioContext)();const b=document.getElementById('lb');if(ENG){ENG=false;if(A$.hum)A$.hum.stop();b.innerText="🫰 IGNITE ENGINE";}else{ENG=true;const hO=A$.c.createOscillator();hO.type='sine';hO.frequency.value=7.83;hO.connect(A$.c.destination);hO.start();A$.hum=hO;b.innerText="🟢 MINING ACTIVE";}}
-
-function init(){
-    const gD=document.getElementById('g');gD.innerHTML='';G.fill(0);
-    for(let i=0;i<100;i++){let c=document.createElement('div');c.className='c';c.id='c'+i;gD.appendChild(c)}
-    setInterval(()=>{if(ENG){HT--; if(HT<=0){HT=150; R+=6.685; localStorage.setItem('hr',R); triggerBurnPulse();} uU();}},1000);
-}
-
-function triggerBurnPulse(){
-    const g=document.getElementById('g'); g.classList.add('burn-ripple');
-    if(navigator.vibrate) navigator.vibrate([10, 40, 10]);
-    setTimeout(()=>g.classList.remove('burn-ripple'), 500);
-}
-
-function uU(){
-    document.getElementById('hr').innerText=Math.floor(R);
-    document.getElementById('score').innerText=SCORE;
-    document.getElementById('burn').innerText=BURN;
-    document.getElementById('cycle').innerText=HT+"s";
-}
-init();
-</script>
-</body>
-</html>
-<style>
-/* ... [Existing variables] ... */
-.surge-gold { border-color: var(--g) !important; box-shadow: 0 0 50px var(--g) !important; background: rgba(255, 215, 0, 0.1) !important; }
-.ore-lock { filter: grayscale(1) opacity(0.5); pointer-events: none; }
-</style>
-
-<script>
-let lastPrice = 0.0007819; // Feb 4, 2026 Base Price
-
-function checkMarketSurge(currentPrice) {
-    const change = ((currentPrice - lastPrice) / lastPrice) * 100;
-    const g = document.getElementById('g');
-    
-    if (change >= 5) {
-        g.classList.add('surge-gold');
-        pS(2200, 'sine', 1.0, 0.3); // High-yield chime
-    } else if (change <= -15) {
-        // Anti-Rug Defensive Lock
-        g.classList.add('ore-lock');
-        document.getElementById('pv-stat').innerText = "RUG-PROTECT";
-        document.getElementById('pv-stat').style.color = "var(--p)";
-        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
+async function checkHatch() {
+    if (SCORE > 800) { // Elite threshold for Rare Hatch
+        cycleStreak++;
+        if (cycleStreak >= 3) {
+            await mintRareHatch();
+            cycleStreak = 0; // Reset streak after rare mint
+        } else {
+            // Standard Hatchling Reward
+            const sh = (Number(localStorage.getItem('sh'))||0) + 1;
+            localStorage.setItem('sh', sh);
+            pS(2200, 'sine', 0.6); 
+        }
+    } else {
+        cycleStreak = 0; // Streak broken if threshold not met
     }
-    lastPrice = currentPrice;
+    SCORE = 0;
 }
 
-// ... [Existing init and update loops] ...
-</script>
+async function mintRareHatch() {
+    const rareId = await gPV(); // Salting with real FTC contract
+    const rareNFTs = JSON.parse(localStorage.getItem('rareNFTs') || '[]');
+    rareNFTs.push({id: rareId, type: 'Ice Blue Sprite', timestamp: Date.now()});
+    localStorage.setItem('rareNFTs', JSON.stringify(rareNFTs));
+    
+    // Rare Surge Visual & Audio
+    document.getElementById('g').classList.add('surge-gold'); 
+    pS(432, 'sine', 2.0, 0.4); pS(443.1, 'sine', 2.0, 0.4);
+    if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
+    setTimeout(() => document.getElementById('g').classList.remove('surge-gold'), 2000);
+}
