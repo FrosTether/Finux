@@ -1,6 +1,17 @@
+
 # ❄️ The Frost Protocol (Finux OS)
 
-> **Version:** Kernel v1.2 (Codename: Iceland)  
+>
+
+# REPO: frostchain-mirror-protocol
+# OWNER: FrosTether
+
+git init
+git add whitepaper.md ice_box_core.js
+git commit -m "RC155: Initializing Ice Chain Overdrive (963Hz_Quantum_Locked)"
+git remote add origin https://github.com/FrosTether/frostchain-mirror-protocol.git
+git push -u origin main
+ **Version:** Kernel v1.2 (Codename: Iceland)  
 > **Status:** Stealth / Alpha  
 > **Architecture:** ARM64 / Android Native  
 > **License:** Proprietary (Pending Open Source Release)
