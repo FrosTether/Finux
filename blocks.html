@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>FAI | ASSET_PROTECT 🧬</title>
+    <title>FAI | AMIAH_DOODLES_ULTIMATE 🧬</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <style>
         :root {
-            --bg: #000; --thermal: #fff000; --glow: 0 0 20px #fff000; --fnr: #00f2ff;
+            --bg: #000; --thermal: #fff000; --glow: 0 0 25px #fff000; --sig: #00f2ff;
         }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family: 'Courier New', monospace; }
         body {
@@ -13,12 +13,11 @@
             display: flex; flex-direction: column; align-items: center;
             transition: background 0.1s ease-out; touch-action: none;
         }
-        body.sync-pulse { background: #1a1a00 !important; }
+        body.mint-pulse { background: #222200 !important; }
 
-        /* SOVEREIGN TICKER */
-        .network-ticker { width: 100%; background: #080808; border-bottom: 1px solid #222; padding: 5px; font-size: 8px; color: #555; overflow: hidden; white-space: nowrap; }
-        .ticker-move { display: inline-block; animation: ticker 65s linear infinite; }
-        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .chain-data { width: 100%; background: #080808; border-bottom: 1px solid #222; padding: 5px 15px; font-size: 8px; color: #555; overflow: hidden; white-space: nowrap; }
+        .ticker-scroll { display: inline-block; animation: scroll 65s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
         .header { width: 360px; display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 2px solid #222; z-index: 10; }
         #timer { font-size: 24px; font-weight: 900; color: #f0f; text-shadow: 0 0 10px #f0f; }
@@ -28,7 +27,7 @@
         #grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; width: 340px; height: 340px; }
         .cell { background: #050505; border-radius: 2px; border: 1px solid #111; }
         .filled { background: var(--thermal); box-shadow: var(--glow); border: none; z-index: 2; }
-        .snap-guide { background: rgba(255, 240, 0, 0.3) !important; border: 1px solid var(--thermal); }
+        .snap-guide { background: rgba(0, 242, 255, 0.3) !important; border: 1px solid var(--sig); }
 
         .tray { width: 360px; height: 120px; display: flex; justify-content: space-around; align-items: center; margin-top: 15px; background: rgba(255,255,255,0.02); border-radius: 20px; }
         .slot { width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; transform: scale(1.1); }
@@ -39,29 +38,29 @@
 </head>
 <body onload="init()">
 
-<div class="network-ticker">
-    <div class="ticker-move">
-        LIQUID_PROTECT: 0x8eA6...10E6 (RECEIVE_ONLY) | ALLOCATED_FUEL: 2.2M SPHYNX + 1,000 TUSD | VAULT: 0x465e...b0f5 | FNR_HOLDER: 0x5147...7da1d | TRUMP: 0xda5e...bef6 | FRST: 0x9fcf...574b | FROSH: 0xdeec...7a0e | BTC_LEGACY: 1Cn654KAo1rmLKkxqr5ubnmhU9dFD3ZNnZ
+<div class="chain-data">
+    <div class="ticker-scroll">
+        ID: voluntaryistj.base.eth | LIAISON: 0x6e47...114c | VAULT: 0x465e...b0f5 | PROTECT: 0x8eA6...10E6 | @agorajay -> AMIAH_DOODLES | IOTA_BRIDGE: 0xd944...0782 | AIRDROP_2019: 0xc668...664f | SCARCITY: 21M/144M
     </div>
 </div>
 
 <div class="header">
     <div>
-        <div style="color:var(--thermal); font-size: 11px; font-weight: 900;">FAI // ASSET_PROTECT</div>
+        <div style="color:var(--thermal); font-size: 11px; font-weight: 900;">FAI // AMIAH ULTIMATE</div>
         <div id="timer">150s</div>
     </div>
-    <div style="text-align:right"><small style="color:#444">X25_EXTRACTION_YIELD</small><div id="yield">0.0000</div></div>
+    <div style="text-align:right"><small style="color:#444">X25_MINED_YIELD</small><div id="yield">0.0000</div></div>
 </div>
 
 <div class="grid-wrap"><div id="grid"></div></div>
 <div id="tray" class="tray"></div>
 
-<button class="ignite-btn" onclick="igniteEngine()">IGNITE SOVEREIGN SPRINT</button>
+<button class="ignite-btn" onclick="igniteEngine()">IGNITE ULTIMATE NODE</button>
 
 <script>
-    let board = Array(81).fill(0), yield_extracted = 0, timer = 150, active = false;
-    let audio = null, beatCount = 0, dragging = null;
-    const woodokuShapes = [[[1,1,1],[1,1,1]], [[1,1,1]], [[1,1],[1,1]], [[1]], [[1,1,1,1]], [[1,1,1],[0,1,0]], [[1,1,1,1,1]]];
+    let board = Array(81).fill(0), ftc_yield = 0, timer = 150, active = false;
+    let audio = null, beatIdx = 0, dragging = null;
+    const shapes = [[[1,1,1],[1,1,1]], [[1,1,1]], [[1,1],[1,1]], [[1]], [[1,1,1,1]], [[1,1,1],[0,1,0]], [[1,1,1,1,1]]];
 
     function init() {
         const g = document.getElementById('grid'); g.innerHTML = '';
@@ -74,14 +73,14 @@
     function igniteEngine() {
         if(!audio) {
             audio = new (window.AudioContext || window.webkitAudioContext)();
-            setupBinaural(40, -1); setupBinaural(51.11, 1); // 11.11Hz Sync
+            setupBinaural(40, -1); setupBinaural(51.11, 1); 
             active = true;
             document.querySelector('.ignite-btn').style.display = 'none';
             setInterval(() => {
                 if(timer > 0) {
                     timer--; document.getElementById('timer').innerText = timer + "s";
                 } else {
-                    active = false; alert("ASSET EXTRACTION SECURED. YIELD ROUTED TO 0x8eA6...10E6: " + yield_extracted.toFixed(4) + " FTC"); location.reload();
+                    active = false; alert("ULTIMATE EXTRACTION COMPLETE. YIELD ROUTED TO VAULT."); location.reload();
                 }
             }, 1000);
             setInterval(engineTick, 500); // 120BPM Sync
@@ -96,13 +95,9 @@
 
     function engineTick() {
         if(!active) return;
-        beatCount++;
-        if(beatCount % 4 === 0) {
-            document.body.classList.add('sync-pulse');
-            setTimeout(() => document.body.classList.remove('sync-pulse'), 50);
-            percussive(60, 0.15, 'sine'); // Industrial Kick
-        }
-        percussive(11500, 0.01, 'white-noise'); // Hi-Hat
+        beatIdx++;
+        if(beatIdx % 4 === 0) percussive(60, 0.15, 'sine'); // Industrial Kick
+        percussive(11500, 0.01, 'white-noise'); // Addictive Hi-Hat
     }
 
     function percussive(f, d, type) {
@@ -126,7 +121,7 @@
     function refreshTray() {
         const t = document.getElementById('tray'); t.innerHTML = '';
         for(let i=0; i<3; i++) {
-            let s = woodokuShapes[Math.floor(Math.random() * woodokuShapes.length)];
+            let s = shapes[Math.floor(Math.random() * shapes.length)];
             let slot = document.createElement('div'); slot.className = 'slot';
             slot.appendChild(renderPiece(s, i, 20)); t.appendChild(slot);
         }
@@ -159,7 +154,7 @@
         dragging.el.style.left = t.clientX - (dragging.el.offsetWidth / 2) + 'px';
         dragging.el.style.top = t.clientY + 'px';
         document.querySelectorAll('.cell').forEach(c => c.classList.remove('snap-guide'));
-        const target = document.elementFromPoint(t.clientX, t.clientY - 135); // 135px S25 FE Lift
+        const target = document.elementFromPoint(t.clientX, t.clientY - 135); // 🪶 Calibration
         if(target && target.classList.contains('cell')) {
             const id = parseInt(target.id.split('-')[1]);
             if(canPlace(id, dragging.shape)) showSnap(id, dragging.shape);
@@ -201,7 +196,7 @@
         s.forEach((row, i) => row.forEach((val, j) => {
             if(val) { board[(r+i)*9+c+j]=1; document.getElementById('c-'+((r+i)*9+c+j)).className='cell filled'; }
         }));
-        percussive(2200, 0.04, 'triangle'); 
+        percussive(2500, 0.04, 'triangle'); // Mechanical Click
         if(navigator.vibrate) navigator.vibrate(10);
         checkClears();
     }
@@ -220,8 +215,10 @@
         }
         let total = rs.length + cs.length + sqs.length;
         if(total > 0) {
-            yield_extracted += total * 0.444; // THE X25 MULTIPLIER (Base extraction)
+            yield_extracted += total * 0.444; 
             document.getElementById('yield').innerText = yield_extracted.toFixed(4);
+            document.body.classList.add('mint-pulse');
+            setTimeout(() => document.body.classList.remove('mint-pulse'), 100);
             rs.forEach(r => { for(let c=0; c<9; c++) board[r*9+c]=0; });
             cs.forEach(c => { for(let r=0; r<9; r++) board[r*9+c]=0; });
             sqs.forEach(s => { for(let i=0; i<3; i++) for(let j=0; j<3; j++) board[(s.y+i)*9+(s.x+j)]=0; });
