@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>⛓️‍💥 duku — RC168 | TEMPORAL_GENESIS</title>
+
+<style>
+:root {
+  --bg: #000; --aqua: oklch(75% 0.12 210); --ice: oklch(85% 0.15 230);
+  --leet: oklch(90% 0.4 100); --burn: oklch(55% 0.25 20);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: "Courier New", monospace; }
+body { background: var(--bg); color: #fff; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: 8px; }
+
+.ticker { width: 100%; border-bottom: 2px solid #222; padding: 4px; font-size: 7px; color: var(--aqua); white-space: nowrap; overflow: hidden; background: #080808; }
+.ticker-scroll { display: inline-block; animation: scroll 40s linear infinite; }
+@keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+
+.header { width: 100%; max-width: 380px; display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 2px solid var(--leet); }
+#yield { font-size: 28px; font-weight: 900; color: var(--leet); text-shadow: 0 0 20px var(--leet); }
+
+.grid-container { width: 100%; max-width: 380px; aspect-ratio: 1/1; display: grid; grid-template-rows: repeat(3, 1fr); background: #0a0a0a; border-radius: 12px; padding: 4px; margin: 8px 0; border: 2px solid #222; }
+.layer-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #050505; }
+.cell { background: #000; border: 1px solid #111; aspect-ratio: 1/1; }
+.filled.ice { background: var(--ice); box-shadow: 0 0 15px var(--ice); }
+
+.tray-container { width: 100%; max-width: 380px; display: flex; gap: 8px; margin-top: 10px; }
+.tray { flex: 3; height: 100px; display: flex; justify-content: space-around; align-items: center; background: #0a0a0a; border-radius: 15px; border: 1px solid #222; }
+.gas-burn-btn { flex: 1; height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #111; border: 2px solid var(--burn); border-radius: 15px; color: var(--burn); font-weight: 900; font-size: 8px; cursor: pointer; }
+
+.ignite-btn { width: 90%; padding: 22px; margin-top: auto; margin-bottom: 15px; border: 5px solid var(--leet); color: var(--leet); font-weight: 900; border-radius: 50px; background: transparent; letter-spacing: 12px; box-shadow: 0 0 30px var(--leet); cursor: pointer; }
+.status-log { font-size: 7px; color: var(--aqua); margin-top: 4px; font-weight: 900; text-transform: uppercase; }
+</style>
+</head>
+
+<body onload="init()">
+<div class="ticker"><div class="ticker-scroll">⛓️‍💥 duku: RC168 | TEMPORAL_GENESIS: LIVE | 963 Hz_RESONANCE | x31337_x25_ELITE | ❤️‍🔥 10% BURN | ID: voluntaryist.frostchain</div></div>
+
+<div class="header">
+  <div><div style="color:var(--aqua); font-size:9px;">TEMPORAL_PROTOCOL</div><div id="freq-tag" style="font-size:18px; color:var(--ice);">963 Hz</div></div>
+  <div style="text-align:right;"><div style="font-size:7px; color:var(--leet);">GENESIS_YIELD</div><div id="yield">0.0000</div></div>
+</div>
+
+<div class="grid-container" id="main-grid">
+  <div class="layer-row" id="L1"></div>
+  <div class="layer-row" id="L2" style="border: 2px solid var(--leet); box-shadow: 0 0 15px var(--leet);"></div>
+  <div class="layer-row" id="L3"></div>
+</div>
+
+<div class="tray-container">
+  <div class="tray" id="tray"></div>
+  <div class="gas-burn-btn">⛽<br>GENESIS<br>+BURN</div>
+</div>
+
+<div class="status-log" id="log">STATUS: TEMPORAL_GENESIS_DEPLOYED_TO_SURGE</div>
+<button class="ignite-btn" onclick="ignite()">IGNITE GENESIS</button>
+
+<script>
+let board = Array(81).fill(0), yieldVal = 0, active = false, audio = null, cells = [];
+function init() {
+  const layers = ['L1', 'L2', 'L3'];
+  layers.forEach((l, li) => {
+    const row = document.getElementById(l);
+    for(let s=0; s<3; s++) {
+      const g = document.createElement('div'); g.className = 'mini-grid';
+      for(let c=0; c<9; c++) {
+        const cell = document.createElement('div'); cell.className = 'cell';
+        const idx = (li * 27) + (s * 9) + c; cell.id = 'c-'+idx;
+        g.appendChild(cell); cells[idx] = cell;
+      }
+      row.appendChild(g);
+    }
+  });
+  refreshTray();
+}
+function ignite() { 
+  active = true; document.querySelector('.ignite-btn').style.display = 'none';
+  document.getElementById('log').innerText = "GENESIS_LOCKED: voluntaryist.frostchain_ACTIVE";
+}
+function refreshTray() {
+  const t = document.getElementById('tray'); t.innerHTML = '';
+  for(let i=0; i<3; i++) {
+    const slot = document.createElement('div'); slot.className = 'piece-slot';
+    t.appendChild(slot);
+    const p = document.createElement('div'); p.style.width='36px'; p.style.height='18px'; p.style.background='var(--ice)'; slot.appendChild(p);
+  }
+}
+</script>
+</body>
+</html>
