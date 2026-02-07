@@ -1,67 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>⛓️‍💥 RC189 | MINING_DYNAMICS_SHIELD</title>
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
-<style>
-:root { --bg:#000; --ice:oklch(85% 0.15 230); --leet:oklch(90% 0.4 100); --warn:oklch(65% 0.25 40); }
-* { margin:0; padding:0; box-sizing:border-box; font-family:"Courier New", monospace; }
-body { background:var(--bg); color:#fff; height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FROST PROTOCOL // INDEX</title>
+    <style>
+        :root { --frost: #00e5ff; --bg: #050505; --dim: #444; }
+        body { background: var(--bg); color: var(--frost); font-family: 'Courier New', monospace; padding: 40px; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+        
+        h1 { border-bottom: 2px solid var(--frost); padding-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        h3 { color: #fff; margin-top: 30px; border-left: 3px solid var(--frost); padding-left: 10px; }
+        
+        a { color: var(--frost); text-decoration: none; border-bottom: 1px dotted var(--frost); transition: all 0.3s; }
+        a:hover { background: var(--frost); color: #000; }
+        
+        .paper-list { list-style: none; padding: 0; }
+        .paper-list li { margin: 15px 0; border: 1px solid #111; padding: 15px; background: #080808; }
+        .paper-list li:hover { border-color: var(--frost); }
+        .desc { font-size: 12px; color: #888; display: block; margin-top: 5px; }
 
-.warning-box {
-  width: 90%; max-width: 400px; background: rgba(20,0,0,0.8); border: 2px solid var(--warn); border-radius: 15px;
-  padding: 20px; text-align: left; box-shadow: 0 0 30px var(--warn / 0.2); margin-bottom: 20px;
-}
-.warning-title { color: var(--warn); font-weight: 900; font-size: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-.warning-text { font-size: 8px; line-height: 1.4; color: #ffcccc; margin-bottom: 15px; }
-.rule-item { margin-bottom: 6px; border-left: 2px solid var(--warn); padding-left: 8px; }
+        .btn-tunnel { display: block; text-align: center; background: #111; border: 1px solid var(--frost); color: #fff; padding: 20px; margin-top: 40px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-tunnel:hover { background: var(--frost); color: #000; cursor: pointer; }
 
-.ignite-container { width: 90%; max-width: 400px; text-align: center; }
-.start-btn { 
-  width: 100%; padding: 22px; border: 4px solid var(--leet); color: var(--leet); font-weight: 900; 
-  border-radius: 50px; background: transparent; letter-spacing: 6px; cursor: pointer; transition: 0.2s;
-}
-.start-btn:active { transform: scale(0.95); background: var(--leet); color: #000; }
-.disabled { opacity: 0.3; cursor: not-allowed; }
-</style>
+        .footer { margin-top: 60px; border-top: 1px solid #222; padding-top: 20px; font-size: 12px; color: #666; text-align: center; }
+        .contact-box { background: #111; padding: 10px; display: inline-block; border: 1px dashed #333; margin-top: 10px; }
+    </style>
 </head>
 <body>
 
-<div class="warning-box" id="warning-node">
-  <div class="warning-title">⚠️ MINING_DYNAMICS_WARNING</div>
-  <div class="warning-text">
-    <div class="rule-item"><strong>ELECTRICAL_LOAD:</strong> High-velocity x-Infinity extraction consumes significant device power and thermal headroom.</div>
-    <div class="rule-item"><strong>THE_BURN:</strong> 10% net yield is recaptured as Heart Burn ❤️‍🔥 to maintain 80M Hard Cap.</div>
-    <div class="rule-item"><strong>SETTLEMENT:</strong> Yield partitions via Weighted 125 Scale to established Frostchain endpoints.</div>
-  </div>
-  <label style="font-size: 9px; display: flex; align-items: center; gap: 10px; color: var(--ice);">
-    <input type="checkbox" id="consent" onchange="toggleIgnition()"> I ACCEPT THE SOVEREIGN RULES
-  </label>
-</div>
+    <h1>FROST PROTOCOL // FINUX GOVERNANCE</h1>
+    <p>Decentralized Operating System & Asset Bridge. Established 2026.</p>
 
-<div class="ignite-container">
-  <button class="start-btn disabled" id="ignite-trigger" disabled onclick="startMining()">IGNITE EXTRACTION</button>
-</div>
+    <h3>// TECHNICAL DOCUMENTATION</h3>
+    <ul class="paper-list">
+        <li>
+            <a href="whitepaper_v1.pdf" target="_blank">📄 FROST_PROTOCOL_V1.PDF</a>
+            <span class="desc">Core architecture, blockchain integration, and the 13.37% sustainability model.</span>
+        </li>
+        <li>
+            <a href="finux_os.pdf" target="_blank">📄 FINUX_OPERATING_SYSTEM.PDF</a>
+            <span class="desc">Technical overview of the custom OS and mobile compilation environment.</span>
+        </li>
+        <li>
+            <a href="governance_34.pdf" target="_blank">📄 THE_34_PERCENT_STANDARD.PDF</a>
+            <span class="desc">Details on the 34% Finux Treasury allocation and governance structure.</span>
+        </li>
+        <li>
+            <a href="doge_tunnel_spec.pdf" target="_blank">📄 DOGE_TUNNEL_SPECIFICATION.PDF</a>
+            <span class="desc">Mechanics of the autonomous Doge-to-FRST bridge.</span>
+        </li>
+    </ul>
 
-<script>
-function toggleIgnition() {
-  const checkbox = document.getElementById('consent');
-  const btn = document.getElementById('ignite-trigger');
-  if(checkbox.checked) {
-    btn.classList.remove('disabled');
-    btn.disabled = false;
-  } else {
-    btn.classList.add('disabled');
-    btn.disabled = true;
-  }
-}
+    <a href="tunnel.html" class="btn-tunnel">>> ENTER THE DOGE TUNNEL (PUBLIC BRIDGE) <<</a>
 
-function startMining() {
-  if(navigator.vibrate) navigator.vibrate([100, 50, 200]);
-  window.location.href = 'games/blocks.html';
-}
-</script>
+    <h3>// CONTACT THE FOUNDER</h3>
+    <p>The protocol is autonomous, but legacy inquiries may be directed to the accounting node.</p>
+    
+    <div style="text-align: center;">
+        <div class="contact-box">
+            EMAIL: <a href="mailto:voluntaryistj@gmail.com">voluntaryistj@gmail.com</a>
+        </div>
+        <div style="font-size: 10px; margin-top: 10px; color: #444;">
+            PGP/GPG: [KEY_ID_REDACTED]
+        </div>
+    </div>
+
+    <div class="footer">
+        STATUS: GHOST_MODE_ACTIVE // SUPPLY: 100M // FOUNDER_FLOAT: 13.37%<br>
+        CONTRACT: 0x1d5a73e89d2b2ffc4ad1c84aba21af5ca3e331c9
+    </div>
+
 </body>
 </html>
