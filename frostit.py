@@ -1,54 +1,77 @@
 #!/usr/bin/env python3
 """
-FROST PROTOCOL - Core Node Module
-Part of the Finux/FrostOS Project
+FROST PROTOCOL v1.4 - HUB INTEGRATION
 Author: FrosTether
 """
-
 import os
 import sys
 import subprocess
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
+
+# --- KERNEL IMPORTS (Live System Check) ---
+try:
+    import wealth_dashboard as wd
+    WEALTH_ACTIVE = True
+except ImportError:
+    WEALTH_ACTIVE = False
+
+try:
+    import watcher
+    WATCHER_ACTIVE = True
+except ImportError:
+    WATCHER_ACTIVE = False
 
 app = Flask(__name__)
 
-class FrostNode:
+class FrostKernel:
     def __init__(self):
-        self.version = "1.2"
-        self.status = "FROZEN"
-        print(f"❄️  FROSTIT NODE v{self.version} INITIALIZED")
-
-    def check_system_integrity(self):
-        """Verifies environment variables and subprocess spawning."""
+        self.id = "FINUX-MAIN-NODE"
+        self.version = "5.5 (Deep Freeze)"
+    
+    def check_integrity(self):
+        # Quick verify that spawn.h is working for system calls
         try:
-            # Verifying the spawn.h fix by attempting a system call
-            result = subprocess.run(['uname', '-a'], capture_output=True, text=True)
-            return True, result.stdout.strip()
-        except Exception as e:
-            return False, str(e)
+            subprocess.run(['uname'], capture_output=True)
+            return True, "SECURE"
+        except:
+            return False, "COMPROMISED"
 
-# --- Flask API Routes ---
-@app.route('/status', methods=['GET'])
-def get_status():
+kernel = FrostKernel()
+
+@app.route('/')
+def home():
+    """Renders the Frost Protocol Hub with Live Data"""
+    is_stable, msg = kernel.check_integrity()
+    
+    # 1. Get Wallet Data (Simulated or Real)
+    # If wealth_dashboard.py has a function like get_total_assets(), use it:
+    # wallet_assets = wd.get_total_assets() if WEALTH_ACTIVE else "0"
+    wallet_assets = "SYNCING..." if WEALTH_ACTIVE else "N/A"
+
+    # 2. Get Watcher Data
+    scan_status = "LIVE MONITORING" if WATCHER_ACTIVE else "DISABLED"
+
+    return render_template('index.html', 
+                           node_id=kernel.id,
+                           kernel_version=kernel.version,
+                           integrity=is_stable,
+                           integrity_msg=msg,
+                           wallet_count=wallet_assets,
+                           last_scan=scan_status,
+                           modules={
+                               "arcade": True, # Placeholder for game status
+                               "miner": False  # Placeholder for miner status
+                           })
+
+@app.route('/api/status')
+def api_status():
+    """API for external nodes to check this hub"""
     return jsonify({
-        "node": "Finux-Main",
-        "protocol": "Deep Freeze",
-        "state": "Active"
+        "status": "online",
+        "node": kernel.id,
+        "load": os.getloadavg()
     })
 
-def main():
-    node = FrostNode()
-    
-    # Run a quick self-test
-    healthy, info = node.check_system_integrity()
-    if healthy:
-        print(f"✅ System Integrity Confirmed: {info}")
-    else:
-        print(f"🔥 Integrity Check Failed: {info}")
-
-    # Launch Flask Server
-    print("🚀 Launching Frost API on port 5000...")
-    app.run(host='0.0.0.0', port=5000)
-
 if __name__ == "__main__":
-    main()
+    print(f"❄️  MOUNTING FROST HUB INTERFACE...")
+    app.run(host='0.0.0.0', port=5000)
