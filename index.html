@@ -4,74 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FROST PROTOCOL | FINUX HUB</title>
+    <link rel="stylesheet" href="/static/theme.css">
     <style>
-        :root { --neon-green: #00ff41; --dark-bg: #0d0208; --glass: rgba(0, 255, 65, 0.1); --alert: #ff003c; }
-        body { background-color: var(--dark-bg); color: var(--neon-green); font-family: 'Courier New', monospace; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; border: 1px solid var(--neon-green); padding: 20px; box-shadow: 0 0 15px var(--glass); }
-        h1, h2 { text-align: center; text-transform: uppercase; border-bottom: 1px solid var(--neon-green); padding-bottom: 10px; }
-        
-        /* Live Status Indicators */
-        .status-bar { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.9em; }
-        .blink { animation: blinker 1.5s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
-        .online { color: var(--neon-green); }
-        .offline { color: var(--alert); }
-
+        /* Fallback CSS if theme.css isn't loaded yet */
+        :root { --neon-green: #00ff41; --dark-bg: #0d0208; --glass: rgba(0, 255, 65, 0.1); }
+        body { background-color: var(--dark-bg); color: var(--neon-green); font-family: 'Courier New', monospace; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; border: 1px solid var(--neon-green); padding: 20px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .card { border: 1px solid var(--neon-green); padding: 15px; background: var(--glass); text-align: center; transition: 0.3s; }
+        .card { border: 1px solid var(--neon-green); padding: 15px; background: var(--glass); text-align: center; }
         .card:hover { background: var(--neon-green); color: var(--dark-bg); cursor: pointer; }
-        
-        /* Special Pi Highlight */
-        .pi-constant { font-weight: bold; color: #d4af37; } /* Gold for the Golden Ratio/Pi */
-
-        a { color: inherit; text-decoration: none; display: block; height: 100%; }
-        .footer { margin-top: 30px; text-align: center; font-size: 0.8em; border-top: 1px solid var(--neon-green); padding-top: 10px; opacity: 0.7; }
+        a { color: inherit; text-decoration: none; display: block; height: 100%; width: 100%; }
+        h1, h2 { text-align: center; border-bottom: 1px solid var(--neon-green); }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>❄️ FROST PROTOCOL HUB ❄️</h1>
-        
+
         <div class="status-bar">
             <span>NODE: {{ node_id }}</span>
-            <span>KERNEL: {{ kernel_version }}</span>
-            <span>SYSTEM: <span class="{{ 'blink' if integrity else '' }} {{ 'online' if integrity else 'offline' }}">{{ integrity_msg }}</span></span>
+            <span>SYSTEM: <span style="color: {{ 'lime' if integrity else 'red' }}">{{ integrity_msg }}</span></span>
         </div>
 
-        <h2>🕹️ SOVEREIGN ARCADE</h2>
+        <h2>🕹️ ARCADE & FINANCE</h2>
         <div class="grid">
-            <div class="card">
-                <h3>MS. FROSTMAN</h3>
-                <p>Status: {{ 'ONLINE' if modules.arcade else 'OFFLINE' }}</p>
-            </div>
-            <div class="card">
-                <h3>FCN ASSET WALLET</h3>
-                <p>Balance: {{ wallet_count }} Assets</p>
-            </div>
+            <div class="card"><a href="/finance/casino"><h3>🎰 CASINO (FCN)</h3></a></div>
+            <div class="card"><a href="/finance/vault"><h3>🔐 THE VAULT</h3></a></div>
+            <div class="card"><a href="/finance/wallet"><h3>💰 WALLET</h3></a></div>
+            <div class="card"><a href="/arcade/gem"><h3>💎 GEM MINER</h3></a></div>
         </div>
 
         <h2>🌐 NETWORK BRIDGES</h2>
         <div class="grid">
-            <div class="card">
-                <h3>DOGE TUNNEL</h3>
-                <p>Hashrate: {{ 'Active' if modules.miner else 'Standby' }}</p>
-            </div>
+            <div class="card"><a href="/bridge/tunnel"><h3>🐕 DOGE TUNNEL</h3></a></div>
             <div class="card">
                 <h3>TERMINAL MINER</h3>
-                <p>FROST CONSTANT: <span class="pi-constant">3.14159</span></p>
+                <p>PI CONSTANT: 3.14159</p>
                 <p>Status: {{ last_scan }}</p>
             </div>
         </div>
 
-        <h2>📂 CLASSIFIED</h2>
+        <h2>📂 CLASSIFIED DOCS</h2>
         <div class="grid">
-            <div class="card"><a href="#">WHITEPAPER V1</a></div>
-            <div class="card"><a href="#">FINUX OS SPEC</a></div>
+            <div class="card"><a href="/static/docs/whitepaper_v1.pdf" target="_blank">📄 WHITEPAPER</a></div>
+            <div class="card"><a href="/static/docs/finux_os.pdf" target="_blank">📄 OS SPECS</a></div>
+            <div class="card"><a href="/static/docs/governance_34.pdf" target="_blank">⚖️ GOVERNANCE</a></div>
+            <div class="card"><a href="/static/docs/doge_tunnel_spec.txt" target="_blank">📝 TUNNEL LOGS</a></div>
         </div>
-
+        
         <div class="footer">
-            <p>OPERATOR: voluntaryistj@gmail.com</p>
-            <p>CONTRACT: 0xFrosTether...Deployed</p>
+            <p>OPERATOR: FrosTether | v{{ kernel_version }}</p>
         </div>
     </div>
 </body>
