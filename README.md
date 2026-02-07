@@ -1,3 +1,19 @@
+# FROST PROTOCOL // FINUX GOVERNANCE
+
+### THE GHOST MANIFESTO
+The founder has exited the terminal. This protocol is now autonomous.
+
+### TOKENOMICS
+- **Total Supply:** 100,000,000 FRST
+- **Founder Allocation:** 13.37% (Locked for sustainability)
+- **Governance Stake:** 34% (Reserved for Finux ecosystem)
+- **Public Distribution:** 52.63% (Available via the Doge Tunnel)
+
+### THE TUNNEL
+Value enters through DOGE and exits through FRST. No middlemen. No gatekeepers.
+
+### CONTACT
+Accounting and legacy inquiries: voluntaryistj@gmail.com
 
 # ❄️ The Frost Protocol (Finux OS)
 
