@@ -1,84 +1,74 @@
-# FROST PROTOCOL // FINUX GOVERNANCE
+# ❄️ THE FROST PROTOCOL (Frostchain)
+> **The World's First Bio-Digital Hybrid Ledger** > *Combining BCH UTXO Security, IOTA Tangle Speed, XMR Privacy, and Solfeggio Frequency Consensus.*
 
-### THE GHOST MANIFESTO
-The founder has exited the terminal. This protocol is now autonomous.
+## 📜 Abstract
+The Frost Protocol represents a paradigm shift in decentralized ledger technology. By introducing **Temporal Sharding (Hyper-Sync)**, we eliminate block latency. By integrating **Solfeggio Frequencies** into the mining algorithm, we align digital consensus with biological resonance. 
 
-### TOKENOMICS
-- **Total Supply:** 100,000,000 FRST
-- **Founder Allocation:** 13.37% (Locked for sustainability)
-- **Governance Stake:** 34% (Reserved for Finux ecosystem)
-- **Public Distribution:** 52.63% (Available via the Doge Tunnel)
-
-### THE TUNNEL
-Value enters through DOGE and exits through FRST. No middlemen. No gatekeepers.
-
-### CONTACT
-Accounting and legacy inquiries: voluntaryistj@gmail.com
-
-# ❄️ The Frost Protocol (Finux OS)
-
->
-
-# REPO: frostchain-mirror-protocol
-# OWNER: FrosTether
-
-git init
-git add whitepaper.md ice_box_core.js
-git commit -m "RC155: Initializing Ice Chain Overdrive (963Hz_Quantum_Locked)"
-git remote add origin https://github.com/FrosTether/frostchain-mirror-protocol.git
-git push -u origin main
- **Version:** Kernel v1.2 (Codename: Iceland)  
-> **Status:** Stealth / Alpha  
-> **Architecture:** ARM64 / Android Native  
-> **License:** Proprietary (Pending Open Source Release)
+This is not just a blockchain; it is a living, breathing digital ecosystem.
 
 ---
 
-## 📋 Abstract
-The **Frost Protocol** is a decentralized operating layer designed to solve the "Thermal Waste" inefficiency in modern mobile silicon. 
+## 🚀 Core Technology
 
-Current Android devices dissipate approximately 40% of consumed energy as waste heat. The **Finux Kernel** intercepts this thermal runway, utilizing a **Proof of Thermal Work (PoTW)** consensus mechanism to convert excess entropy into cryptographic validation.
+### 1. ⚡ Temporal Sharding (The 4s Hyper-Sync)
+Unlike legacy blockchains that suffer from "orphan blocks" and latency gaps, Frostchain utilizes a **4-second overlap window**. 
+* **T-4s to T-0s:** Transactions are dual-written to the closing block (Block N) and the opening block (Block N+1).
+* **Result:** Zero-downtime block propagation and instant settlement finality via the IOTA Tangle layer.
 
-Instead of throttling the CPU to cool down, Finux locks the frequency at **963Hz** and redirects the thermal load into the **Frost Network**, minting **FNR** tokens as a reward for thermodynamic efficiency.
+### 2. 🔊 Solfeggio Frequency Consensus (SFC)
+Mining is no longer just brute force. It is harmonic resonance.
+* **396 Hz (Liberation):** Validates UTXO sets and clears transaction fear/doubt (Finality).
+* **528 Hz (Miracle):** The "Genesis Frequency" used to mint new blocks and repair chain integrity.
+* **852 Hz (Intuition):** Aligns the peer-to-peer node layer (Tangle).
 
----
-
-## ⚙️ Core Architecture
-
-### 1. The Virgo Kernel Modules
-A custom set of Python-based driver hooks that interface directly with the Android `system.img`.
-* **Thermal Interceptor:** Monitors CPU core temps in real-time (35°C - 85°C).
-* **Frequency Locker:** Prevents standard Android governors from throttling performance during mining operations.
-
-### 2. Proof of Thermal Work (PoTW)
-Unlike Proof of Work (which wastes energy) or Proof of Stake (which centralizes wealth), PoTW validates transactions based on the **Thermodynamic Output** of the device.
-* **Input:** Hardware Heat Signature + CPU Cycles.
-* **Output:** Validated Block + FNR Token Reward.
-
-### 3. The Frost Ecosystem
-* **FrostMiner:** Background daemon for silent computation.
-* **FrostWallet:** Cold storage for FNR tokens (Address: `0x5147...`).
-* **FrostGlass:** (In Development) AR visualization layer for network stats.
+### 3. 🔒 Hybrid Architecture
+* **Base Layer:** Bitcoin Cash (BCH) fork for rock-solid UTXO security.
+* **Transport Layer:** IOTA Tangle for fee-less, instant data transfer.
+* **Privacy Layer:** Monero (XMR) Ring Signatures for optional opacity.
 
 ---
 
-## 🚀 Installation (Dev Preview)
+## 📊 Tokenomics & Supply
 
-Currently, the protocol is deployable via the **Termux Interface** on rooted and non-rooted Android devices.
+The Frost Protocol operates on a multi-asset economy designed for stability, governance, and community.
+
+| Ticker | Name | Type | Max Supply | Utility |
+| :--- | :--- | :--- | :--- | :--- |
+| **FTC** | **Frostcoin** | Native Coin | **100,000,000** | Gas, Value Store, 300s Block Rewards |
+| **FNR** | **FinuxReserve** | Asset | **33,000,000** | Liquidity Backing, Strategic Reserve |
+| **AMD** | **AmiahDoodles** | Token | **12,000,000,000** | Ecosystem Rewards, Non-Minable |
+| **FRST** | **FrostGov** | Governance | **∞ (Uncapped)** | Pegged to `DOGE * π`. Voting Rights. |
+
+### 🏆 Genesis Allocation (The "1337" Premine)
+To ensure long-term development and ecosystem stability, **13.37%** of the initial supply is allocated to the **Frost Foundation (voluntaryistj)**.
+
+* **FTC:** 11,870,000.01 
+* **FNR:** 4,412,100.00 
+* **AMD:** 404,400,000.00
+* **FRST:** 3,145,900.00 (Initial Seed)
+
+---
+
+## 🛠️ Installation & Mining
 
 ### Prerequisites
-* Android 10+
-* Python 3.11+
-* Kivy (for GUI Mode) / Headless (for CLI Mode)
+* Finux OS (or Linux distro)
+* Go 1.19+
+* Node.js (for Tangle Visualizer)
 
-### Deployment
-```bash
-# 1. Clone the Repository
-git clone [https://github.com/JacobFrost/FrostProtocol.git](https://github.com/JacobFrost/FrostProtocol.git)
+### Visualizer
+Access the **Trippy Interactive Tangle Miner** at `http://localhost:8080`.
+* *Features:* Real-time DAG node visualization, Solfeggio audio feedback, GPU temperature monitoring.
 
-# 2. Run the Frost Deployment Script
-chmod +x frostit.sh
-./frostit.sh
+---
 
-# 3. Initialize the Node
-python main.py
+## 📅 Roadmap 2026
+
+* **Q1:** Genesis Block & Tangle Integration (Completed)
+* **Q2:** Mobile Wallet & "Frostmart" Integration
+* **Q3:** Decentralized Exchange (DEX) Launch
+* **Q4:** Global Node Expansion
+
+---
+
+*© 2026 Frost Protocol. Code is Law. Frequency is Truth.*
