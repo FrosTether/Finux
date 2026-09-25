@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Finux Wallet</title>
+  <style>
+    :root {
+      --bg: #061018;
+      --card: #0c1a24;
+      --line: #1d3a4a;
+      --ice: #7ee7ff;
+      --gold: #d4b46a;
+      --text: #e8f4f8;
+      --mute: #8aa4b0;
+      --bad: #ff6b7a;
+      --ok: #6ee7b7;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, Segoe UI, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #123044 0%, var(--bg) 45%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 18px 64px; }
+    h1 { margin: 0 0 4px; font-size: 1.6rem; letter-spacing: .08em; }
+    .sub { color: var(--mute); margin: 0 0 22px; font-size: .92rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    button {
+      background: var(--ice);
+      color: #05202a;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.secondary { background: transparent; color: var(--ice); border: 1px solid var(--ice); }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    input {
+      flex: 1;
+      min-width: 160px;
+      width: 100%;
+      background: #07141c;
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .addr { font-family: ui-monospace, monospace; font-size: .85rem; word-break: break-all; color: var(--ice); }
+    .bal { font-size: 1.8rem; font-weight: 800; }
+    .mute { color: var(--mute); font-size: .85rem; }
+    .err { color: var(--bad); white-space: pre-wrap; }
+    .ok { color: var(--ok); }
+    label { display: block; font-size: .78rem; color: var(--mute); margin: 10px 0 4px; }
+    a { color: var(--gold); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>FINUX WALLET</h1>
+    <p class="sub">Base network. Connect the wallet you already own. This page never stores a seed.</p>
+
+    <div class="card">
+      <div class="row">
+        <button id="connectBtn" type="button">Connect wallet</button>
+        <button id="baseBtn" class="secondary" type="button">Use Base</button>
+        <span class="mute" id="netLabel">not connected</span>
+      </div>
+      <p class="addr" id="address">—</p>
+      <div class="bal" id="ethBal">0 ETH</div>
+      <p class="mute">Receive: copy the address and send Base ETH or tokens to it.</p>
+      <div class="row">
+        <button class="secondary" id="copyBtn" type="button">Copy address</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>Send ETH</strong>
+      <label>To (0x address)</label>
+      <input id="toEth" placeholder="0x…" />
+      <label>Amount (ETH)</label>
+      <input id="amtEth" placeholder="0.01" />
+      <div class="row" style="margin-top:12px">
+        <button id="sendEthBtn" type="button" disabled>Send ETH</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>Custom token (Frostcoin after you deploy)</strong>
+      <p class="mute">Paste the ERC-20 contract on Base. Until you deploy, there is no FTC to send.</p>
+      <label>Token contract</label>
+      <input id="token" placeholder="0x…" />
+      <div class="row" style="margin-top:12px">
+        <button id="loadTok" class="secondary" type="button" disabled>Load token</button>
+      </div>
+      <p id="tokMeta" class="mute"></p>
+      <div class="bal" id="tokBal" style="font-size:1.2rem"></div>
+      <label>Send token to</label>
+      <input id="toTok" placeholder="0x…" />
+      <label>Amount</label>
+      <input id="amtTok" placeholder="100" />
+      <div class="row" style="margin-top:12px">
+        <button id="sendTokBtn" type="button" disabled>Send token</button>
+      </div>
+    </div>
+
+    <p id="status" class="mute"></p>
+    <p class="mute">Token source: <a href="../contracts/Frostcoin.sol">contracts/Frostcoin.sol</a>. Deploy on Base with Remix using your wallet, then load it here.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+  <script>
+    const BASE = {
+      chainId: "0x2105",
+      chainName: "Base",
+      nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+      rpcUrls: ["https://mainnet.base.org"],
+      blockExplorerUrls: ["https://basescan.org"]
+    };
+    const ERC20_ABI = [
+      "function name() view returns (string)",
+      "function symbol() view returns (string)",
+      "function decimals() view returns (uint8)",
+      "function balanceOf(address) view returns (uint256)",
+      "function transfer(address to, uint256 amount) returns (bool)"
+    ];
+
+    let provider, signer, account, tokenContract, tokenDecimals = 18, tokenSymbol = "TOKEN";
+
+    const $ = (id) => document.getElementById(id);
+    const setStatus = (msg, ok) => {
+      const el = $("status");
+      el.textContent = msg || "";
+      el.className = ok === false ? "err" : ok ? "ok" : "mute";
+    };
+
+    async function connect() {
+      if (!window.ethereum) {
+        setStatus("No injected wallet. Install Coinbase Wallet or MetaMask.", false);
+        return;
+      }
+      provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = await provider.getSigner();
+      account = await signer.getAddress();
+      $("address").textContent = account;
+      $("sendEthBtn").disabled = false;
+      $("loadTok").disabled = false;
+      await ensureBase();
+      await refreshEth();
+      setStatus("Connected.", true);
+    }
+
+    async function ensureBase() {
+      const net = await provider.getNetwork();
+      $("netLabel").textContent = "chain " + net.chainId.toString();
+      if (net.chainId !== 8453n) {
+        try {
+          await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: BASE.chainId }] });
+        } catch (e) {
+          if (e.code === 4902) {
+            await window.ethereum.request({ method: "wallet_addEthereumChain", params: [BASE] });
+          } else {
+            throw e;
+          }
+        }
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = await provider.getSigner();
+        const n2 = await provider.getNetwork();
+        $("netLabel").textContent = "chain " + n2.chainId.toString();
+      }
+    }
+
+    async function refreshEth() {
+      const bal = await provider.getBalance(account);
+      $("ethBal").textContent = ethers.formatEther(bal) + " ETH";
+    }
+
+    $("connectBtn").onclick = () => connect().catch((e) => setStatus(e.message || String(e), false));
+    $("baseBtn").onclick = () => ensureBase().catch((e) => setStatus(e.message || String(e), false));
+    $("copyBtn").onclick = async () => {
+      if (!account) return;
+      await navigator.clipboard.writeText(account);
+      setStatus("Address copied.", true);
+    };
+
+    $("sendEthBtn").onclick = async () => {
+      try {
+        const to = $("toEth").value.trim();
+        const amt = $("amtEth").value.trim();
+        if (!ethers.isAddress(to)) throw new Error("Need a 0x address.");
+        const tx = await signer.sendTransaction({ to, value: ethers.parseEther(amt) });
+        setStatus("ETH tx sent: " + tx.hash);
+        await tx.wait();
+        await refreshEth();
+        setStatus("ETH confirmed: " + tx.hash, true);
+      } catch (e) {
+        setStatus(e.shortMessage || e.message || String(e), false);
+      }
+    };
+
+    $("loadTok").onclick = async () => {
+      try {
+        const addr = $("token").value.trim();
+        if (!ethers.isAddress(addr)) throw new Error("Need a token contract address.");
+        tokenContract = new ethers.Contract(addr, ERC20_ABI, signer);
+        const [name, sym, dec, raw] = await Promise.all([
+          tokenContract.name(),
+          tokenContract.symbol(),
+          tokenContract.decimals(),
+          tokenContract.balanceOf(account)
+        ]);
+        tokenDecimals = Number(dec);
+        tokenSymbol = sym;
+        $("tokMeta").textContent = name + " (" + sym + ") @ " + addr;
+        $("tokBal").textContent = ethers.formatUnits(raw, tokenDecimals) + " " + sym;
+        $("sendTokBtn").disabled = false;
+        localStorage.setItem("finuxToken", addr);
+        setStatus("Token loaded from chain.", true);
+      } catch (e) {
+        setStatus(e.shortMessage || e.message || String(e), false);
+      }
+    };
+
+    $("sendTokBtn").onclick = async () => {
+      try {
+        const to = $("toTok").value.trim();
+        const amt = $("amtTok").value.trim();
+        if (!ethers.isAddress(to)) throw new Error("Need a 0x address.");
+        const tx = await tokenContract.transfer(to, ethers.parseUnits(amt, tokenDecimals));
+        setStatus(tokenSymbol + " tx sent: " + tx.hash);
+        await tx.wait();
+        const raw = await tokenContract.balanceOf(account);
+        $("tokBal").textContent = ethers.formatUnits(raw, tokenDecimals) + " " + tokenSymbol;
+        setStatus(tokenSymbol + " confirmed: " + tx.hash, true);
+      } catch (e) {
+        setStatus(e.shortMessage || e.message || String(e), false);
+      }
+    };
+
+    const saved = localStorage.getItem("finuxToken");
+    if (saved) $("token").value = saved;
+  </script>
+</body>
+</html>
