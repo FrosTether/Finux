@@ -64,3 +64,39 @@ Finux/
 	}
 	return Block{}
 }
+// FrostChain Airdrop: 13.37 FTC & 88,000 FsZTx3 (Rcoin)
+// Drop this function where you handle the Base identity linking.
+
+function claimHumanAirdrop(linkedBaseAddress) {
+    // 1. Verify a Base address is present (Human Verification)
+    if (!linkedBaseAddress || !linkedBaseAddress.startsWith('0x')) {
+        console.warn("Airdrop locked: Base identity required for verification.");
+        return;
+    }
+
+    // 2. Check if this device already claimed the genesis balance
+    const CLAIM_KEY = 'frostchain_genesis_claimed';
+    if (localStorage.getItem(CLAIM_KEY) === 'true') {
+        console.log("Genesis balance already initialized on this device.");
+        return;
+    }
+
+    // 3. Load your existing local balances (Replace 'frostchain_balances' with your actual storage key if different)
+    let balances = JSON.parse(localStorage.getItem('frostchain_balances')) || {};
+
+    // 4. Inject the starting units
+    balances['FTC'] = (balances['FTC'] || 0) + 13.37;
+    balances['FsZTx3'] = (balances['FsZTx3'] || 0) + 88000;
+
+    // 5. Save the updated state and lock the airdrop for this device
+    localStorage.setItem('frostchain_balances', JSON.stringify(balances));
+    localStorage.setItem(CLAIM_KEY, 'true');
+
+    console.log(`Success: Genesis balances routed to ${linkedBaseAddress}`);
+    
+    // NOTE: Call whatever function you use to refresh the Portfolio UI here.
+    // e.g., updatePortfolioUI();
+}
+
+// How to trigger it when you link your address:
+// claimHumanAirdrop('0x6556fbb94508bfa8ce919f691ef71d4181d36d20');
