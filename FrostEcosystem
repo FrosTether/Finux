@@ -7,7 +7,7 @@ import shutil
 GITHUB_USER = "FrosTether"        # Change this to your username!
 GITHUB_EMAIL = "voluntaryistj@gmail.com"      # Change this!
 REPO_NAME = "FrostEcosystem"         # Your Repo Name
-TOKEN = "ghp_PFJX6zoXhBBlcLusw4oIHcChur5fffffffff3O3W40y7WQB"      # Paste your ghp_ token here
+TOKEN = os.environ.get("GITHUB_TOKEN", "")  # Set GITHUB_TOKEN in your environment (${GITHUB_TOKEN})
 # ------------------------------------------------------------------
 
 # 2. SETUP GIT & CLONE

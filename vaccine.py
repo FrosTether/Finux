@@ -37,4 +37,4 @@ EOF
 
 # 5. Package and Launch
 zip -r frosku_viral.zip manifest source/ images/
-curl --user rokudev:jeww --digest -v -F "archive=@frosku_viral.zip" -F "mysubmit=Install" http://192.168.0.7/plugin_install
+curl --user "${ROKU_DEV_USER}:${ROKU_DEV_PASSWORD}" --digest -v -F "archive=@frosku_viral.zip" -F "mysubmit=Install" http://${ROKU_IP}/plugin_install

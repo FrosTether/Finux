@@ -91,7 +91,7 @@ EOF
 # ------------------------------------------
 cat <<EOF > "$PREFIX/bin/finux"
 #!/bin/bash
-export GEMINI_API_KEY="AIzaSyArl_oHSoUH6DAttIyyFrQulbrmS_umMWM"
+export GEMINI_API_KEY="${GEMINI_API_KEY}"
 export USE_SDL2=1
 echo "🚀 Booting Frostinstaller1 Build..."
 python3 $HOME/finux/fui/Virgo_Chat_UI.py
