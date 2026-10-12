@@ -1,0 +1,22 @@
+name = "trackend-cook"
+main = "src/worker.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+# serve the page at https://finux.tech/cook/ (needs finux.tech's DNS record proxied, the orange cloud)
+routes = [
+  { pattern = "finux.tech/cook*", zone_name = "finux.tech" }
+]
+
+# the page's HTML is bundled into the Worker as text
+rules = [
+  { type = "Text", globs = ["**/*.html"], fallthrough = true }
+]
+
+[vars]
+QUICK_MODEL = "claude-haiku-5-5"
+STRONG_MODEL = "claude-sonnet-5-5"
+
+# Secrets are set in Cloudflare, never in this file:
+#   ANTHROPIC_API_KEY  (required)
+#   KITCHEN_CODE       (optional)

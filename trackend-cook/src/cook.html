@@ -1,0 +1,1549 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#121210">
+<meta name="description" content="Track's End Railroad Restaurant kitchen ticket timer and voice dispatcher">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Track's End Ticket Timer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Barlow:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Chivo+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one screen. Snap or talk a ticket in at the top, then a station departure board that calls the next lay-down,
+   the calls coming up, and each ticket as a railroad ticket whose locomotive runs down the track to the window. */
+:root{
+  /* Track's End: locomotive black, menu-banner gold, crossing red, signal green, rail steel, tie wood, menu-paper grey */
+  --bg:#E7E6E1; --surface:#FAF9F6; --sunk:#DEDDD7; --ink:#16150F; --muted:#5F5D55; --rule:#C8C6BE;
+  --gold:#E3A92A; --gold-ink:#7A5300; --on-gold:#16150F;
+  --board:#121210; --board-fg:#F3EFE3; --board-dim:#ABA698; --board-line:#3A3931; --board-edge:#121210;
+  --tile:#28271F; --tile-line:#0A0A08;
+  --signal-red:#C62D21; --signal-green:#1F7A45; --on-signal:#FFFFFF; --lamp-off:#4B4941;
+  --basket:#C62D21; --on-basket:#FFFFFF;
+  --tie:#7A5C43; --rail:#56616B;
+  --scrim:rgb(22 21 15 / .55);
+  --slab:'Alfa Slab One',Rockwell,'Roboto Slab',Georgia,serif;
+  --cond:'Barlow Condensed','Arial Narrow',sans-serif;
+  --body:'Barlow',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'Chivo Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11100D; --surface:#1B1A16; --sunk:#0D0C0A; --ink:#EEEBE2; --muted:#A39F94; --rule:#36342D;
+    --gold:#EDB43A; --gold-ink:#F2C45C; --on-gold:#16150F;
+    --board:#070706; --board-fg:#F3EFE3; --board-dim:#ABA698; --board-line:#33322B; --board-edge:#3A382F;
+    --tile:#1E1D18; --tile-line:#000000;
+    --signal-red:#FF6A57; --signal-green:#5BCB8C; --on-signal:#130B08; --lamp-off:#3B3932;
+    --basket:#C62D21; --on-basket:#FFFFFF;
+    --tie:#55412F; --rail:#808B95;
+    --scrim:rgb(0 0 0 / .62);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11100D; --surface:#1B1A16; --sunk:#0D0C0A; --ink:#EEEBE2; --muted:#A39F94; --rule:#36342D;
+  --gold:#EDB43A; --gold-ink:#F2C45C; --on-gold:#16150F;
+  --board:#070706; --board-fg:#F3EFE3; --board-dim:#ABA698; --board-line:#33322B; --board-edge:#3A382F;
+  --tile:#1E1D18; --tile-line:#000000;
+  --signal-red:#FF6A57; --signal-green:#5BCB8C; --on-signal:#130B08; --lamp-off:#3B3932;
+  --basket:#C62D21; --on-basket:#FFFFFF;
+  --tie:#55412F; --rail:#808B95;
+  --scrim:rgb(0 0 0 / .62);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:500 16px/1.4 var(--body);-webkit-tap-highlight-color:transparent}
+body.locked{overflow:hidden}
+.wrap{max-width:760px;margin-inline:auto;padding-inline:16px}
+:where(button,input,select,summary):focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+label:has(input[type="file"]:focus-visible){outline:3px solid var(--gold);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.muted{color:var(--muted);font-size:14px}
+.eyebrow{font:700 12px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.banner{display:inline-block;margin:0;background:var(--board);color:var(--gold);font:400 18px/1 var(--slab);text-transform:uppercase;letter-spacing:.03em;padding:7px 10px 6px;border-radius:2px;box-shadow:0 0 0 1px var(--board-edge)}
+.h3{font:400 18px/1.1 var(--slab);text-transform:uppercase;margin:0}
+@keyframes pulse{to{opacity:.6}}
+@keyframes blink{50%{opacity:.2}}
+
+/* header: the menu's gold-on-black banner over its checker border */
+.top{background:var(--board);color:var(--board-fg)}
+.top-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px 6px;padding-block:12px}
+.brand{margin-right:auto;min-width:0;display:grid;gap:5px}
+.brand-name{font:400 clamp(20px,6vw,34px)/1 var(--slab);color:var(--gold);text-transform:uppercase;white-space:nowrap}
+.hbtns{display:flex;gap:6px;margin-left:auto}
+.brand-sub{font:700 12px/1.2 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--board-dim)}
+.checker{height:12px;background:repeating-conic-gradient(var(--board) 0 25%,var(--board-fg) 0 50%) 0 0/12px 12px}
+.hbtn{appearance:none;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;background:transparent;color:var(--board-fg);border:1px solid var(--board-line);border-radius:var(--r);font:700 14px/1 var(--cond);letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.hbtn:hover{border-color:var(--board-dim)}
+.hbtn svg{width:18px;height:18px;flex:none}
+.hbtn[data-mode="voice"] svg{color:var(--gold)}
+.hbtn[data-mode="off"]{color:var(--board-dim)}
+
+/* buttons */
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 14px;font:600 15px/1 var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);cursor:pointer;text-align:center}
+.btn:hover{border-color:var(--muted)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-fire{width:100%;min-height:62px;background:var(--gold);border-color:var(--gold);color:var(--on-gold);font:400 22px/1 var(--slab);text-transform:uppercase;letter-spacing:.02em}
+.btn-fire:hover{border-color:var(--gold);filter:brightness(1.05)}
+.fire-t{font:700 16px/1 var(--mono);background:var(--on-gold);color:var(--gold);padding:5px 8px;border-radius:3px}
+.link{appearance:none;background:none;border:0;color:var(--ink);font:600 15px/1.2 var(--body);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;padding:10px 2px;cursor:pointer}
+label.link,label.btn{position:relative;overflow:hidden}
+/* the file input itself covers its button, so a tap lands right on it in every browser and app view */
+.filehit{position:absolute;inset:0;z-index:1;width:100%;height:100%;margin:0;padding:0;opacity:0;cursor:pointer}
+.oil{display:inline-block;font:800 12px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;background:var(--gold);color:var(--on-gold);padding:5px 7px 4px;border-radius:2px;white-space:nowrap;vertical-align:3px}
+
+main.wrap{padding-block:16px 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+
+/* intake: snap the ticket, or talk to the dispatcher */
+.intake{background:var(--surface);border:1px solid var(--rule);border-radius:var(--r);padding:14px;display:grid;gap:12px}
+.snap{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:14px;min-height:90px;padding:0 16px;border-radius:var(--r);background:var(--gold);color:var(--on-gold);font:400 32px/1 var(--slab);text-transform:uppercase;cursor:pointer;user-select:none;-webkit-user-select:none;box-shadow:inset 0 -5px 0 rgb(0 0 0 / .16)}
+.snap svg{width:40px;height:40px;flex:none}
+.snap:hover{filter:brightness(1.04)}
+.snap:active{transform:translateY(1px)}
+.snap[aria-busy="true"]{pointer-events:none;animation:pulse .8s ease-in-out infinite alternate}
+.talk{display:grid;gap:6px;margin:0}
+.talk-label{display:flex;align-items:baseline;justify-content:space-between;gap:2px 8px;flex-wrap:wrap;font:700 15px/1.2 var(--cond);letter-spacing:.08em;text-transform:uppercase}
+.talk-label .muted{font:500 13px/1.2 var(--body);letter-spacing:0;text-transform:none}
+.talk-row{display:flex;gap:8px}
+.talk-row input{flex:1 1 0;width:0;min-width:0;min-height:52px;font:500 18px/1.2 var(--body);color:var(--ink);background:var(--sunk);border:1px solid var(--rule);border-radius:var(--r);padding:0 12px}
+.talk-row input::placeholder{color:var(--muted);opacity:.9}
+.talk-row input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.btn-send{min-height:52px;min-width:78px;background:var(--board);border-color:var(--board);color:var(--gold);font:700 16px/1 var(--cond);letter-spacing:.1em;text-transform:uppercase}
+.btn-send:hover{border-color:var(--board)}
+.btn-mic{min-height:52px;width:56px;padding:0;background:var(--surface);border:2px solid var(--ink);color:var(--ink)}
+.btn-mic svg{width:24px;height:24px}
+.btn-mic.on{background:var(--signal-red);border-color:var(--signal-red);color:var(--on-signal);animation:pulse .7s ease-in-out infinite alternate}
+.radio{display:flex;align-items:flex-start;gap:6px 10px;flex-wrap:wrap;padding:10px 12px;background:var(--sunk);border-radius:var(--r);border-left:4px solid var(--gold)}
+.radio-tag{flex:none;font:700 12px/1 var(--cond);letter-spacing:.16em;text-transform:uppercase;background:var(--board);color:var(--gold);padding:5px 7px 4px;border-radius:2px;margin-top:1px}
+.radio-text{flex:1;min-width:0;font-size:15px;line-height:1.35}
+.radio[data-tone="err"] .radio-text{color:var(--signal-red);font-weight:600}
+.radio[data-busy="true"] .radio-tag{animation:pulse .7s ease-in-out infinite alternate}
+.radio-again{padding:2px 0;font-size:14px}
+.intake-foot{display:flex;align-items:center;gap:0 18px;flex-wrap:wrap}
+.radio-thumb{width:44px;height:58px;object-fit:cover;border-radius:3px;box-shadow:0 0 0 1px var(--rule);flex:none}
+.diag>summary{display:inline-block;font:600 14px/1.2 var(--body);color:var(--muted);text-decoration:underline;text-underline-offset:3px;padding:6px 0}
+.diag-list{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;margin:8px 0 10px;font-size:14px}
+.diag-list dt{color:var(--muted)}
+.diag-list dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.diag p{margin:0}
+
+/* departure board */
+.board{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.lamp{width:14px;height:14px;border-radius:50%;background:var(--lamp-off);flex:none;box-shadow:inset 0 -2px 0 rgb(0 0 0 / .3)}
+[data-s="soon"] .lamp{background:var(--gold)}
+[data-s="now"] .lamp{background:var(--gold);box-shadow:0 0 10px var(--gold);animation:blink .7s steps(1) infinite}
+[data-s="late"] .lamp{background:var(--signal-red);box-shadow:0 0 10px var(--signal-red)}
+.lamp.lamp-green{background:var(--signal-green);box-shadow:0 0 10px var(--signal-green)}
+.hero{appearance:none;width:100%;text-align:left;font:inherit;cursor:pointer;background:var(--board);color:var(--board-fg);border:2px solid var(--board-edge);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px 14px;align-items:center}
+.hero-idle{cursor:default}
+.hero-top{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;min-width:0}
+.hero-top .oil{font-size:14px;padding:6px 8px 5px;vertical-align:0}
+.hero-eyebrow{font:700 15px/1 var(--cond);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.hero-st{margin-left:auto;font:700 13px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--board-dim);border:1px solid var(--board-line);padding:6px 8px 5px;border-radius:2px;white-space:nowrap}
+.hero-what{grid-column:1/-1;font:800 clamp(40px,12vw,66px)/.92 var(--cond);text-transform:uppercase;overflow-wrap:anywhere;min-width:0}
+.hero-q{font:700 .42em/1 var(--mono);color:var(--gold);vertical-align:.4em;white-space:nowrap;text-transform:none}
+.flap{display:flex;gap:3px}
+.flap span{display:grid;place-items:center;width:30px;height:46px;background:var(--tile);color:var(--board-fg);font:700 28px/1 var(--mono);border-radius:3px;position:relative}
+.flap span::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--tile-line)}
+.flap span.sep{width:10px;background:transparent}
+.flap span.sep::after{display:none}
+.hero[data-s="now"] .flap span:not(.sep){background:var(--gold);color:var(--on-gold)}
+.hero[data-s="late"] .flap span:not(.sep){background:var(--signal-red);color:var(--on-signal)}
+.hero-sub{font:600 15px/1.3 var(--body);color:var(--board-dim);min-width:0}
+.hero-done{grid-column:1/-1;display:flex;align-items:center;gap:10px;border-top:1px dashed var(--board-line);padding-top:12px;font:700 16px/1 var(--body)}
+.hero-done .chk{border-color:var(--board-dim)}
+.calls{list-style:none;margin:0;padding:0;border-top:2px solid var(--ink)}
+.call{appearance:none;width:100%;display:grid;grid-template-columns:14px 62px minmax(0,1fr) 28px;align-items:center;gap:10px;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--rule);padding:12px 4px;color:var(--ink);font:inherit;cursor:pointer}
+.call:hover{background:var(--sunk)}
+.cd{font:700 18px/1 var(--mono);font-variant-numeric:tabular-nums;color:var(--muted)}
+.call[data-s="soon"] .cd{color:var(--gold-ink)}
+.call[data-s="now"] .cd{color:var(--ink)}
+.call[data-s="late"] .cd{color:var(--signal-red)}
+.call-what{min-width:0;line-height:1.2}
+.call-what b{font:700 20px/1.1 var(--cond);text-transform:uppercase;letter-spacing:.02em}
+.call-what small{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.q{font:500 14px/1 var(--mono);white-space:nowrap}
+.chk{width:28px;height:28px;border:2px solid var(--rule);border-radius:50%;flex:none}
+.call:hover .chk{border-color:var(--signal-green)}
+
+/* railroad tickets */
+.tixs{display:grid;gap:16px}
+.tix{--stub:92px;position:relative;display:grid;grid-template-columns:var(--stub) minmax(0,1fr);background:var(--surface);border:1px solid var(--rule);border-radius:8px;overflow:hidden;min-width:0}
+.tix::before,.tix::after{content:"";position:absolute;z-index:1;left:calc(var(--stub) - 10px);width:20px;height:20px;border-radius:50%;background:var(--bg);border:1px solid var(--rule)}
+.tix::before{top:-11px}
+.tix::after{bottom:-11px}
+.tix[data-s="window"]{border-color:var(--signal-green);box-shadow:inset 0 0 0 1px var(--signal-green)}
+.tix[data-s="dying"]{border-color:var(--signal-red);box-shadow:inset 0 0 0 1px var(--signal-red)}
+.stub{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 6px;background:var(--sunk);border-right:2px dashed var(--rule);text-align:center;min-width:0}
+.stub-no{font:700 11px/1 var(--cond);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.stub-label{font:400 30px/1 var(--slab);max-width:100%;overflow-wrap:anywhere}
+.svc{font:700 12px/1 var(--cond);letter-spacing:.05em;text-transform:uppercase;padding:5px 5px 4px;border-radius:2px;box-shadow:inset 0 0 0 1.5px var(--ink);white-space:nowrap}
+.svc-togo{background:var(--ink);color:var(--surface)}
+.tix-main{padding:12px 14px 12px 16px;display:grid;gap:10px;min-width:0}
+.tix-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.tix-cap{font:700 13px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.tix-cd{font:700 28px/1 var(--mono);font-variant-numeric:tabular-nums}
+.tix[data-s="window"] .tix-cap,.tix[data-s="window"] .tix-cd{color:var(--signal-green)}
+.tix[data-s="dying"] .tix-cap,.tix[data-s="dying"] .tix-cd{color:var(--signal-red)}
+.rail{position:relative;height:22px;margin-right:10px}
+.rail::before{content:"";position:absolute;left:0;right:0;top:4px;height:14px;background:repeating-linear-gradient(90deg,var(--tie) 0 4px,transparent 4px 11px)}
+.rail::after{content:"";position:absolute;left:0;right:0;top:7px;height:8px;border-top:2px solid var(--rail);border-bottom:2px solid var(--rail)}
+.bumper{position:absolute;right:-10px;top:3px;width:8px;height:16px;background:var(--signal-red);border-radius:2px}
+.loco{position:absolute;z-index:1;top:0;left:calc(var(--p,0) * (100% - 30px));width:30px;height:18px;color:var(--gold-ink);transition:left .25s linear}
+.loco svg{display:block;width:30px;height:18px}
+.tix[data-s="window"] .loco{color:var(--signal-green)}
+.tix[data-s="dying"] .loco{color:var(--signal-red)}
+.tix-items{list-style:none;margin:0;padding:0}
+.tix-items li{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px dotted var(--rule)}
+.ti-what{min-width:0;display:grid;gap:2px}
+.ti-what b{font:700 18px/1.15 var(--cond);text-transform:uppercase;letter-spacing:.02em}
+.ti-sub{font-size:14px;color:var(--muted)}
+.ti-note{font-size:14px;font-style:italic;color:var(--gold-ink)}
+.ware{flex:none;font:700 12px/1 var(--cond);letter-spacing:.1em;text-transform:uppercase;padding:5px 7px 4px;border-radius:2px;white-space:nowrap;margin-top:2px}
+.ware-plate{box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink)}
+.ware-basket{background:var(--basket);color:var(--on-basket)}
+.ware-togo{background:var(--ink);color:var(--surface)}
+.tix-foot{display:flex;justify-content:flex-end}
+.btn-sold{min-width:120px;background:var(--board);color:var(--gold);border-color:var(--board);font:700 16px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase}
+.btn-sold:hover{border-color:var(--board)}
+.tix[data-s="window"] .btn-sold,.tix[data-s="dying"] .btn-sold{background:var(--signal-green);border-color:var(--signal-green);color:var(--on-signal)}
+.other{margin:0;font-size:14px;color:var(--muted)}
+.other .eyebrow{margin-right:6px}
+.clear{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px dashed var(--rule);border-radius:var(--r);padding:20px}
+.clear .lamp{width:18px;height:18px;margin-top:5px}
+.clear-h{font:400 24px/1.1 var(--slab);text-transform:uppercase;margin:0 0 6px}
+.clear p{margin:0;color:var(--muted);max-width:52ch}
+
+/* sheets */
+.sheet{position:fixed;inset:0;z-index:50;background:var(--scrim);display:flex;justify-content:center;align-items:stretch;padding-top:env(safe-area-inset-top,0px)}
+.sheet-panel{background:var(--bg);width:100%;max-width:680px;height:100%;overflow:auto;display:flex;flex-direction:column;overscroll-behavior:contain}
+.sheet-bar{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px 10px 16px;background:var(--board);color:var(--board-fg);border-bottom:4px solid var(--gold)}
+.sheet-bar h2{font:400 22px/1.1 var(--slab);text-transform:uppercase;color:var(--gold);margin:0}
+.sheet-bar h2:focus{outline:none}
+.sheet-body{flex:1;padding:16px;display:grid;gap:18px;align-content:start}
+.sheet-foot{position:sticky;bottom:0;z-index:2;display:flex;gap:10px;align-items:stretch;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--rule)}
+.sheet-foot .btn-fire{flex:1;width:auto}
+.sheet-foot .btn{min-height:62px}
+@media (min-width:720px){
+  .sheet{align-items:center;padding:24px}
+  .sheet-panel{height:auto;max-height:calc(100vh - 48px);border-radius:10px}
+}
+
+/* check-the-ticket sheet */
+.rv-head{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.rv-label-wrap{display:grid;gap:4px;flex:1;min-width:140px}
+.rv-label{font:400 32px/1.1 var(--slab);text-transform:uppercase;color:var(--ink);background:transparent;border:0;border-bottom:2px dashed var(--rule);border-radius:0;padding:2px 0;width:100%;min-width:0}
+.rv-label::placeholder{color:var(--muted);opacity:.7}
+.rv-label:focus{outline:none;border-bottom-color:var(--gold)}
+.seg{display:inline-flex;box-shadow:inset 0 0 0 2px var(--ink);border-radius:var(--r);overflow:hidden;flex:none}
+.seg button{appearance:none;border:0;background:transparent;color:var(--ink);font:700 15px/1 var(--cond);letter-spacing:.1em;text-transform:uppercase;padding:14px;cursor:pointer}
+.seg button[aria-checked="true"]{background:var(--ink);color:var(--surface)}
+.rv-lines{list-style:none;margin:0;padding:0;border-top:2px solid var(--ink)}
+.rv-line{padding:12px 0;border-bottom:1px solid var(--rule);display:grid;gap:4px}
+.rv-top{display:flex;align-items:center;gap:10px}
+.rv-name{font:700 22px/1.1 var(--cond);text-transform:uppercase;letter-spacing:.02em;flex:1;min-width:0}
+.rv-sub{font-size:15px}
+.rv-note{font-size:14px;font-style:italic;color:var(--gold-ink)}
+.x{appearance:none;flex:none;border:1px solid var(--rule);background:var(--surface);color:var(--muted);width:40px;height:40px;border-radius:var(--r);font:400 22px/1 var(--body);cursor:pointer}
+.x:hover{color:var(--signal-red);border-color:var(--signal-red)}
+details>summary{list-style:none;cursor:pointer}
+details>summary::-webkit-details-marker{display:none}
+.rv-fix>summary{display:inline-block;font-size:14px;font-weight:600;text-decoration:underline;text-underline-offset:3px;padding:6px 0;color:var(--muted)}
+.rv-fix[open]>summary{color:var(--ink)}
+.opts{display:flex;flex-wrap:wrap;gap:6px;padding-top:4px}
+.opt{position:relative;max-width:100%}
+.opt::after{content:"";position:absolute;right:12px;top:50%;width:6px;height:6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+.opt select{appearance:none;-webkit-appearance:none;font:600 14px/1.1 var(--body);color:var(--ink);background:var(--sunk);border:1px solid var(--rule);border-radius:999px;padding:10px 30px 10px 12px;max-width:100%;cursor:pointer}
+.rv-add>summary{width:100%;justify-content:space-between}
+.rv-add>summary::after{content:"+";font:600 22px/1 var(--body)}
+.rv-add[open]>summary::after{content:"\2212"}
+.cat{padding-top:16px}
+.cat .banner{font-size:15px}
+.items{list-style:none;margin:6px 0 0;padding:0}
+.item{appearance:none;width:100%;display:flex;align-items:center;gap:8px;text-align:left;background:none;border:0;border-bottom:1px solid var(--rule);color:var(--ink);padding:12px 2px;cursor:pointer;font:inherit}
+.item:hover .item-name{text-decoration:underline 2px var(--gold);text-underline-offset:3px}
+.item-name{font:700 18px/1.15 var(--cond);text-transform:uppercase;letter-spacing:.02em;min-width:0}
+.leader{flex:1;min-width:12px;border-bottom:2px dotted var(--rule);align-self:flex-end;margin-bottom:5px}
+.item-t{font:500 14px/1 var(--mono);color:var(--muted)}
+.plus{flex:none;width:28px;height:28px;display:grid;place-items:center;border:1.5px solid var(--ink);border-radius:50%;font:600 19px/1 var(--body)}
+.rv-plan{display:grid;gap:2px}
+.plan-t{font:500 14px/1 var(--mono);color:var(--muted)}
+.plan-t b{font-size:20px;color:var(--ink)}
+.steps{list-style:none;margin:0;padding:0}
+.step{display:grid;grid-template-columns:28px 52px minmax(0,1fr) auto;column-gap:10px;align-items:start;padding:9px 0;border-top:1px dotted var(--rule)}
+.rank{width:28px;height:28px;display:grid;place-items:center;background:var(--board);color:var(--gold);font:400 16px/1 var(--slab);border-radius:2px;box-shadow:0 0 0 1px var(--board-edge)}
+.at{font:700 15px/1.75 var(--mono);color:var(--gold-ink);font-variant-numeric:tabular-nums}
+.what{min-width:0;line-height:1.3;padding-top:3px}
+.what b{font:700 18px/1.1 var(--cond);text-transform:uppercase;letter-spacing:.02em}
+.what small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.st{font:700 12px/1 var(--cond);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--rule);padding:4px 6px 3px;border-radius:2px;white-space:nowrap;margin-top:4px}
+
+/* cook times sheet */
+.tgroups{display:grid;gap:22px}
+.trows{list-style:none;margin:8px 0 0;padding:0}
+.trow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--rule)}
+.tname{font-weight:600;min-width:0}
+.trow.changed .tname::after{content:"edited";margin-left:8px;font:700 11px/1 var(--cond);letter-spacing:.1em;text-transform:uppercase;color:var(--gold-ink);box-shadow:inset 0 0 0 1px var(--gold);padding:3px 4px;border-radius:2px;vertical-align:2px}
+.tval{font:700 17px/1 var(--mono);min-width:3.4em;text-align:right;font-variant-numeric:tabular-nums}
+.tbtns{display:flex;gap:6px}
+.btn-sm{min-height:40px;padding:0 10px;font:600 14px/1 var(--mono)}
+.times-foot{display:grid;gap:12px;justify-items:start}
+.times-foot p{margin:0}
+
+/* toast */
+.toast{position:fixed;left:16px;right:16px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--board);color:var(--board-fg);border:1px solid var(--board-edge);border-radius:var(--r);font-size:15px;max-width:520px;margin-inline:auto;opacity:0;transform:translateY(8px);transition:opacity .15s,transform .15s}
+body.locked .toast{bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+.toast.on{opacity:1;transform:none}
+.toast-act{appearance:none;flex:none;background:none;border:1px solid var(--gold);color:var(--gold);font:700 14px/1 var(--cond);letter-spacing:.1em;text-transform:uppercase;padding:9px 12px;border-radius:4px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important;scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-row">
+    <div class="brand"><span class="brand-name">Track's End</span><span class="brand-sub">Railroad Restaurant</span></div>
+    <div class="hbtns"><button class="hbtn" id="audioBtn" data-act="audio" data-mode="voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg><span id="audioState">Voice</span></button>
+    <button class="hbtn" data-act="times">Times</button></div>
+  </div>
+  <div class="checker" aria-hidden="true"></div>
+</header>
+
+<main class="wrap">
+  <section class="intake" id="intake" aria-label="New ticket and dispatcher">
+    <label class="snap" id="snapBtn">
+      <input type="file" id="snapCam" class="filehit" accept="image/*" capture="environment" aria-label="Snap ticket photo">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5h3.6l1.8-3h6.2l1.8 3h3.6v12h-17z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3.8" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <span id="snapText">Snap ticket</span>
+    </label>
+    <form class="talk" id="talkForm" autocomplete="off">
+      <label class="talk-label" for="talkText"><span>Talk to the dispatcher</span><span class="muted" id="talkHint">tap the mic on your keyboard</span></label>
+      <div class="talk-row">
+        <input id="talkText" enterkeyhint="send" spellcheck="false" placeholder="A ticket or a question">
+        <button class="btn btn-mic" id="micBtn" type="button" data-act="mic" aria-label="Talk to the dispatcher" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></svg></button>
+        <button class="btn btn-send" id="sendBtn" type="submit">Send</button>
+      </div>
+    </form>
+    <form class="talk" id="codeForm" autocomplete="off" hidden>
+      <label class="talk-label" for="codeText"><span>Kitchen code</span><span class="muted">ask whoever set this up</span></label>
+      <div class="talk-row">
+        <input id="codeText" type="password" autocomplete="off" spellcheck="false" placeholder="Code">
+        <button class="btn btn-send" type="submit">Save</button>
+      </div>
+    </form>
+    <div class="radio" id="radio"><span class="radio-tag">Dispatch</span><img id="radioThumb" class="radio-thumb" alt="Ticket photo being read" hidden><span class="radio-text" id="radioText" role="status" aria-live="polite"></span><button class="link radio-again" data-act="again">Say again</button></div>
+    <div class="intake-foot">
+      <label class="link" id="pickLink"><input type="file" id="snapPick" class="filehit" accept="image/*" aria-label="Use a saved photo">Use a saved photo</label>
+      <button class="link" id="handBtn" data-act="hand">Add by hand</button>
+      <button class="link" id="stopBtn" data-act="stop" hidden>Stop</button>
+      <button class="btn" id="allowBtn" data-act="allow" hidden>Turn Claude on</button>
+    </div>
+    <details class="diag" id="diag"><summary>Having trouble?</summary><div id="diagBody"></div></details>
+  </section>
+  <div class="board" id="board"></div>
+</main>
+
+<div class="sheet" id="review" role="dialog" aria-modal="true" aria-labelledby="rvTitle" hidden>
+  <div class="sheet-panel">
+    <div class="sheet-bar"><h2 id="rvTitle" tabindex="-1">Check the ticket</h2><button class="hbtn" data-act="cancel">Cancel</button></div>
+    <div class="sheet-body" id="rvBody"></div>
+    <div class="sheet-foot">
+      <label class="btn" id="retakeBtn" hidden><input type="file" id="snapRetake" class="filehit" accept="image/*" capture="environment" aria-label="Retake ticket photo"><span id="retakeText">Retake</span></label>
+      <button class="btn btn-fire" id="startBtn" data-act="start">Start cooking</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="times" role="dialog" aria-modal="true" aria-labelledby="tmTitle" hidden>
+  <div class="sheet-panel">
+    <div class="sheet-bar"><h2 id="tmTitle" tabindex="-1">Cook times</h2><button class="hbtn" data-act="closetimes">Done</button></div>
+    <div class="sheet-body" id="tmBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+/* ---------- Kitchen data (Track's End menu + what the POS prints) ---------- */
+const STATIONS=[['flat','Flat-top'],['fry','Fryer'],['toast','Toaster'],['well','Hot well'],['cold','Cold build'],['pass','Window']];
+const STATION_NAME=Object.fromEntries(STATIONS);
+const STATION_RANK=Object.fromEntries(STATIONS.map((s,i)=>[s[0],i]));
+
+/* id: [label, station, estimated seconds, unit]
+   Estimates: flat-top around 350-375°F, fryer at 350°F, raw proteins, frozen fries. Tuned in Cook times. */
+const COMP={
+  hash:['Hash browns','flat',480,''], home:['Home fries','flat',420,''],
+  bacon:['Bacon','flat',360,'strips'], saus_p:['Sausage patties','flat',420,''],
+  saus_l:['Sausage links','flat',360,''], saus_c:['Sausage, crumbled','flat',300,''],
+  ham:['Ham, 5 oz','flat',240,''],
+  egg_scr:['Eggs scrambled','flat',150,''], egg_oe:['Eggs over easy','flat',180,''],
+  egg_om:['Eggs over medium','flat',210,''], egg_oh:['Eggs over hard','flat',240,''],
+  egg_ss:['Eggs sunny side up','flat',210,''],
+  omelet:['Omelet, 3-egg','flat',360,''], omelet4:['Omelet, 4-egg','flat',420,''],
+  veg:['Peppers & onions','flat',240,''],
+  pancake:['Pancakes','flat',240,''], ftoast:['French toast','flat',240,'slices'],
+  texas:['Texas toast, grilled','flat',180,''], tortilla:['Tortilla, warm & wrap','flat',45,''],
+  patty_w:['Patty, well done','flat',480,''], patty_mw:['Patty, medium well','flat',420,''],
+  patty_m:['Patty, medium','flat',360,''], patty_mr:['Patty, medium rare','flat',300,''],
+  gonion:['Grilled onions','flat',300,''], mush:['Mushrooms, sauté','flat',240,''],
+  melt:['Melt bread & cheese','flat',180,''], bun:['Buns, toast','flat',60,''],
+  roll:['Philly roll, toast','flat',90,''], philly:['Philly steak','flat',240,''],
+  pvm:['Peppers, onions & mushrooms','flat',300,''],
+  fveg:['Fajita peppers & onions','flat',360,''], fj_ch:['Fajita chicken','flat',360,''],
+  fj_st:['Fajita steak','flat',240,''], ftort:['Tortillas, warm','flat',45,''],
+  fside:['Fajita sides','cold',60,''],
+  gchick:['Chicken breast, grilled','flat',600,''], gcheese:['Grilled cheese','flat',240,''],
+  gham:['Grilled ham & cheese','flat',300,''],
+  wings:['Wings','fry',600,''], strips:['Chicken strips','fry',300,'pc'],
+  fchick:['Fried chicken, salad','fry',300,''], fries:['Fries','fry',210,''],
+  waffle:['Waffle fries','fry',210,''],
+  rings:['Onion rings','fry',180,''], ring1:['Onion ring, burger','fry',180,''],
+  mozz:['Mozzarella sticks','fry',180,''], mushb:['Breaded mushrooms','fry',180,''],
+  curds_r:['Cheese curds','fry',120,''], curds_s:['Cheese curds, spicy','fry',120,''],
+  toast:['Toast','toast',120,'slices'],
+  biscuit:['Biscuits, warm','well',90,''], gravy:['Sausage gravy','well',30,''],
+  oat:['Oatmeal','well',90,''], grits:['Grits','well',90,''], taco:['Taco beef','well',60,''],
+  salad:['Build salad','cold',120,''], dsalad:['Dinner salad','cold',60,'']
+};
+
+const OPTS={
+  egg:{name:'Eggs',v:['Scrambled','Over easy','Over medium','Over hard','Sunny side up']},
+  meat:{name:'Meat',v:['Bacon','Sausage','Ham']},
+  pot:{name:'Potatoes',v:['Hash browns','Home fries']},
+  bread:{name:'Toast',v:['White','Wheat','Rye','No toast']},
+  sbread:{name:'Bread',v:['White','Wheat','Rye']},
+  temp:{name:'Burger',v:['Well done','Medium well','Medium','Medium rare']},
+  side:{name:'Side',v:['Fries','Waffle fries','Onion rings','No side']},
+  veg:{name:'Philly',v:['With veg','Meat only']},
+  fprot:{name:'Fajitas',v:['Chicken','Steak','Combo','Veggie']},
+  cakes:{name:'Cakes',v:['Pancakes','French toast']},
+  chick:{name:'Chicken',v:['Grilled','Fried']},
+  curd:{name:'Curds',v:['Regular','Spicy']},
+  omeat:{name:'Omelet meat',v:['Ham','Bacon','Sausage']},
+  bmeat:{name:'Burrito meat',v:['Sausage','Bacon']},
+  smeat:{name:'Side meat',v:['Bacon, 4 strips','Sausage, 3 links','Sausage, 2 patties','Ham']},
+  stack:{name:'Stack',v:['Short stack (2)','Full stack (3)']},
+  bisc:{name:'Biscuits',v:['One','Two']}
+};
+
+const P=(c,q=1,lead=0,v='')=>({c,q,lead,v});
+const IN=180; /* omelet fillings ready 3:00 before the omelet is done */
+const EGG={'Scrambled':'egg_scr','Over easy':'egg_oe','Over medium':'egg_om','Over hard':'egg_oh','Sunny side up':'egg_ss'};
+const TEMP={'Well done':'patty_w','Medium well':'patty_mw','Medium':'patty_m','Medium rare':'patty_mr'};
+const eg=(o,n)=>P(EGG[o.egg],n);
+const meat=o=>o.meat==='Bacon'?P('bacon',2):o.meat==='Sausage'?P('saus_p',2):P('ham');
+const pot=o=>P(o.pot==='Home fries'?'home':'hash');
+const toast=(o,n=2)=>o.bread==='No toast'?[]:[P('toast',n,0,o.bread)];
+const side=o=>({'Fries':[P('fries')],'Waffle fries':[P('waffle')],'Onion rings':[P('rings')]}[o.side]||[]);
+const patty=(o,n=1,lead=0)=>P(TEMP[o.temp],n,lead);
+const B=['temp','side'];
+
+const MENU=[
+ {id:'bfast',name:'Breakfast',items:[
+  {id:'eggs2',name:'Two Eggs',d:'Toast & jelly',o:['egg','bread'],b:o=>[eg(o,2),...toast(o)]},
+  {id:'eggs2p',name:'Two Eggs & Potatoes',d:'Hash browns or home fries, toast',o:['egg','pot','bread'],b:o=>[eg(o,2),pot(o),...toast(o)]},
+  {id:'eggs2m',name:'Two Eggs & Meat',d:'Ham, sausage or bacon, toast',o:['egg','meat','bread'],b:o=>[eg(o,2),meat(o),...toast(o)]},
+  {id:'brake',name:'Brakeman',d:'2 eggs, meat, potatoes, toast',o:['egg','meat','pot','bread'],b:o=>[eg(o,2),meat(o),pot(o),...toast(o)]},
+  {id:'loco',name:'Loaded Locomotive',d:'2 eggs, potatoes with onions, bacon, peppers, mushrooms, cheese, toast',o:['egg','pot','bread'],b:o=>[eg(o,2),pot(o),P('bacon',2),P('veg'),...toast(o)]},
+  {id:'train',name:'Trainmaster',d:'3 scrambled eggs, bacon, ham, onions, green peppers, toast',o:['egg','bread'],b:o=>[eg(o,3),P('bacon',2),P('ham'),P('veg'),...toast(o)]},
+  {id:'casey',name:'Casey Jones',d:'2 eggs, meat, 2 pancakes or 2 French toast',o:['egg','meat','cakes'],b:o=>[eg(o,2),meat(o),o.cakes==='Pancakes'?P('pancake',2):P('ftoast',2)]},
+  {id:'yard',name:'Yardmaster',d:'Sandwich: meat, egg & cheese on grilled Texas toast',o:['meat','egg'],def:{egg:'Over hard'},b:o=>[meat(o),eg(o,1),P('texas')]},
+  {id:'sizz',name:'Sizzler',d:'3 scrambled eggs, hash browns, cheese, sausage gravy, toast',o:['egg','pot','bread'],b:o=>[eg(o,3),pot(o),P('gravy'),...toast(o)]},
+  {id:'steam',name:'Steam Engine',d:'2 eggs, hash browns, biscuits & gravy',o:['egg'],b:o=>[eg(o,2),P('hash'),P('biscuit',2),P('gravy')]},
+  {id:'cab',name:'Caboose',d:'1 egg, hash browns, biscuit & gravy',o:['egg'],b:o=>[eg(o,1),P('hash'),P('biscuit'),P('gravy')]},
+  {id:'burr',name:'Breakfast Burrito',d:'Eggs, hash browns, sausage or bacon in a tortilla',o:['bmeat'],b:o=>[P('egg_scr',2),P('hash'),o.bmeat==='Bacon'?P('bacon',2):P('saus_c'),P('tortilla')]}
+ ]},
+ {id:'omelet',name:'Three-Egg Omelets',items:[
+  {id:'om_ch',name:'Cheese Omelet',d:'With toast',o:['bread'],b:o=>[P('omelet'),...toast(o)]},
+  {id:'om_mt',name:'Meat & Cheese Omelet',d:'Ham, bacon or sausage, toast',o:['omeat','bread'],b:o=>[P('omelet'),...(o.omeat==='Bacon'?[P('bacon',2,IN)]:o.omeat==='Sausage'?[P('saus_c',1,IN)]:[]),...toast(o)]},
+  {id:'om_we',name:'Western Omelet',d:'Ham, cheese, tomato, green peppers, onions',o:['bread'],b:o=>[P('omelet'),P('veg',1,IN),...toast(o)]},
+  {id:'om_di',name:'Dispatcher Omelet',d:'Hash browns, ham, green peppers, onions, American',o:['bread'],b:o=>[P('omelet'),P('hash',1,IN),P('veg',1,IN),...toast(o)]},
+  {id:'om_rr',name:'Railroader Omelet',d:'4 eggs, hash browns, onions, peppers, ham, bacon, mushrooms, 2 cheeses',o:['bread'],b:o=>[P('omelet4'),P('hash',1,IN),P('veg',1,IN),P('bacon',2,IN),...toast(o)]}
+ ]},
+ {id:'side',name:'Breakfast Sides',items:[
+  {id:'s_meat',name:'Side of Meat',d:'Bacon, sausage or ham',o:['smeat'],b:o=>[{'Bacon, 4 strips':P('bacon',4),'Sausage, 3 links':P('saus_l',3),'Sausage, 2 patties':P('saus_p',2),'Ham':P('ham')}[o.smeat]]},
+  {id:'s_cake',name:'Pancakes',d:'Short stack (2) or full stack (3)',o:['stack'],b:o=>[P('pancake',o.stack.startsWith('Full')?3:2)]},
+  {id:'s_ft',name:'French Toast (3)',d:'',b:()=>[P('ftoast',3)]},
+  {id:'s_bg',name:'Biscuits & Gravy',d:'One or two biscuits',o:['bisc'],b:o=>[P('biscuit',o.bisc==='Two'?2:1),P('gravy')]},
+  {id:'s_egg',name:'One Egg',d:'Made to order',o:['egg'],b:o=>[eg(o,1)]},
+  {id:'s_toast',name:'Toast & Jelly',d:'',o:['sbread'],b:o=>[P('toast',2,0,o.sbread)]},
+  {id:'s_pot',name:'Hash Browns / Home Fries',d:'',o:['pot'],b:o=>[pot(o)]},
+  {id:'s_po',name:'Grilled Peppers & Onions',d:'Side',b:()=>[P('veg')]},
+  {id:'s_oat',name:'Oatmeal',d:'',b:()=>[P('oat')]},
+  {id:'s_grits',name:'Grits',d:'',b:()=>[P('grits')]}
+ ]},
+ {id:'burg',name:'Boxcar Burgers',items:[
+  {id:'b_ped',name:'The Peddler',d:'Lettuce, tomato, onion, cheese',o:B,b:o=>[patty(o),P('bun'),...side(o)]},
+  {id:'b_con',name:'The Conductor',d:'Two patties, lettuce, tomato, onion, cheese',o:B,b:o=>[patty(o,2),P('bun'),...side(o)]},
+  {id:'b_ih',name:'The Iron Horse',d:'2 strips bacon, choice of cheese',o:B,b:o=>[patty(o),P('bacon',2),P('bun'),...side(o)]},
+  {id:'b_bbq',name:'BBQ Bacon Burger',d:'Bacon, onion ring, BBQ sauce, cheese',o:B,b:o=>[patty(o),P('bacon',2),P('ring1'),P('bun'),...side(o)]},
+  {id:'b_ms',name:'Mushroom Swiss',d:'Mushrooms, Swiss',o:B,b:o=>[patty(o),P('mush'),P('bun'),...side(o)]},
+  {id:'b_fb',name:'Firebox',d:'Jalapeños, pepper jack',o:B,b:o=>[patty(o),P('bun'),...side(o)]},
+  {id:'b_pm',name:'Patty Melt',d:'Grilled onions & cheese on wheat, white or rye',o:['temp','side','sbread'],b:o=>[patty(o,1,180),P('gonion',1,180),P('melt',1,0,o.sbread),...side(o)]}
+ ]},
+ {id:'sand',name:'Sandwiches & Such',items:[
+  {id:'w_ph',name:'Philly Cheesesteak',d:'Onions, peppers, mushrooms, cheese',o:['veg','side'],b:o=>[...(o.veg==='Meat only'?[]:[P('pvm')]),P('philly'),P('roll'),...side(o)]},
+  {id:'w_gc',name:'Grilled Chicken Breast',d:'Lettuce, tomato, mayo',o:['side'],b:o=>[P('gchick'),P('bun'),...side(o)]},
+  {id:'w_tb',name:'Turkey Bacon Club',d:'2 strips bacon, cheese, lettuce, tomato, mayo',o:['sbread','side'],b:o=>[P('bacon',2),P('toast',2,0,o.sbread),...side(o)]},
+  {id:'w_td',name:'Triple Decker Club',d:'Ham, turkey, 2 strips bacon, American & Swiss',o:['sbread','side'],b:o=>[P('bacon',2),P('toast',3,0,o.sbread),...side(o)]},
+  {id:'w_gch',name:'Grilled Cheese',d:'White, wheat or rye',o:['sbread','side'],b:o=>[P('gcheese',1,0,o.sbread),...side(o)]},
+  {id:'w_ghc',name:'Grilled Ham & Cheese',d:'White, wheat or rye',o:['sbread','side'],b:o=>[P('gham',1,0,o.sbread),...side(o)]},
+  {id:'w_blt',name:'BLT',d:'White, wheat or rye',o:['sbread','side'],b:o=>[P('bacon',2),P('toast',2,0,o.sbread),...side(o)]},
+  {id:'w_wr',name:'Chicken Wrap',d:'Grilled chicken, lettuce, tomato, cheese, ranch',o:['side'],b:o=>[P('gchick'),P('tortilla'),...side(o)]}
+ ]},
+ {id:'faj',name:'Fajitas',items:[
+  {id:'fajitas',name:'Fajitas',d:'Peppers & onions, warm tortillas, sour cream, salsa, cheese',o:['fprot'],b:o=>[P('fveg',o.fprot==='Veggie'?2:1),...(o.fprot==='Chicken'?[P('fj_ch')]:o.fprot==='Steak'?[P('fj_st')]:o.fprot==='Combo'?[P('fj_ch'),P('fj_st')]:[]),P('ftort',3),P('fside')]}
+ ]},
+ {id:'apps',name:'Sidetracks',items:[
+  {id:'a_mz',name:'Mozzarella Sticks',d:'6 pc with marinara',b:()=>[P('mozz')]},
+  {id:'a_ff',name:'French Fries',d:'',b:()=>[P('fries')]},
+  {id:'a_wf',name:'Waffle Fries',d:'',b:()=>[P('waffle')]},
+  {id:'a_cs',name:'Chicken Strips',d:'5 pc',b:()=>[P('strips',5)]},
+  {id:'a_cb',name:'Strip Basket',d:'4 pc with fries',b:()=>[P('strips',4),P('fries')]},
+  {id:'a_or',name:'Onion Rings',d:'',b:()=>[P('rings')]},
+  {id:'a_bm',name:'Breaded Mushrooms',d:'',b:()=>[P('mushb')]},
+  {id:'a_cc',name:'Cheese Curds',d:'Regular or spicy',o:['curd'],b:o=>[P(o.curd==='Spicy'?'curds_s':'curds_r')]},
+  {id:'a_wb',name:'Wing Basket',d:'8 wings with fries',b:()=>[P('wings',8),P('fries')]}
+ ]},
+ {id:'salad',name:'Salads',items:[
+  {id:'l_ta',name:'Taco Salad',d:'Tortilla bowl, beef, lettuce, tomato, onion, sour cream, cheddar, salsa',b:()=>[P('taco'),P('salad')]},
+  {id:'l_ch',name:'Chef Salad',d:'Ham, turkey, egg, American/Swiss, croutons',b:()=>[P('salad')]},
+  {id:'l_ck',name:'Chicken Salad',d:'Grilled or fried chicken, egg, cheese',o:['chick'],b:o=>[o.chick==='Fried'?P('fchick'):P('gchick'),P('salad')]},
+  {id:'l_di',name:'Dinner Salad',d:'',b:()=>[P('dsalad')]}
+ ]}
+];
+const ITEM={};
+MENU.forEach(cat=>cat.items.forEach(it=>{it.cat=cat.id;ITEM[it.id]=it;}));
+
+/* what each item goes out on: for here, breakfast is plated and burgers, sandwiches and fryer baskets go in red baskets */
+const WARE={bfast:'plate',omelet:'plate',side:'plate',salad:'plate',faj:'plate',burg:'basket',sand:'basket',apps:'basket'};
+const WARE_NAME={plate:'Plate',basket:'Red basket',togo:'To-go box'};
+/* parts that need the flat-top oiled before they go down */
+const OIL=new Set(['hash','home','veg','pvm','fveg','fj_ch','fj_st','philly','gonion','mush','gchick']);
+
+/* ---------- State ---------- */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=sec=>{sec=Math.max(0,Math.round(sec));return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');};
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+let uidN=0;
+const uid=()=>Date.now().toString(36)+(uidN++).toString(36);
+const KEY='te-ticket-timer-v2';
+let sampleFn, photoOK=false;
+
+function line(id,o={},n=''){
+  const it=ITEM[id],opts={};
+  (it.o||[]).forEach(k=>{opts[k]=o[k]??(it.def&&it.def[k])??OPTS[k].v[0];});
+  return {u:uid(),id,o:opts,n};
+}
+const fresh=()=>({seq:1,audio:'voice',times:{},tickets:[],draft:null});
+function load(){
+  try{
+    const s=JSON.parse(localStorage.getItem(KEY));
+    if(s&&Array.isArray(s.tickets)&&s.times&&typeof s.times==='object'){
+      if(!s.audio) s.audio=s.sound===false?'off':'voice';
+      if(s.draft) s.draft.lines=(s.draft.lines||[]).filter(l=>ITEM[l.id]);
+      s.tickets.forEach(t=>t.steps.forEach(st=>{if(!st.say) st.say=st.label.toLowerCase();}));
+      return s;
+    }
+  }catch(e){}
+  try{
+    const old=JSON.parse(localStorage.getItem('te-ticket-timer-v1'));
+    if(old&&old.times&&typeof old.times==='object'){const f=fresh();f.times=old.times;f.audio=old.sound===false?'off':'voice';return f;}
+  }catch(e){}
+  return null;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+let S=load()||fresh();
+const tOf=c=>S.times[c]??COMP[c][2];
+
+const wareOf=(id,svc)=>svc==='togo'?'togo':WARE[ITEM[id].cat];
+const wareChip=w=>`<span class="ware ware-${w}">${WARE_NAME[w]}</span>`;
+const tixName=l=>/^\d+$/.test(l)?'#'+l:l;
+const sayTicket=l=>/^\d+$/.test(l)?'Ticket '+l:l;
+const svcName=s=>s==='togo'?'To go':'For here';
+const joinSay=a=>a.length<2?(a[0]||''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+function lineSummary(ln){
+  return (ITEM[ln.id].o||[]).map(k=>{
+    const v=ln.o[k];
+    if(k==='bread') return v==='No toast'?v:v+' toast';
+    if(k==='sbread') return v+' bread';
+    return v;
+  }).join(' · ');
+}
+/* how a lay-down call sounds out loud: "wheat toast, 4 slices", "patty, well done" */
+function sayName(base,v,n,unit){
+  let name=base.toLowerCase().replace(/&/g,'and').replace(/\b5 oz\b/,'5 ounce');
+  if(v) name=v.toLowerCase()+' '+name;
+  if(n>1) name+=', '+n+(unit&&unit!=='pc'?' '+unit:'');
+  return name;
+}
+
+/* ---------- Planner: every part of a ticket lands at the window together ---------- */
+function plan(lines,svc){
+  const m=new Map(), wares={};
+  for(const ln of lines){
+    const it=ITEM[ln.id];
+    if(!it) continue;
+    const w=wareOf(ln.id,svc);
+    wares[w]=(wares[w]||0)+1;
+    for(const p of it.b(ln.o)){
+      const k=p.c+'|'+p.lead+'|'+p.v;
+      let s=m.get(k);
+      if(!s){s={c:p.c,lead:p.lead,v:p.v,q:0,f:new Map()};m.set(k,s);}
+      s.q+=p.q;
+      s.f.set(it.name,(s.f.get(it.name)||0)+1);
+    }
+  }
+  const steps=[...m.values()].map(s=>{
+    const c=COMP[s.c];
+    return {label:c[0]+(s.v?' ('+s.v.toLowerCase()+')':''),q:'×'+s.q+(c[3]?' '+c[3]:''),st:c[1],lead:s.lead,dur:tOf(s.c),
+      oil:OIL.has(s.c),say:sayName(c[0],s.v,s.q,c[3]),for:[...s.f].map(([n,k])=>k>1?k+'× '+n:n).join(', ')};
+  });
+  const T=steps.reduce((a,s)=>Math.max(a,s.lead+s.dur),0);
+  steps.forEach(s=>{s.start=T-s.lead-s.dur;});
+  if(steps.length){
+    const d=Math.min(60,T);
+    steps.push({label:wareText(wares,svc,' + '),q:'',st:'pass',lead:0,dur:d,start:T-d,for:'',ware:true,say:wareText(wares,svc,' and ').toLowerCase()});
+  }
+  steps.sort((a,b)=>a.start-b.start||STATION_RANK[a.st]-STATION_RANK[b.st]||b.dur-a.dur);
+  let r=0,prev=null;
+  steps.forEach(s=>{if(s.start!==prev){r++;prev=s.start;}s.rank=r;});
+  return {T,steps};
+}
+function wareText(wares,svc,joiner){
+  const word={plate:['plate','plates'],basket:['red basket','red baskets'],togo:['to-go box','to-go boxes']};
+  const parts=Object.entries(wares).map(([w,n])=>n+' '+word[w][n>1?1:0]);
+  return (svc==='togo'?'Pack ':'Set out ')+parts.join(joiner);
+}
+/* what the dispatcher says after reading a ticket */
+function readBack(d){
+  const p=plan(d.lines,d.service);
+  const items=d.lines.map(l=>{
+    const parts=[lineSummary(l),l.n||''].filter(Boolean).join(', ').replace(/ · /g,', ').toLowerCase();
+    return ITEM[l.id].name+(parts?': '+parts:'');
+  });
+  const first=p.steps.find(s=>!s.ware), mins=Math.max(1,Math.round(p.T/60));
+  return `${d.label?sayTicket(d.label)+', ':''}${svcName(d.service).toLowerCase()}. ${items.join('. ')}. About ${mins} minute${mins>1?'s':''} to the window. ${first?'First down: '+(first.oil?'oil the flat-top, then ':'')+first.say+'. ':''}Check it, then tap start cooking.`;
+}
+
+/* ---------- Check-the-ticket sheet ---------- */
+let rvAddOpen=false, menuCache='';
+const fixOpen=new Set();
+function menuHTML(){
+  if(menuCache) return menuCache;
+  return menuCache=MENU.map(c=>`<section class="cat"><h4 class="banner">${esc(c.name)}</h4><ul class="items">${c.items.map(it=>
+    `<li><button class="item" data-add="${it.id}"><span class="item-name">${esc(it.name)}</span><span class="leader" aria-hidden="true"></span><span class="item-t">${fmt(plan([line(it.id)],'here').T)}</span><span class="plus" aria-hidden="true">+</span></button></li>`).join('')}</ul></section>`).join('');
+}
+function rvLineHTML(ln,svc){
+  const it=ITEM[ln.id], sub=lineSummary(ln);
+  const sel=(it.o||[]).map(k=>`<label class="opt"><span class="sr">${OPTS[k].name}</span><select id="o-${ln.u}-${k}" data-line="${ln.u}" data-opt="${k}">${OPTS[k].v.map(v=>`<option${v===ln.o[k]?' selected':''}>${esc(v)}</option>`).join('')}</select></label>`).join('');
+  return `<li class="rv-line">
+    <div class="rv-top"><span class="rv-name">${esc(it.name)}</span>${wareChip(wareOf(ln.id,svc))}<button class="x" data-act="rm" data-line="${ln.u}" aria-label="Remove ${esc(it.name)}">×</button></div>
+    ${sub?`<div class="rv-sub">${esc(sub)}</div>`:''}
+    ${ln.n?`<div class="rv-note">${esc(ln.n)}</div>`:''}
+    ${sel?`<details class="rv-fix" data-fix="${ln.u}"${fixOpen.has(ln.u)?' open':''}><summary>Change</summary><div class="opts">${sel}</div></details>`:''}
+  </li>`;
+}
+function planHTML(p){
+  return `<section class="rv-plan" aria-labelledby="planH">
+    <div class="sec-head"><h3 class="banner" id="planH">Lay-down order</h3><span class="plan-t"><b>${fmt(p.T)}</b> to window</span></div>
+    <ol class="steps">${p.steps.map(s=>`<li class="step"><span class="rank">${s.rank}</span><span class="at">+${fmt(s.start)}</span><span class="what"><b>${esc(s.label)}</b>${s.q?` <span class="q">${esc(s.q)}</span>`:''}${s.oil?' <span class="oil">Oil first</span>':''}${s.for?`<small>${esc(s.for)}</small>`:''}</span><span class="st">${STATION_NAME[s.st]}</span></li>`).join('')}</ol>
+  </section>`;
+}
+function syncLock(){document.body.classList.toggle('locked',!$('#review').hidden||!$('#times').hidden);}
+function renderReview(){
+  const d=S.draft, sheet=$('#review');
+  if(!d){sheet.hidden=true;syncLock();return;}
+  const opening=sheet.hidden;
+  sheet.hidden=false;syncLock();
+  const n=d.lines.length, p=plan(d.lines,d.service), other=d.other||[];
+  $('#rvBody').innerHTML=`
+    <div class="rv-head">
+      <label class="rv-label-wrap" for="rvLabel"><span class="eyebrow">Ticket</span><input id="rvLabel" class="rv-label" value="${esc(d.label)}" placeholder="Table #" maxlength="16" autocomplete="off" spellcheck="false"></label>
+      <div class="seg" role="radiogroup" aria-label="For here or to go">
+        <button type="button" role="radio" aria-checked="${d.service!=='togo'}" data-svc="here">For here</button>
+        <button type="button" role="radio" aria-checked="${d.service==='togo'}" data-svc="togo">To go</button>
+      </div>
+    </div>
+    ${n?`<ol class="rv-lines">${d.lines.map(ln=>rvLineHTML(ln,d.service)).join('')}</ol>`:'<p class="muted">No items yet. Add them from the menu.</p>'}
+    ${other.length?`<p class="other"><span class="eyebrow">Not timed</span>${esc(other.join(', '))}</p>`:''}
+    <details class="rv-add" id="rvAdd"${rvAddOpen||!n?' open':''}><summary class="btn">Add an item</summary>${menuHTML()}</details>
+    ${n?planHTML(p):''}`;
+  const sb=$('#startBtn');
+  sb.disabled=!n;
+  sb.innerHTML=n?`Start cooking <span class="fire-t">${fmt(p.T)}</span>`:'Start cooking';
+  $('#retakeBtn').hidden=!(d.src==='photo'&&photoOK);
+  if(opening){$('#review .sheet-panel').scrollTop=0;$('#rvTitle').focus({preventScroll:true});}
+}
+function openDraft(d){S.draft=d;rvAddOpen=!d.lines.length;fixOpen.clear();save();renderReview();}
+function addToDraft(id){
+  if(!S.draft) return;
+  S.draft.lines.push(line(id));
+  save();renderReview();
+  toastMsg(`Added ${ITEM[id].name}.`);
+}
+function rmLine(u){
+  const d=S.draft;
+  if(!d) return;
+  const i=d.lines.findIndex(l=>l.u===u);
+  if(i<0) return;
+  const [ln]=d.lines.splice(i,1);
+  save();renderReview();
+  toastMsg(`Removed ${ITEM[ln.id].name}.`,'Undo',()=>{if(S.draft===d){d.lines.splice(i,0,ln);save();renderReview();}});
+}
+function cancelDraft(){
+  const d=S.draft;
+  if(!d) return;
+  S.draft=null;save();renderReview();
+  if(d.lines.length) toastMsg('Ticket dropped.','Undo',()=>{S.draft=d;save();renderReview();});
+}
+function setService(svc){if(!S.draft) return;S.draft.service=svc;save();renderReview();}
+function start(){
+  const d=S.draft;
+  if(!d||!d.lines.length) return;
+  const p=plan(d.lines,d.service);
+  const label=String(d.label||'').trim().replace(/^#/,'')||String(S.seq);
+  const t={id:uid(),label,service:d.service==='togo'?'togo':'here',at:Date.now(),T:p.T,alerted:false,
+    items:d.lines.map(l=>({name:ITEM[l.id].name,sub:lineSummary(l),n:l.n||'',w:wareOf(l.id,d.service)})),
+    other:d.other||[],
+    steps:p.steps.map(s=>({label:s.label,q:s.q,st:s.st,for:s.for,say:s.say,oil:!!s.oil,start:s.start,dur:s.dur,ware:!!s.ware,done:false,alerted:false}))};
+  S.tickets.push(t);S.seq++;S.draft=null;
+  save();unlockAudio();keepAwake();
+  renderReview();renderBoard();window.scrollTo(0,0);
+  toastMsg(`Started ${tixName(label)}. ${t.steps[0].label} goes down now.`);
+}
+
+/* ---------- The departure board: one call at a time ---------- */
+const LOCO='<svg viewBox="0 0 30 18" fill="currentColor" aria-hidden="true"><rect x="2" y="2" width="8" height="10" rx="1"/><rect x="10" y="5" width="14" height="7" rx="1"/><rect x="19" y="1" width="3" height="4"/><path d="M24 7l5 5h-5z"/><circle cx="6" cy="14.5" r="2.5"/><circle cx="13" cy="14.5" r="2.5"/><circle cx="20" cy="14.5" r="2.5"/></svg>';
+function callsNow(){
+  const calls=[];
+  S.tickets.forEach(t=>t.steps.forEach((s,i)=>{if(!s.done) calls.push({t,s,i,due:t.at+s.start*1000});}));
+  return calls.sort((a,b)=>a.due-b.due);
+}
+function findStep(ref){
+  const [tid,i]=String(ref).split(':');
+  const t=S.tickets.find(x=>x.id===tid);
+  return {t,s:t&&t.steps[+i]};
+}
+const subText=(t,s)=>[tixName(t.label),svcName(t.service),STATION_NAME[s.st],s.for].filter(Boolean).join(' · ');
+function heroHTML({t,s,i,due}){
+  return `<button class="hero" data-step="${t.id}:${i}" data-due="${due}">
+    <span class="hero-top"><span class="lamp" aria-hidden="true"></span><span class="hero-eyebrow" data-he>Lay next</span>${s.oil?'<span class="oil">Oil the flat-top first</span>':''}<span class="hero-st">${STATION_NAME[s.st]}</span></span>
+    <span class="hero-what">${esc(s.label)}${s.q?` <span class="hero-q">${esc(s.q)}</span>`:''}</span>
+    <span class="flap" data-cd aria-hidden="true"></span>
+    <span class="hero-sub">${esc([tixName(t.label),svcName(t.service),s.for].filter(Boolean).join(' · '))}<span class="sr" data-cdsr></span></span>
+    <span class="hero-done"><span class="chk" aria-hidden="true"></span>Tap when it's down</span>
+  </button>`;
+}
+function callHTML({t,s,i,due}){
+  return `<li><button class="call" data-step="${t.id}:${i}" data-due="${due}">
+    <span class="lamp" aria-hidden="true"></span>
+    <span class="cd" data-cd></span>
+    <span class="call-what"><b>${esc(s.label)}</b>${s.q?` <span class="q">${esc(s.q)}</span>`:''}${s.oil?' <span class="oil">Oil first</span>':''}<small>${esc(subText(t,s))}</small></span>
+    <span class="chk" aria-hidden="true"></span></button></li>`;
+}
+function tixHTML(t){
+  return `<article class="tix" data-sell="${t.at+t.T*1000}" data-total="${t.T}">
+    <div class="stub"><span class="stub-no">Ticket</span><span class="stub-label">${esc(tixName(t.label))}</span><span class="svc svc-${t.service}">${svcName(t.service)}</span></div>
+    <div class="tix-main">
+      <div class="tix-top"><span class="tix-cap" data-cap></span><span class="tix-cd" data-tcd></span></div>
+      <div class="rail" aria-hidden="true"><span class="loco" data-loco>${LOCO}</span><span class="bumper"></span></div>
+      <ul class="tix-items">${t.items.map(it=>`<li><span class="ti-what"><b>${esc(it.name)}</b>${it.sub?`<span class="ti-sub">${esc(it.sub)}</span>`:''}${it.n?`<span class="ti-note">${esc(it.n)}</span>`:''}</span>${wareChip(it.w)}</li>`).join('')}</ul>
+      ${t.other&&t.other.length?`<p class="other"><span class="eyebrow">Also</span>${esc(t.other.join(', '))}</p>`:''}
+      <div class="tix-foot"><button class="btn btn-sold" data-sold="${t.id}">Sold</button></div>
+    </div>
+  </article>`;
+}
+function renderBoard(){
+  const tk=S.tickets;
+  if(!tk.length){
+    $('#board').innerHTML=`<div class="clear"><span class="lamp lamp-green" aria-hidden="true"></span><div><h2 class="clear-h">Line clear</h2><p>No tickets on the line. ${sampleFn===null?'Add one by hand':'Snap a ticket'} and tap Start cooking. The dispatcher then calls out what to lay down next.</p></div></div>`;
+    return;
+  }
+  const [first,...rest]=callsNow();
+  const sorted=tk.slice().sort((a,b)=>(a.at+a.T*1000)-(b.at+b.T*1000));
+  $('#board').innerHTML=`
+    ${first?heroHTML(first):'<div class="hero hero-idle"><span class="hero-top"><span class="lamp lamp-green" aria-hidden="true"></span><span class="hero-eyebrow">Everything is down</span></span><span class="hero-what">Watch the window</span></div>'}
+    ${rest.length?`<section aria-labelledby="upH"><div class="sec-head"><h2 class="banner" id="upH">Coming up</h2></div><ol class="calls">${rest.map(callHTML).join('')}</ol></section>`:''}
+    <section aria-labelledby="lineH"><div class="sec-head"><h2 class="banner" id="lineH">On the line</h2><span class="muted">${tk.length} ticket${tk.length>1?'s':''}</span></div><div class="tixs">${sorted.map(tixHTML).join('')}</div></section>`;
+  paint();
+}
+const HERO_EYEBROW={up:'Lay next',soon:'Get ready',now:'Lay it now',late:'Late · lay it now'};
+function cdState(r){
+  if(r>30) return ['up',fmt(r)];
+  if(r>0) return ['soon',fmt(r)];
+  if(r>-30) return ['now','NOW'];
+  return ['late','+'+fmt(-r)];
+}
+function paint(){
+  const now=Date.now();
+  $$('[data-due]').forEach(b=>{
+    const [st,txt]=cdState((+b.dataset.due-now)/1000);
+    if(b.dataset.s!==st){b.dataset.s=st;const he=$('[data-he]',b);if(he) he.textContent=HERO_EYEBROW[st];}
+    const cd=$('[data-cd]',b);
+    if(cd.dataset.v!==txt){
+      cd.dataset.v=txt;
+      if(cd.classList.contains('flap')){
+        cd.innerHTML=[...txt].map(ch=>`<span${ch===':'?' class="sep"':''}>${ch}</span>`).join('');
+        const sr=$('[data-cdsr]',b);if(sr) sr.textContent=' · '+(txt==='NOW'?'now':txt[0]==='+'?'late by '+txt.slice(1):'in '+txt);
+      } else cd.textContent=txt;
+    }
+  });
+  $$('.tix').forEach(el=>{
+    const r=(+el.dataset.sell-now)/1000, T=+el.dataset.total;
+    const st=r>0?'cooking':r>-120?'window':'dying';
+    if(el.dataset.s!==st) el.dataset.s=st;
+    const txt=r>0?fmt(r):'+'+fmt(-r), cd=$('[data-tcd]',el), capEl=$('[data-cap]',el);
+    if(cd.textContent!==txt) cd.textContent=txt;
+    const ct=st==='cooking'?'To the window':st==='window'?'Sell it':'Dying in the window';
+    if(capEl.textContent!==ct) capEl.textContent=ct;
+    $('[data-loco]',el).style.setProperty('--p',(T?Math.min(1,Math.max(0,(T-Math.max(r,0))/T)):1).toFixed(3));
+  });
+}
+/* every 250 ms: call out what just came due, then repaint */
+function tick(){
+  const now=Date.now(), lines=[];
+  let changed=false, ding=false;
+  for(const t of S.tickets){
+    const due=[];
+    for(const s of t.steps){
+      if(!s.done&&!s.alerted&&now>=t.at+s.start*1000){s.alerted=true;changed=true;due.push(s);}
+    }
+    if(due.length){
+      ding=true;
+      const lays=due.filter(s=>!s.ware).map(s=>s.say), sets=due.filter(s=>s.ware).map(s=>s.say);
+      const parts=[];
+      if(lays.length) parts.push((due.some(s=>s.oil&&!s.ware)?'oil the flat-top, then lay ':'lay ')+joinSay(lays));
+      parts.push(...sets);
+      lines.push(`${sayTicket(t.label)}, ${parts.join('. ')}.`);
+    }
+    if(!t.alerted&&now>=t.at+t.T*1000){
+      t.alerted=true;changed=true;
+      beep([660,880,1180],.15,true);buzz([150,90,150]);
+      toastMsg(`${tixName(t.label)} is ready. Sell it.`);
+      lines.push(`${sayTicket(t.label)} is up. Sell it.`);
+    }
+  }
+  if(ding){beep([880],.13);buzz(180);}
+  if(lines.length) say(lines.join(' '));
+  if(changed) save();
+  paint();
+}
+function toggleStep(ref){
+  const {t,s}=findStep(ref);
+  if(!s) return;
+  s.done=true;s.alerted=true;
+  save();renderBoard();
+  toastMsg(`${s.label} is down for ${tixName(t.label)}.`,'Undo',()=>{s.done=false;save();renderBoard();});
+}
+function sold(tid){
+  const idx=S.tickets.findIndex(x=>x.id===tid);
+  if(idx<0) return;
+  const [t]=S.tickets.splice(idx,1);
+  save();renderBoard();releaseWake();
+  toastMsg(`${tixName(t.label)} sold.`,'Undo',()=>{S.tickets.splice(idx,0,t);save();renderBoard();keepAwake();});
+}
+function spokenWhen(r){
+  if(r<=5) return r<-30?'and it is late':'now';
+  const r5=Math.round(r/5)*5;
+  if(r5<60) return `in ${r5} seconds`;
+  const m=Math.floor(r5/60), s=Math.round((r5%60)/10)*10;
+  return `in ${m} minute${m>1?'s':''}${s&&s<60?' '+s:''}`;
+}
+function nextLine(){
+  const [c]=callsNow();
+  if(!c) return S.tickets.length?'Everything is down. Watch the window.':'';
+  return `Next for ${sayTicket(c.t.label).toLowerCase()}: ${c.s.oil?'oil the flat-top, then ':''}${c.s.say}, ${spokenWhen(Math.round((c.due-Date.now())/1000))}.`;
+}
+
+/* ---------- Sound: beeps, buzz, the dispatcher's voice, keep the screen on ---------- */
+const VOICE_OK=typeof window.speechSynthesis!=='undefined'&&typeof window.SpeechSynthesisUtterance!=='undefined';
+if(!VOICE_OK&&S.audio==='voice') S.audio='beep';
+let actx=null,lastBeep=0,voicePick=null,voiceUnlocked=false,lastSaid='';
+function pickVoice(){
+  try{
+    const vs=speechSynthesis.getVoices();
+    voicePick=vs.find(v=>/^en[-_]US/i.test(v.lang)&&/natural|google|samantha|aria|jenny|guy|alex/i.test(v.name))
+      ||vs.find(v=>/^en[-_]US/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang))||null;
+  }catch(e){voicePick=null;}
+}
+if(VOICE_OK){pickVoice();try{speechSynthesis.addEventListener('voiceschanged',pickVoice);}catch(e){}}
+function say(text,force){
+  if(!text) return;
+  lastSaid=text;
+  if(!VOICE_OK||(S.audio!=='voice'&&!force)) return;
+  try{
+    const u=new SpeechSynthesisUtterance(text);
+    if(voicePick){u.voice=voicePick;u.lang=voicePick.lang;}else u.lang='en-US';
+    u.rate=1.05;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function unlockAudio(){
+  if(S.audio==='off') return;
+  try{
+    if(!actx){const AC=window.AudioContext||window.webkitAudioContext;if(AC) actx=new AC();}
+    if(actx&&actx.state==='suspended') actx.resume();
+  }catch(e){}
+  if(VOICE_OK&&S.audio==='voice'&&!voiceUnlocked){
+    try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);voiceUnlocked=true;}catch(e){}
+  }
+}
+function beep(freqs,dur,force){
+  if(S.audio==='off'||!actx) return;
+  const n=performance.now();
+  if(!force&&n-lastBeep<400) return;
+  lastBeep=n;
+  try{
+    let t=actx.currentTime+.01;
+    for(const f of freqs){
+      const o=actx.createOscillator(),g=actx.createGain();
+      o.type='square';o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t);
+      g.gain.exponentialRampToValueAtTime(.18,t+.01);
+      g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+      o.connect(g);g.connect(actx.destination);
+      o.start(t);o.stop(t+dur+.02);
+      t+=dur+.05;
+    }
+  }catch(e){}
+}
+function buzz(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
+const AUDIO_LABEL={voice:'Voice',beep:'Beeps',off:'Muted'};
+function updateAudioBtn(){
+  const b=$('#audioBtn');
+  b.dataset.mode=S.audio;
+  $('#audioState').textContent=AUDIO_LABEL[S.audio];
+  b.setAttribute('aria-label',`Sound: ${AUDIO_LABEL[S.audio]}. Tap to change.`);
+}
+function cycleAudio(){
+  const order=VOICE_OK?['voice','beep','off']:['beep','off'];
+  S.audio=order[(order.indexOf(S.audio)+1)%order.length];
+  save();updateAudioBtn();
+  if(S.audio==='voice'){unlockAudio();say("Voice on. I'll call out every lay-down.");}
+  else if(S.audio==='beep'){if(VOICE_OK) try{speechSynthesis.cancel();}catch(e){}unlockAudio();beep([880],.1,true);toastMsg('Beeps only. The dispatcher stays quiet.');}
+  else{if(VOICE_OK) try{speechSynthesis.cancel();}catch(e){}toastMsg('Sound off.');}
+}
+let wl=null;
+async function keepAwake(){
+  if(!S.tickets.length||wl||document.visibilityState!=='visible') return;
+  try{
+    if('wakeLock' in navigator){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null;});}
+  }catch(e){wl=null;}
+}
+function releaseWake(){if(!S.tickets.length&&wl){try{wl.release();}catch(e){}wl=null;}}
+
+/* ---------- Toast with optional undo ---------- */
+let toastTimer=null,toastFn=null;
+function toastMsg(msg,actLabel,fn){
+  const el=$('#toast');
+  el.innerHTML=`<span>${esc(msg)}</span>${actLabel?`<button class="toast-act" data-act="toastact">${esc(actLabel)}</button>`:''}`;
+  toastFn=fn||null;
+  el.hidden=false;
+  requestAnimationFrame(()=>el.classList.add('on'));
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(hideToast,actLabel?5000:2600);
+}
+function hideToast(){const el=$('#toast');el.classList.remove('on');el.hidden=true;toastFn=null;}
+
+/* ---------- Cook times sheet ---------- */
+let resetArmed=false,resetTimer=null;
+function renderTimes(){
+  $('#tmBody').innerHTML=`<p class="muted">These are estimates for a flat-top around 350–375°F, a 350°F fryer, raw bacon, sausage and patties, and frozen fries. Time a few plates on your line and nudge them. New tickets use them right away.</p>
+    <div class="tgroups">${STATIONS.filter(([sid])=>sid!=='pass').map(([sid,sn])=>`<section><h3 class="banner">${sn}</h3><ul class="trows">${
+      Object.entries(COMP).filter(([,c])=>c[1]===sid).map(([id,c])=>{
+        const v=tOf(id);
+        return `<li class="trow${v!==c[2]?' changed':''}"><span class="tname">${esc(c[0])}</span><span class="tval">${fmt(v)}</span>
+          <span class="tbtns"><button class="btn btn-sm" data-time="${id}" data-d="-15" aria-label="${esc(c[0])}: 15 seconds less">−15s</button><button class="btn btn-sm" data-time="${id}" data-d="15" aria-label="${esc(c[0])}: 15 seconds more">+15s</button></span></li>`;
+      }).join('')}</ul></section>`).join('')}</div>
+    <div class="times-foot">
+      <p class="muted">Where the menu doesn't print a bacon count, plans use 2 strips. Omelet fillings are timed to be ready 3:00 before the omelet. Plates or baskets get set out 1:00 before the window. If your line par-cooks bacon or sausage, drop those times.</p>
+      <button class="btn" data-act="reset">${resetArmed?'Tap again to reset all times':'Reset to the estimates'}</button>
+    </div>`;
+}
+function openTimes(){renderTimes();$('#times').hidden=false;syncLock();$('#times .sheet-panel').scrollTop=0;$('#tmTitle').focus({preventScroll:true});}
+function closeTimes(){$('#times').hidden=true;syncLock();}
+function adjTime(id,d){
+  const v=Math.min(1800,Math.max(15,tOf(id)+d));
+  if(v===COMP[id][2]) delete S.times[id]; else S.times[id]=v;
+  menuCache='';save();renderTimes();
+  if(S.draft) renderReview();
+  const f=$(`[data-time="${id}"][data-d="${d}"]`);
+  f&&f.focus({preventScroll:true});
+}
+function resetTimes(){
+  if(!resetArmed){
+    resetArmed=true;renderTimes();
+    clearTimeout(resetTimer);
+    resetTimer=setTimeout(()=>{resetArmed=false;if(!$('#times').hidden) renderTimes();},4000);
+    return;
+  }
+  clearTimeout(resetTimer);resetArmed=false;
+  S.times={};menuCache='';save();renderTimes();
+  if(S.draft) renderReview();
+  toastMsg('Cook times are back to the estimates.');
+}
+
+/* ---------- Claude: reads tickets and plays dispatcher ---------- */
+const TICKET_RULES=(()=>{
+  const items=MENU.map(c=>`# ${c.name}\n`+c.items.map(it=>[it.id,it.name,it.d||'-',it.o?'options: '+it.o.join(', '):'no options'].join(' | ')).join('\n')).join('\n');
+  const opts=Object.entries(OPTS).map(([k,o])=>`${k}: ${o.v.join(' | ')}`).join('\n');
+  return `A printed ticket has the table or ticket number at the top, the time, the server's name, FOR HERE or TO GO, then each item as "1 × Item name" with its choices printed under it (egg style, meat, potatoes, bread for toast, cheese, side, "No ..." removals) and sometimes a typed note from the server. A cook may also say or type a ticket in shorthand.
+
+MENU (id | name | what comes on it | options it takes)
+${items}
+
+OPTIONS (key: allowed values; the first is the default)
+${opts}
+
+POS names can differ from the menu: "BBQ Bacon Burger" is b_bbq, "Philly" is w_ph, "Chicken Fajitas" is fajitas with fprot Chicken, "Over Med" is Over medium, "Homefries" is Home fries, "Waffle Fries" is the side Waffle fries, "Shred Ched" is shredded cheddar (a note). A bread name under a breakfast item (White, Wheat, Rye) is its toast, option bread.
+
+Shorthand: OE over easy, OM over medium, OH over hard, SSU sunny side up, scr scrambled, HB hash browns, HF home fries, W or WD well done, MW medium well, MR medium rare, w/ with, x2 or 2x two, OR or rings onion rings, FF fries, WF waffle fries, FT French toast, B&G biscuits and gravy, SS short stack.
+
+Rules:
+- Use only ids from the menu, and only values copied exactly from the allowed list, for options that item takes. Leave out options the ticket doesn't mention.
+- note: anything else the cook must do for that item, short and lowercase, joined with " · ": cheese choice, removals like "no onions", and server notes. Use "" if none. Don't repeat chosen option values.
+- A Philly with no peppers, no onions and no mushrooms is veg "Meat only".
+- qty: how many of that item. Give items their own lines when their choices differ.
+- service: "togo" if the ticket says TO GO, TAKE OUT, CARRY OUT or PICK UP; otherwise "here".
+- label: the table or ticket number printed at the top, just the number like "7", or a customer name. Use "" if none. Never the time or the server's name.
+- other: anything on the ticket that isn't menu food (drinks, unknown items), in the ticket's words.
+
+Example. This ticket:
+7
+1:25:56 PM    Lois
+FOR HERE
+1 × Sizzler
+    Shred Ched
+    Scrambled
+    Hash Browns
+    Wheat
+1 × Brakeman
+    Over Med
+    Wheat
+    Homefries
+    Sausage
+becomes:
+{"label":"7","service":"here","lines":[{"id":"sizz","qty":1,"opts":{"egg":"Scrambled","pot":"Hash browns","bread":"Wheat"},"note":"shredded cheddar"},{"id":"brake","qty":1,"opts":{"egg":"Over medium","meat":"Sausage","pot":"Home fries","bread":"Wheat"},"note":""}],"other":[]}`;
+})();
+const READ_PROMPT=`You read kitchen tickets for Track's End Railroad Restaurant, a diner, and turn them into menu item ids for the cook's timer app.
+
+${TICKET_RULES}
+
+Reply with only JSON in that shape.
+
+TICKET:
+(The ticket is the attached photo of a printed kitchen ticket. Item lines are dark; the choices under each item are printed in red and may be faded, so read them carefully. Ignore anything that is not printed on the ticket.)`;
+function boardText(){
+  if(!S.tickets.length) return 'No tickets on the line. The line is clear.';
+  const now=Date.now();
+  const tk=S.tickets.map(t=>{
+    const r=Math.round((t.at+t.T*1000-now)/1000);
+    return `Ticket ${t.label}, ${svcName(t.service).toLowerCase()}: ${r>0?'window in '+fmt(r):'ready '+fmt(-r)+' ago, waiting to be sold'}. Items: ${t.items.map(i=>i.name+(i.sub||i.n?' ('+[i.sub,i.n].filter(Boolean).join(' · ')+')':'')).join('; ')}.`;
+  }).join('\n');
+  const calls=callsNow().map(({t,s,i,due})=>{
+    const r=Math.round((due-now)/1000);
+    return `${t.id}:${i} | ticket ${t.label} | ${s.label} ${s.q}${s.oil?' (oil the flat-top first)':''} |${STATION_NAME[s.st]} | ${r>5?'in '+fmt(r):r>-30?'due now':'late by '+fmt(-r)}`;
+  }).join('\n');
+  return `TICKETS\n${tk}\n\nCALLS NOT DOWN YET, in order (id | ticket | what | station | when)\n${calls||'none, everything is down'}`;
+}
+function dispatchPrompt(text){
+  const times=Object.entries(COMP).map(([id,c])=>`${c[0]} ${fmt(tOf(id))}${OIL.has(id)?' (oil the flat-top first)':''}`).join('; ');
+  return `You are the dispatcher for the kitchen line at Track's End Railroad Restaurant, a diner. The cook talks to you through a phone: usually by dictating with the keyboard mic, so expect missing punctuation and misheard words, sometimes by typing. The app reads your "say" text out loud, so keep it to one or two short, plain sentences with no symbols, lists or emoji.
+
+Work out what the cook wants:
+- "ticket": they are giving you a new order to cook. Fill "ticket" using the TICKET FORMAT below and leave "say" empty; the app reads the ticket back itself.
+- "done": they say food is down, on, dropped or started. Put the matching call ids from CALLS in "done". "Everything for 7 is down" means all of ticket 7's calls. Confirm in a few words; the app adds what's next.
+- "sold": a ticket went out to the customer. Put its ticket labels, as written on the board, in "sold". Confirm in a few words.
+- "answer": a question, like what's next, how long on a ticket, what's on a ticket, what comes on a menu item, or how long something cooks. Answer from the line, menu and cook times below.
+If you can't tell what they mean, use "answer" and ask them to say it again.
+
+THE LINE RIGHT NOW
+${boardText()}
+
+COOK TIMES (estimates the app uses)
+${times}
+
+TICKET FORMAT
+${TICKET_RULES}
+
+Reply with only JSON like:
+{"intent":"done","say":"Got it, hash browns are down on 7.","done":["k3x9a:0"],"sold":[],"ticket":null}
+
+THE COOK SAID:
+${text}`;
+}
+const READ_OFF=new Set(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed']);
+const READ_ERR={
+  rate_limited:'Too many requests in a row. Give it a minute, then try again.',
+  session_expired:'Sign in to Claude again, then try again.',
+  refused:"I couldn't read that one. Try again, or add it by hand.",
+  empty_completion:"I couldn't read that one. Try again, or add it by hand.",
+  invalid_json:'That came back garbled. Try again.',
+  prompt_too_large:'That was too long. Split it in two.',
+  image_rejected:"That photo didn't work. Try again closer, in good light.",
+  not_configured:"The kitchen server doesn't have its Claude API key yet.",
+  bad_api_key:'The Claude API key on the kitchen server was turned down. Check it in Cloudflare.',
+  upstream_error:'Connection problem. Try again.'
+};
+const HINT="Snap a ticket so it fills the photo, or tell me one. Ask me what's next anytime.";
+let readCtl=null;
+/* Two homes: inside Claude the page asks Claude directly; on finux.tech/cook it asks the
+   kitchen's own server (a Cloudflare Worker that holds the API key) through the same interface. */
+const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==='function');
+const CODE_KEY=KEY+':code';
+let codeMem='';
+const kitchenCode=()=>{try{return localStorage.getItem(CODE_KEY)||codeMem;}catch(e){return codeMem;}};
+function blobToBase64(b){
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]||'');r.onerror=()=>rej(r.error);r.readAsDataURL(b);});
+}
+function webClaude(){
+  const endpoint=new URL('api/claude',location.href).href;
+  const call=async(input,opts={})=>{
+    const images=[];
+    for(const b of (opts.images||[])) images.push({type:b.type||'image/jpeg',data:await blobToBase64(b)});
+    const prompt=typeof input==='string'?input:input.map(m=>m.content).join('\n\n');
+    const tier=opts.modelTier==='default'||opts.modelTier==='complex'?'default':'quick';
+    let res;
+    try{
+      res=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','x-kitchen-code':kitchenCode()},body:JSON.stringify({prompt,images,tier}),signal:opts.signal});
+    }catch(e){
+      if(e&&e.name==='AbortError') throw {code:'cancelled',message:'stopped'};
+      throw {code:'upstream_error',message:'Could not reach the kitchen server'};
+    }
+    let data=null;
+    try{data=await res.json();}catch(e){}
+    if(!res.ok||!data||data.error){const er=(data&&data.error)||{};throw {code:er.code||'upstream_error',message:er.message||('Server answered '+res.status)};}
+    return {text:String(data.text||''),truncated:data.stop==='max_tokens'};
+  };
+  const fn=(input,opts)=>call(input,opts);
+  fn.json=async(input,opts)=>parseLooseJSON((await call(input,opts)).text);
+  fn.limits=async()=>({maxPromptBytes:200000,images:{maxCount:2,maxInputBytes:5e6,mediaTypes:['image/jpeg','image/png','image/webp','image/gif']}});
+  return fn;
+}
+const sampleReady=IN_CLAUDE?window.claude.use('sample').catch(()=>null):Promise.resolve(webClaude());
+/* what the "Having trouble?" panel shows: the facts that decide whether photos can work here */
+const diag={claude:'Connecting…',photos:'Checking…',perm:'Checking…',photo:'None yet',last:'None'};
+const PERM_NAME={granted:'Allowed',prompt:'Asks on first use',denied:'Switched off',unavailable:'Not available here',unknown:'Unknown'};
+function renderDiag(){
+  const el=$('#diagBody');
+  if(!el) return;
+  const rows=[['Claude',diag.claude],['Photo reading',diag.photos],['Permission',diag.perm],['Last photo sent',diag.photo],['Last problem',diag.last]];
+  el.innerHTML=`<dl class="diag-list">${rows.map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl>
+    <p class="muted">If the camera makes the page reload, take the picture with your camera app, then tap Use a saved photo. If photo reading says it isn't available, open this page on claude.ai in your phone's web browser.</p>`;
+}
+/* older viewers lack sample.json: ask in plain text and pull the JSON out ourselves */
+function parseLooseJSON(text){
+  const t=String(text||'').trim();
+  try{return JSON.parse(t);}catch(e){}
+  const fence=t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if(fence){try{return JSON.parse(fence[1]);}catch(e){}}
+  const a=t.search(/[\[{]/), b=Math.max(t.lastIndexOf('}'),t.lastIndexOf(']'));
+  if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1));}catch(e){}}
+  throw {code:'invalid_json',message:'no JSON in the reply'};
+}
+async function askJSON(fn,input,opts){
+  if(typeof fn.json==='function'){
+    try{return await fn.json(input,opts);}
+    catch(e){if(!(e&&e.code==='capability_removed')) throw e;}
+  }
+  const r=await fn(input,opts);
+  return parseLooseJSON(r&&r.text);
+}
+/* Android can kill the page while the camera app is open; notice that on the next load */
+const CAM_KEY=KEY+':camera';
+function camMark(){try{localStorage.setItem(CAM_KEY,String(Date.now()));}catch(e){}}
+function camClear(){try{localStorage.removeItem(CAM_KEY);}catch(e){}}
+function camCheck(){
+  let t=0;
+  try{t=+localStorage.getItem(CAM_KEY)||0;}catch(e){}
+  camClear();
+  return t>0&&Date.now()-t<180000;
+}
+let thumbURL=null;
+function showThumb(blob){
+  const im=$('#radioThumb');
+  if(thumbURL){URL.revokeObjectURL(thumbURL);thumbURL=null;}
+  if(blob){thumbURL=URL.createObjectURL(blob);im.src=thumbURL;im.hidden=false;}
+  else{im.hidden=true;im.removeAttribute('src');}
+}
+sampleReady.then(async fn=>{
+  sampleFn=fn;
+  diag.claude=fn?(IN_CLAUDE?'Connected':'Through the finux.tech kitchen server'):'Not available in this view';
+  if(!fn){diag.photos=diag.perm='Not available here';renderDiag();return aiOff();}
+  /* only an explicit "no images" hides the camera; an older viewer that can't say gets to try */
+  let photos='unknown';
+  if(typeof fn.limits==='function'){
+    try{const l=await fn.limits();photos=l&&l.images?'yes':'no';}catch(e){photos='unknown';}
+  }
+  photoOK=photos!=='no';
+  diag.photos=photos==='yes'?'Supported':photos==='no'?'Not available in this view':'Not reported, will try anyway';
+  showPhoto(photoOK);
+  if(!photoOK) radio("Photo reading isn't available in this view. Tell me the ticket instead, or open this page on claude.ai in your phone's web browser.");
+  if(IN_CLAUDE){
+    try{
+      const perms=await window.claude.use('permissions');
+      const st=perms?await perms.state('sample'):'unknown';
+      diag.perm=PERM_NAME[st]||st;
+      if(st==='denied') aiDenied(false);
+    }catch(e){diag.perm='Unknown';}
+  } else diag.perm=kitchenCode()?'Kitchen code saved':'No kitchen code saved';
+  renderDiag();
+  if(S.draft) renderReview();
+});
+function showPhoto(on){$('#snapBtn').hidden=!on;$('#pickLink').hidden=!on;}
+function aiOff(){
+  showPhoto(false);$('#talkForm').hidden=true;$('#allowBtn').hidden=true;
+  $('#handBtn').className='btn btn-fire';
+  radio("Ticket reading needs Claude, and it isn't available in this view. Add tickets by hand. I still call out every lay-down.");
+  renderBoard();
+}
+/* the viewer said no to Claude for this page: offer the way back instead of going dark */
+function aiDenied(speak=true){
+  showPhoto(false);$('#talkForm').hidden=true;
+  $('#allowBtn').hidden=false;
+  radio("Claude is switched off for this page, so I can't read photos or talk back. Tap Turn Claude on, or add tickets by hand.",'err',speak);
+}
+function aiOn(){
+  showPhoto(photoOK);$('#talkForm').hidden=false;$('#allowBtn').hidden=true;
+  $('#handBtn').className='link';
+  radio();renderBoard();
+}
+async function allowClaude(){
+  const howTo="Open this page's menu, choose Permissions, allow Claude, then reload the page.";
+  let perms=null;
+  try{perms=await window.claude.use('permissions');}catch(e){perms=null;}
+  if(!perms) return radio(howTo,'err');
+  try{await perms.manage();}catch(e){return radio(howTo,'err');}
+  let st='denied';
+  try{st=await perms.state('sample');}catch(e){}
+  if(st==='granted'||st==='prompt'){aiOn();radio('Claude is back on. Snap a ticket.',null,true);}
+  else radio('Claude is still off for this page. You can keep adding tickets by hand.','err');
+}
+/* the dispatcher's line: shown in the radio strip; speak=true says it, a string says that instead */
+function radio(msg,tone,speak){
+  const box=$('#radio');
+  $('#radioText').textContent=msg||HINT;
+  if(tone) box.dataset.tone=tone; else delete box.dataset.tone;
+  if(speak) say(typeof speak==='string'?speak:msg);
+}
+let busyTimer=null;
+function setBusy(on,image){
+  $('#radio').dataset.busy=String(on);
+  $('#snapBtn').setAttribute('aria-busy',String(on&&!!image));
+  $('#snapText').textContent=on&&image?'Reading…':'Snap ticket';
+  $('#retakeText').textContent=on&&image?'Reading…':'Retake';
+  $('#sendBtn').disabled=on;
+  $('#stopBtn').hidden=!on;
+  clearInterval(busyTimer);busyTimer=null;
+  if(on){
+    const t0=Date.now();
+    busyTimer=setInterval(()=>{
+      const s=Math.round((Date.now()-t0)/1000), el=$('#radioText');
+      if(s>=3) el.textContent=el.textContent.replace(/ \d+s$/,'')+' '+s+'s';
+    },1000);
+  }
+}
+/* trust nothing from a reply: only real ids and real option values get through */
+function parseRead(res){
+  if(!res||typeof res!=='object'||!Array.isArray(res.lines)) throw {code:'invalid_json'};
+  const add=[];
+  for(const r of res.lines){
+    const it=r&&ITEM[String(r.id)];
+    if(!it) continue;
+    const src=r.opts&&typeof r.opts==='object'?r.opts:{}, o={};
+    (it.o||[]).forEach(k=>{
+      const want=String(src[k]??'').trim().toLowerCase();
+      const hit=OPTS[k].v.find(v=>v.toLowerCase()===want);
+      if(hit) o[k]=hit;
+    });
+    const qty=Math.min(12,Math.max(1,Math.round(Number(r.qty))||1));
+    const n=typeof r.note==='string'?r.note.trim().slice(0,90):'';
+    for(let i=0;i<qty;i++) add.push(line(it.id,o,n));
+  }
+  const other=(Array.isArray(res.other)?res.other:[]).map(x=>String(x).trim()).filter(Boolean).slice(0,8);
+  const label=String(res.label??'').trim().replace(/^#\s*/,'').slice(0,16);
+  const service=String(res.service||'').toLowerCase().replace(/[^a-z]/g,'')==='togo'?'togo':'here';
+  return {add,other,label,service};
+}
+function openTicket(r,src){
+  openDraft({label:r.label,service:r.service,lines:r.add,other:r.other,src});
+  radio(readBack(S.draft),null,true);
+}
+function failed(e){
+  const code=e&&e.code;
+  if(code==='cancelled') return radio();
+  diag.last=`${code||'error'}: ${String((e&&e.message)||e||'').slice(0,140)} (${new Date().toLocaleTimeString()})`;
+  renderDiag();
+  if(code==='images_unavailable'){photoOK=false;showPhoto(false);return radio("Photo reading isn't available in this view. Tell me the ticket instead.",'err',true);}
+  if(code==='not_granted') return aiDenied();
+  if(code==='bad_code'){
+    $('#codeForm').hidden=false;$('#codeText').focus();
+    return radio('This kitchen needs its code. Type it in, tap Save, then try again.','err',true);
+  }
+  if(READ_OFF.has(code)) return aiOff();
+  const msg=READ_ERR[code]||READ_ERR.upstream_error;
+  const detail=code?code:String((e&&e.message)||e||'unknown').slice(0,60);
+  radio(`${msg} (${detail})`,'err',msg);
+  if(!$('#review').hidden) toastMsg(msg);
+}
+async function claudeFn(ctl){
+  const fn=sampleFn===undefined?await sampleReady:sampleFn;
+  if(!fn) throw {code:'sampling_disabled'};
+  if(ctl.signal.aborted) throw {code:'cancelled'};
+  return fn;
+}
+/* make any phone photo sendable: decode it (iPhone HEIC too, where the browser can),
+   turn it upright, shrink it, lift the faded print a little, and re-save it as a JPEG */
+async function prepImage(file){
+  let src=null,w=0,h=0,url=null;
+  try{
+    if(window.createImageBitmap){src=await createImageBitmap(file,{imageOrientation:'from-image'});w=src.width;h=src.height;}
+  }catch(e){src=null;}
+  if(!src){
+    try{
+      url=URL.createObjectURL(file);
+      src=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error('decode'));im.src=url;});
+      w=src.naturalWidth;h=src.naturalHeight;
+    }catch(e){src=null;}
+  }
+  try{
+    if(!src||!w||!h) return null;
+    const k=Math.min(1,2000/Math.max(w,h)), c=document.createElement('canvas');
+    c.width=Math.round(w*k);c.height=Math.round(h*k);
+    const ctx=c.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
+    try{ctx.filter='contrast(1.2)';}catch(e){}
+    ctx.drawImage(src,0,0,c.width,c.height);
+    prepImage.dim=c.width+'×'+c.height;
+    return await new Promise(res=>c.toBlob(b=>res(b),'image/jpeg',.9));
+  }catch(e){return null;}
+  finally{
+    try{if(src&&src.close) src.close();}catch(e){}
+    if(url) URL.revokeObjectURL(url);
+  }
+}
+/* a photo from the camera, the photo library, a drop or a paste */
+async function takePhoto(file,input){
+  try{
+    if(!file) return;
+    unlockAudio();
+    if(readCtl) return radio('Still working on the last one. One moment.');
+    if(sampleFn===null) return aiOff();
+    radio('Getting the photo ready…');
+    let img=await prepImage(file);
+    if(!img){
+      if(!/^image\/(jpeg|png|webp|gif)$/i.test(file.type||'')){
+        const kind=file.type?' ('+file.type.replace(/^image\//,'').toUpperCase()+')':'';
+        return radio(`I can't open that kind of photo${kind}. Use Snap ticket to take a new one.`,'err',"I can't open that kind of photo. Use snap ticket to take a new one.");
+      }
+      img=file;
+    }
+    diag.photo=`${img===file?'original':prepImage.dim} ${(img.type||'image').replace('image/','').toUpperCase()}, ${Math.max(1,Math.round(img.size/1024))} KB (${new Date().toLocaleTimeString()})`;
+    renderDiag();
+    await readPhoto(img);
+  }finally{if(input) input.value='';}
+}
+/* read the printed ticket: the fast model first; if it stumbles or finds nothing, one closer look with the stronger model */
+const TIER_RETRY=new Set(['invalid_json','invalid_request','upstream_error','empty_completion','transform_error','refused']);
+async function readPhoto(image){
+  if(readCtl) return;
+  showThumb(image);
+  radio('Reading the ticket…');
+  setBusy(true,true);
+  const ctl=readCtl=new AbortController();
+  try{
+    const fn=await claudeFn(ctl);
+    let r=null;
+    try{r=parseRead(await askJSON(fn,READ_PROMPT,{modelTier:'quick',signal:ctl.signal,images:[image]}));}
+    catch(e){
+      if(!e||!TIER_RETRY.has(e.code)) throw e;
+      diag.last=`quick read: ${e.code} (${new Date().toLocaleTimeString()})`;renderDiag();
+    }
+    if(!r||(!r.add.length&&!r.other.length)){
+      radio('Taking a closer look…');
+      r=parseRead(await askJSON(fn,READ_PROMPT,{modelTier:'default',signal:ctl.signal,images:[image]}));
+    }
+    if(!r.add.length) return radio(r.other.length?`Nothing to cook on that ticket, just ${r.other.join(', ')}.`:"I couldn't find menu items on that photo. Hold the phone close so the ticket fills the photo, or tell me the ticket.",'err',true);
+    showThumb(null);
+    openTicket(r,'photo');
+  }catch(e){failed(e);}
+  finally{if(readCtl===ctl) readCtl=null;setBusy(false);}
+}
+/* anything the cook says or types: a ticket, "hash browns are down", "7 is sold", or a question */
+async function talk(){
+  const inp=$('#talkText'), text=inp.value.trim();
+  if(readCtl) return;
+  if(!text){radio('Tap the mic on your keyboard and tell me a ticket, or ask what\'s next.');inp.focus();return;}
+  showThumb(null);
+  radio('Copy, working on it…');
+  setBusy(true,false);
+  const ctl=readCtl=new AbortController();
+  try{
+    const fn=await claudeFn(ctl);
+    const res=await askJSON(fn,dispatchPrompt(text),{modelTier:'quick',signal:ctl.signal,cache:false});
+    if(!res||typeof res!=='object') throw {code:'invalid_json'};
+    inp.value='';
+    const intent=String(res.intent||'').toLowerCase();
+    const said=typeof res.say==='string'?res.say.trim().slice(0,400):'';
+    if(intent==='ticket'&&res.ticket&&typeof res.ticket==='object'){
+      const r=parseRead(res.ticket);
+      if(r.add.length){inp.blur();return openTicket(r,'typed');}
+      return radio(said||"I didn't catch any menu items. Say it again?",'err',true);
+    }
+    if(intent==='done'&&Array.isArray(res.done)){
+      const marked=[];
+      for(const ref of res.done){const {s}=findStep(ref);if(s&&!s.done){s.done=true;s.alerted=true;marked.push(s);}}
+      if(marked.length){
+        save();renderBoard();
+        toastMsg(`Marked ${marked.length} call${marked.length>1?'s':''} down.`,'Undo',()=>{marked.forEach(s=>{s.done=false;});save();renderBoard();});
+        return radio(`${said||'Got it.'} ${nextLine()}`.trim(),null,true);
+      }
+      return radio("I couldn't match that to a call on the board. Tap it on the screen instead.",'err',true);
+    }
+    if(intent==='sold'&&Array.isArray(res.sold)){
+      const gone=[];
+      for(const l of res.sold){
+        const lab=String(l).trim().replace(/^(ticket|table)\s*/i,'').replace(/^#\s*/,'').toLowerCase();
+        const idx=S.tickets.findIndex(t=>t.label.toLowerCase()===lab);
+        if(idx>=0) gone.push(S.tickets.splice(idx,1)[0]);
+      }
+      if(gone.length){
+        save();renderBoard();releaseWake();
+        toastMsg(`${gone.map(t=>tixName(t.label)).join(', ')} sold.`,'Undo',()=>{S.tickets.push(...gone);save();renderBoard();keepAwake();});
+        return radio(said||'Sold.',null,true);
+      }
+      return radio("I couldn't find that ticket on the line.",'err',true);
+    }
+    radio(said||'Say that again?',null,true);
+  }catch(e){failed(e);}
+  finally{if(readCtl===ctl) readCtl=null;setBusy(false);}
+}
+
+/* on finux.tech, Chrome can listen directly: tap the mic, talk, and it sends when you stop */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const CAN_LISTEN=!IN_CLAUDE&&!!SR;
+let rec=null;
+function listen(){
+  if(rec){try{rec.stop();}catch(e){}return;}
+  const inp=$('#talkText'), mic=$('#micBtn');
+  try{if(VOICE_OK) speechSynthesis.cancel();}catch(e){}
+  try{rec=new SR();}catch(e){rec=null;return radio("This browser can't listen. Use the mic on your keyboard instead.",'err');}
+  rec.lang='en-US';rec.interimResults=true;rec.maxAlternatives=1;rec.continuous=false;
+  let heard='';
+  rec.onresult=e=>{heard=[...e.results].map(r=>r[0].transcript).join(' ').trim();inp.value=heard;};
+  rec.onerror=e=>{radio(e.error==='not-allowed'||e.error==='service-not-allowed'?'Allow the microphone for finux.tech, then tap the mic again.':"I didn't catch that. Tap the mic and try again.",'err');};
+  rec.onend=()=>{mic.classList.remove('on');mic.setAttribute('aria-pressed','false');rec=null;if(heard) talk();};
+  mic.classList.add('on');mic.setAttribute('aria-pressed','true');
+  radio('Listening… say the ticket or your question.');
+  try{rec.start();}catch(e){rec=null;mic.classList.remove('on');radio("I couldn't start listening. Use the mic on your keyboard instead.",'err');}
+}
+
+/* ---------- Events ---------- */
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');
+  if(!b) return;
+  unlockAudio();
+  const d=b.dataset;
+  if(d.step) return toggleStep(d.step);
+  if(d.sold) return sold(d.sold);
+  if(d.add) return addToDraft(d.add);
+  if(d.svc) return setService(d.svc);
+  if(d.time) return adjTime(d.time,+d.d);
+  switch(d.act){
+    case 'rm': return rmLine(d.line);
+    case 'cancel': return cancelDraft();
+    case 'start': return start();
+    case 'hand': return openDraft({label:'',service:'here',lines:[],other:[],src:'hand'});
+    case 'times': return openTimes();
+    case 'closetimes': return closeTimes();
+    case 'reset': return resetTimes();
+    case 'audio': return cycleAudio();
+    case 'allow': return allowClaude();
+    case 'mic': return listen();
+    case 'again': return say(lastSaid||$('#radioText').textContent,true);
+    case 'stop': if(readCtl) readCtl.abort(); return;
+    case 'toastact': {const f=toastFn;hideToast();f&&f();return;}
+  }
+});
+document.addEventListener('change',e=>{
+  const el=e.target;
+  if(el.type==='file'){
+    const f=el.files&&el.files[0];
+    camClear();
+    if(f) takePhoto(f,el); else el.value='';
+    return;
+  }
+  if(el.matches('select[data-opt]')&&S.draft){
+    const ln=S.draft.lines.find(l=>l.u===el.dataset.line);
+    if(!ln) return;
+    ln.o[el.dataset.opt]=el.value;
+    save();renderReview();
+    const again=$('#'+el.id);
+    again&&again.focus({preventScroll:true});
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='rvLabel'&&S.draft){S.draft.label=e.target.value;save();}
+});
+document.addEventListener('toggle',e=>{
+  const el=e.target;
+  if(el.id==='rvAdd') rvAddOpen=el.open;
+  else if(el.dataset&&el.dataset.fix){if(el.open) fixOpen.add(el.dataset.fix); else fixOpen.delete(el.dataset.fix);}
+},true);
+$('#talkForm').addEventListener('submit',e=>{e.preventDefault();unlockAudio();talk();});
+$('#codeForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const v=$('#codeText').value.trim();
+  codeMem=v;
+  try{if(v) localStorage.setItem(CODE_KEY,v); else localStorage.removeItem(CODE_KEY);}catch(err){}
+  $('#codeText').value='';$('#codeForm').hidden=true;
+  diag.perm=v?'Kitchen code saved':'No kitchen code saved';renderDiag();
+  radio(v?'Code saved. Try that again.':'Code cleared.');
+});
+/* any tap unlocks sound and voice, including the tap that opens the camera */
+document.addEventListener('pointerup',unlockAudio,{passive:true});
+document.addEventListener('click',e=>{const t=e.target;if(t&&t.matches&&t.matches('input[type="file"][capture]')) camMark();},true);
+/* on a computer: drop or paste a photo of the ticket anywhere */
+document.addEventListener('dragover',e=>{if(e.dataTransfer&&[...e.dataTransfer.types].includes('Files')) e.preventDefault();});
+document.addEventListener('drop',e=>{
+  const f=e.dataTransfer&&[...e.dataTransfer.files].find(x=>/^image\//.test(x.type));
+  if(!f) return;
+  e.preventDefault();takePhoto(f);
+});
+document.addEventListener('paste',e=>{
+  const f=e.clipboardData&&[...e.clipboardData.files].find(x=>/^image\//.test(x.type));
+  if(!f) return;
+  e.preventDefault();takePhoto(f);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  if(!$('#times').hidden) closeTimes();
+  else if(!$('#review').hidden) cancelDraft();
+});
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){keepAwake();tick();setTimeout(camClear,3000);}
+});
+
+/* ---------- Start ---------- */
+(function init(){
+  const now=Date.now();
+  S.tickets.forEach(t=>{
+    t.steps.forEach(s=>{if(now>=t.at+s.start*1000) s.alerted=true;});
+    if(now>=t.at+t.T*1000) t.alerted=true;
+  });
+  if(CAN_LISTEN){$('#micBtn').hidden=false;$('#talkHint').textContent='tap the mic and talk';}
+  radio();updateAudioBtn();renderBoard();renderReview();renderDiag();
+  if(camCheck()){
+    diag.last='The page reloaded while the camera was open';renderDiag();
+    radio("Your phone reloaded this page while the camera was open, so the photo didn't come through. Take the picture with your camera app, then tap Use a saved photo.",'err');
+  }
+  setInterval(tick,250);
+})();
+</script>
+</body>
+</html>
